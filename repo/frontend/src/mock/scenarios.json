@@ -1,0 +1,16 @@
+[
+  {
+    "id": "normal_opchange",
+    "name": "정상 + 주조 속도 변경",
+    "description": "누수 없음. 주조 속도와 강종이 바뀌어도 오경보가 없어야 한다.",
+    "n_samples": 2880,
+    "sensor_layout": "S-A"
+  },
+  {
+    "id": "leak_ramp_s5",
+    "name": "서서히 커지는 누수 (세그먼트 5)",
+    "description": "6시간에 걸쳐 커지는 미세 누수. 고정 임계값은 늦게 감지한다.",
+    "n_samples": 2880,
+    "sensor_layout": "S-A"
+  }
+]

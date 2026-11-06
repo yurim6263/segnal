@@ -1,0 +1,3851 @@
+{
+  "scenario_id": "leak_ramp_s5",
+  "group": 2,
+  "name": "묶음 3 회수 유량",
+  "unit": "L/min",
+  "points": [
+    {
+      "ts": 0,
+      "value": 1001.15,
+      "baseline": 1000.0,
+      "residual": 1.15,
+      "ewma": 0.287,
+      "cusum": 0.0
+    },
+    {
+      "ts": 1,
+      "value": 997.62,
+      "baseline": 1000.25,
+      "residual": -2.63,
+      "ewma": -0.441,
+      "cusum": 1.127
+    },
+    {
+      "ts": 2,
+      "value": 995.96,
+      "baseline": 1000.5,
+      "residual": -4.54,
+      "ewma": -1.467,
+      "cusum": 4.17
+    },
+    {
+      "ts": 3,
+      "value": 1006.01,
+      "baseline": 1000.75,
+      "residual": 5.26,
+      "ewma": 0.215,
+      "cusum": 0.0
+    },
+    {
+      "ts": 4,
+      "value": 1000.67,
+      "baseline": 1001.0,
+      "residual": -0.33,
+      "ewma": 0.078,
+      "cusum": 0.0
+    },
+    {
+      "ts": 5,
+      "value": 999.18,
+      "baseline": 1001.25,
+      "residual": -2.07,
+      "ewma": -0.458,
+      "cusum": 0.566
+    },
+    {
+      "ts": 6,
+      "value": 1001.93,
+      "baseline": 1001.5,
+      "residual": 0.43,
+      "ewma": -0.235,
+      "cusum": 0.0
+    },
+    {
+      "ts": 7,
+      "value": 1001.17,
+      "baseline": 1001.75,
+      "residual": -0.57,
+      "ewma": -0.32,
+      "cusum": 0.0
+    },
+    {
+      "ts": 8,
+      "value": 1004.55,
+      "baseline": 1002.0,
+      "residual": 2.56,
+      "ewma": 0.399,
+      "cusum": 0.0
+    },
+    {
+      "ts": 9,
+      "value": 1002.35,
+      "baseline": 1002.25,
+      "residual": 0.1,
+      "ewma": 0.325,
+      "cusum": 0.0
+    },
+    {
+      "ts": 10,
+      "value": 1002.53,
+      "baseline": 1002.49,
+      "residual": 0.04,
+      "ewma": 0.254,
+      "cusum": 0.0
+    },
+    {
+      "ts": 11,
+      "value": 1000.6,
+      "baseline": 1002.74,
+      "residual": -2.14,
+      "ewma": -0.346,
+      "cusum": 0.644
+    },
+    {
+      "ts": 12,
+      "value": 1004.4,
+      "baseline": 1002.99,
+      "residual": 1.41,
+      "ewma": 0.093,
+      "cusum": 0.0
+    },
+    {
+      "ts": 13,
+      "value": 1000.13,
+      "baseline": 1003.24,
+      "residual": -3.1,
+      "ewma": -0.706,
+      "cusum": 1.602
+    },
+    {
+      "ts": 14,
+      "value": 1005.48,
+      "baseline": 1003.48,
+      "residual": 2.0,
+      "ewma": -0.03,
+      "cusum": 0.0
+    },
+    {
+      "ts": 15,
+      "value": 1008.3,
+      "baseline": 1003.73,
+      "residual": 4.57,
+      "ewma": 1.121,
+      "cusum": 0.0
+    },
+    {
+      "ts": 16,
+      "value": 999.4,
+      "baseline": 1003.97,
+      "residual": -4.57,
+      "ewma": -0.303,
+      "cusum": 3.074
+    },
+    {
+      "ts": 17,
+      "value": 996.82,
+      "baseline": 1004.22,
+      "residual": -7.4,
+      "ewma": -2.077,
+      "cusum": 8.973
+    },
+    {
+      "ts": 18,
+      "value": 1006.31,
+      "baseline": 1004.46,
+      "residual": 1.85,
+      "ewma": -1.095,
+      "cusum": 5.622
+    },
+    {
+      "ts": 19,
+      "value": 1012.35,
+      "baseline": 1004.71,
+      "residual": 7.64,
+      "ewma": 1.09,
+      "cusum": 0.0
+    },
+    {
+      "ts": 20,
+      "value": 1001.95,
+      "baseline": 1004.95,
+      "residual": -3.0,
+      "ewma": 0.067,
+      "cusum": 1.503
+    },
+    {
+      "ts": 21,
+      "value": 1001.44,
+      "baseline": 1005.19,
+      "residual": -3.75,
+      "ewma": -0.888,
+      "cusum": 3.755
+    },
+    {
+      "ts": 22,
+      "value": 1007.2,
+      "baseline": 1005.43,
+      "residual": 1.77,
+      "ewma": -0.224,
+      "cusum": 0.488
+    },
+    {
+      "ts": 23,
+      "value": 1003.15,
+      "baseline": 1005.67,
+      "residual": -2.52,
+      "ewma": -0.799,
+      "cusum": 1.51
+    },
+    {
+      "ts": 24,
+      "value": 1004.39,
+      "baseline": 1005.91,
+      "residual": -1.52,
+      "ewma": -0.979,
+      "cusum": 1.528
+    },
+    {
+      "ts": 25,
+      "value": 1005.1,
+      "baseline": 1006.15,
+      "residual": -1.04,
+      "ewma": -0.995,
+      "cusum": 1.073
+    },
+    {
+      "ts": 26,
+      "value": 1007.98,
+      "baseline": 1006.39,
+      "residual": 1.6,
+      "ewma": -0.347,
+      "cusum": 0.0
+    },
+    {
+      "ts": 27,
+      "value": 1005.41,
+      "baseline": 1006.62,
+      "residual": -1.22,
+      "ewma": -0.564,
+      "cusum": 0.0
+    },
+    {
+      "ts": 28,
+      "value": 1007.69,
+      "baseline": 1006.86,
+      "residual": 0.83,
+      "ewma": -0.215,
+      "cusum": 0.0
+    },
+    {
+      "ts": 29,
+      "value": 1006.56,
+      "baseline": 1007.09,
+      "residual": -0.53,
+      "ewma": -0.294,
+      "cusum": 0.0
+    },
+    {
+      "ts": 30,
+      "value": 1004.79,
+      "baseline": 1007.33,
+      "residual": -2.53,
+      "ewma": -0.854,
+      "cusum": 1.034
+    },
+    {
+      "ts": 31,
+      "value": 1006.6,
+      "baseline": 1007.56,
+      "residual": -0.96,
+      "ewma": -0.88,
+      "cusum": 0.493
+    },
+    {
+      "ts": 32,
+      "value": 1004.94,
+      "baseline": 1007.79,
+      "residual": -2.85,
+      "ewma": -1.373,
+      "cusum": 1.845
+    },
+    {
+      "ts": 33,
+      "value": 1008.04,
+      "baseline": 1008.02,
+      "residual": 0.02,
+      "ewma": -1.025,
+      "cusum": 0.325
+    },
+    {
+      "ts": 34,
+      "value": 1004.87,
+      "baseline": 1008.25,
+      "residual": -3.37,
+      "ewma": -1.611,
+      "cusum": 2.197
+    },
+    {
+      "ts": 35,
+      "value": 1005.19,
+      "baseline": 1008.47,
+      "residual": -3.28,
+      "ewma": -2.028,
+      "cusum": 3.975
+    },
+    {
+      "ts": 36,
+      "value": 1013.07,
+      "baseline": 1008.7,
+      "residual": 4.37,
+      "ewma": -0.428,
+      "cusum": 0.0
+    },
+    {
+      "ts": 37,
+      "value": 1008.76,
+      "baseline": 1008.92,
+      "residual": -0.16,
+      "ewma": -0.361,
+      "cusum": 0.0
+    },
+    {
+      "ts": 38,
+      "value": 1008.99,
+      "baseline": 1009.15,
+      "residual": -0.16,
+      "ewma": -0.311,
+      "cusum": 0.0
+    },
+    {
+      "ts": 39,
+      "value": 1010.9,
+      "baseline": 1009.37,
+      "residual": 1.53,
+      "ewma": 0.15,
+      "cusum": 0.0
+    },
+    {
+      "ts": 40,
+      "value": 1008.33,
+      "baseline": 1009.59,
+      "residual": -1.26,
+      "ewma": -0.203,
+      "cusum": 0.0
+    },
+    {
+      "ts": 41,
+      "value": 1009.12,
+      "baseline": 1009.81,
+      "residual": -0.69,
+      "ewma": -0.324,
+      "cusum": 0.0
+    },
+    {
+      "ts": 42,
+      "value": 1011.3,
+      "baseline": 1010.02,
+      "residual": 1.28,
+      "ewma": 0.076,
+      "cusum": 0.0
+    },
+    {
+      "ts": 43,
+      "value": 1011.09,
+      "baseline": 1010.24,
+      "residual": 0.85,
+      "ewma": 0.269,
+      "cusum": 0.0
+    },
+    {
+      "ts": 44,
+      "value": 1006.98,
+      "baseline": 1010.45,
+      "residual": -3.48,
+      "ewma": -0.668,
+      "cusum": 1.978
+    },
+    {
+      "ts": 45,
+      "value": 1013.17,
+      "baseline": 1010.67,
+      "residual": 2.5,
+      "ewma": 0.124,
+      "cusum": 0.0
+    },
+    {
+      "ts": 46,
+      "value": 1009.11,
+      "baseline": 1010.88,
+      "residual": -1.77,
+      "ewma": -0.35,
+      "cusum": 0.271
+    },
+    {
+      "ts": 47,
+      "value": 1007.92,
+      "baseline": 1011.09,
+      "residual": -3.17,
+      "ewma": -1.054,
+      "cusum": 1.94
+    },
+    {
+      "ts": 48,
+      "value": 1008.59,
+      "baseline": 1011.29,
+      "residual": -2.7,
+      "ewma": -1.466,
+      "cusum": 3.141
+    },
+    {
+      "ts": 49,
+      "value": 1010.33,
+      "baseline": 1011.5,
+      "residual": -1.17,
+      "ewma": -1.392,
+      "cusum": 2.813
+    },
+    {
+      "ts": 50,
+      "value": 1016.58,
+      "baseline": 1011.7,
+      "residual": 4.88,
+      "ewma": 0.176,
+      "cusum": 0.0
+    },
+    {
+      "ts": 51,
+      "value": 1008.38,
+      "baseline": 1011.9,
+      "residual": -3.53,
+      "ewma": -0.75,
+      "cusum": 2.027
+    },
+    {
+      "ts": 52,
+      "value": 1012.58,
+      "baseline": 1012.1,
+      "residual": 0.48,
+      "ewma": -0.442,
+      "cusum": 0.046
+    },
+    {
+      "ts": 53,
+      "value": 1005.89,
+      "baseline": 1012.3,
+      "residual": -6.41,
+      "ewma": -1.935,
+      "cusum": 4.96
+    },
+    {
+      "ts": 54,
+      "value": 1012.49,
+      "baseline": 1012.5,
+      "residual": -0.0,
+      "ewma": -1.452,
+      "cusum": 3.465
+    },
+    {
+      "ts": 55,
+      "value": 1015.39,
+      "baseline": 1012.69,
+      "residual": 2.7,
+      "ewma": -0.415,
+      "cusum": 0.0
+    },
+    {
+      "ts": 56,
+      "value": 1012.17,
+      "baseline": 1012.88,
+      "residual": -0.71,
+      "ewma": -0.488,
+      "cusum": 0.0
+    },
+    {
+      "ts": 57,
+      "value": 1011.19,
+      "baseline": 1013.07,
+      "residual": -1.89,
+      "ewma": -0.838,
+      "cusum": 0.388
+    },
+    {
+      "ts": 58,
+      "value": 1013.96,
+      "baseline": 1013.26,
+      "residual": 0.69,
+      "ewma": -0.455,
+      "cusum": 0.0
+    },
+    {
+      "ts": 59,
+      "value": 1015.55,
+      "baseline": 1013.45,
+      "residual": 2.1,
+      "ewma": 0.184,
+      "cusum": 0.0
+    },
+    {
+      "ts": 60,
+      "value": 1015.62,
+      "baseline": 1013.63,
+      "residual": 1.99,
+      "ewma": 0.636,
+      "cusum": 0.0
+    },
+    {
+      "ts": 61,
+      "value": 1019.73,
+      "baseline": 1013.81,
+      "residual": 5.92,
+      "ewma": 1.956,
+      "cusum": 0.0
+    },
+    {
+      "ts": 62,
+      "value": 1014.62,
+      "baseline": 1013.99,
+      "residual": 0.63,
+      "ewma": 1.624,
+      "cusum": 0.0
+    },
+    {
+      "ts": 63,
+      "value": 1012.39,
+      "baseline": 1014.17,
+      "residual": -1.78,
+      "ewma": 0.774,
+      "cusum": 0.277
+    },
+    {
+      "ts": 64,
+      "value": 1013.97,
+      "baseline": 1014.35,
+      "residual": -0.38,
+      "ewma": 0.486,
+      "cusum": 0.0
+    },
+    {
+      "ts": 65,
+      "value": 1014.3,
+      "baseline": 1014.52,
+      "residual": -0.22,
+      "ewma": 0.31,
+      "cusum": 0.0
+    },
+    {
+      "ts": 66,
+      "value": 1015.02,
+      "baseline": 1014.69,
+      "residual": 0.33,
+      "ewma": 0.314,
+      "cusum": 0.0
+    },
+    {
+      "ts": 67,
+      "value": 1014.77,
+      "baseline": 1014.86,
+      "residual": -0.09,
+      "ewma": 0.213,
+      "cusum": 0.0
+    },
+    {
+      "ts": 68,
+      "value": 1015.55,
+      "baseline": 1015.03,
+      "residual": 0.52,
+      "ewma": 0.29,
+      "cusum": 0.0
+    },
+    {
+      "ts": 69,
+      "value": 1010.18,
+      "baseline": 1015.19,
+      "residual": -5.01,
+      "ewma": -1.035,
+      "cusum": 3.513
+    },
+    {
+      "ts": 70,
+      "value": 1017.84,
+      "baseline": 1015.35,
+      "residual": 2.49,
+      "ewma": -0.154,
+      "cusum": 0.0
+    },
+    {
+      "ts": 71,
+      "value": 1013.79,
+      "baseline": 1015.51,
+      "residual": -1.72,
+      "ewma": -0.547,
+      "cusum": 0.224
+    },
+    {
+      "ts": 72,
+      "value": 1012.15,
+      "baseline": 1015.67,
+      "residual": -3.52,
+      "ewma": -1.29,
+      "cusum": 2.244
+    },
+    {
+      "ts": 73,
+      "value": 1017.73,
+      "baseline": 1015.82,
+      "residual": 1.91,
+      "ewma": -0.489,
+      "cusum": 0.0
+    },
+    {
+      "ts": 74,
+      "value": 1019.92,
+      "baseline": 1015.97,
+      "residual": 3.95,
+      "ewma": 0.621,
+      "cusum": 0.0
+    },
+    {
+      "ts": 75,
+      "value": 1017.6,
+      "baseline": 1016.12,
+      "residual": 1.48,
+      "ewma": 0.836,
+      "cusum": 0.0
+    },
+    {
+      "ts": 76,
+      "value": 1016.75,
+      "baseline": 1016.27,
+      "residual": 0.48,
+      "ewma": 0.748,
+      "cusum": 0.0
+    },
+    {
+      "ts": 77,
+      "value": 1013.62,
+      "baseline": 1016.41,
+      "residual": -2.8,
+      "ewma": -0.138,
+      "cusum": 1.297
+    },
+    {
+      "ts": 78,
+      "value": 1025.17,
+      "baseline": 1016.55,
+      "residual": 8.61,
+      "ewma": 2.05,
+      "cusum": 0.0
+    },
+    {
+      "ts": 79,
+      "value": 1019.33,
+      "baseline": 1016.69,
+      "residual": 2.64,
+      "ewma": 2.198,
+      "cusum": 0.0
+    },
+    {
+      "ts": 80,
+      "value": 1013.41,
+      "baseline": 1016.83,
+      "residual": -3.42,
+      "ewma": 0.794,
+      "cusum": 1.918
+    },
+    {
+      "ts": 81,
+      "value": 1014.62,
+      "baseline": 1016.96,
+      "residual": -2.34,
+      "ewma": 0.011,
+      "cusum": 2.757
+    },
+    {
+      "ts": 82,
+      "value": 1017.36,
+      "baseline": 1017.09,
+      "residual": 0.26,
+      "ewma": 0.073,
+      "cusum": 0.996
+    },
+    {
+      "ts": 83,
+      "value": 1012.56,
+      "baseline": 1017.22,
+      "residual": -4.66,
+      "ewma": -1.111,
+      "cusum": 4.16
+    },
+    {
+      "ts": 84,
+      "value": 1017.85,
+      "baseline": 1017.35,
+      "residual": 0.51,
+      "ewma": -0.707,
+      "cusum": 2.154
+    },
+    {
+      "ts": 85,
+      "value": 1016.09,
+      "baseline": 1017.47,
+      "residual": -1.38,
+      "ewma": -0.874,
+      "cusum": 2.031
+    },
+    {
+      "ts": 86,
+      "value": 1021.27,
+      "baseline": 1017.59,
+      "residual": 3.68,
+      "ewma": 0.264,
+      "cusum": 0.0
+    },
+    {
+      "ts": 87,
+      "value": 1020.6,
+      "baseline": 1017.71,
+      "residual": 2.89,
+      "ewma": 0.919,
+      "cusum": 0.0
+    },
+    {
+      "ts": 88,
+      "value": 1009.69,
+      "baseline": 1017.82,
+      "residual": -8.13,
+      "ewma": -1.344,
+      "cusum": 6.634
+    },
+    {
+      "ts": 89,
+      "value": 1018.06,
+      "baseline": 1017.94,
+      "residual": 0.13,
+      "ewma": -0.977,
+      "cusum": 5.009
+    },
+    {
+      "ts": 90,
+      "value": 1013.19,
+      "baseline": 1018.05,
+      "residual": -4.85,
+      "ewma": -1.946,
+      "cusum": 8.361
+    },
+    {
+      "ts": 91,
+      "value": 1021.48,
+      "baseline": 1018.15,
+      "residual": 3.33,
+      "ewma": -0.627,
+      "cusum": 3.532
+    },
+    {
+      "ts": 92,
+      "value": 1018.76,
+      "baseline": 1018.26,
+      "residual": 0.5,
+      "ewma": -0.344,
+      "cusum": 1.528
+    },
+    {
+      "ts": 93,
+      "value": 1020.0,
+      "baseline": 1018.36,
+      "residual": 1.65,
+      "ewma": 0.153,
+      "cusum": 0.0
+    },
+    {
+      "ts": 94,
+      "value": 1015.26,
+      "baseline": 1018.45,
+      "residual": -3.2,
+      "ewma": -0.684,
+      "cusum": 1.695
+    },
+    {
+      "ts": 95,
+      "value": 1024.03,
+      "baseline": 1018.55,
+      "residual": 5.49,
+      "ewma": 0.858,
+      "cusum": 0.0
+    },
+    {
+      "ts": 96,
+      "value": 1024.7,
+      "baseline": 1018.64,
+      "residual": 6.06,
+      "ewma": 2.159,
+      "cusum": 0.0
+    },
+    {
+      "ts": 97,
+      "value": 1015.54,
+      "baseline": 1018.73,
+      "residual": -3.19,
+      "ewma": 0.821,
+      "cusum": 1.694
+    },
+    {
+      "ts": 98,
+      "value": 1019.93,
+      "baseline": 1018.82,
+      "residual": 1.12,
+      "ewma": 0.895,
+      "cusum": 0.0
+    },
+    {
+      "ts": 99,
+      "value": 1016.88,
+      "baseline": 1018.9,
+      "residual": -2.02,
+      "ewma": 0.166,
+      "cusum": 0.52
+    },
+    {
+      "ts": 100,
+      "value": 1018.91,
+      "baseline": 1018.98,
+      "residual": -0.07,
+      "ewma": 0.107,
+      "cusum": 0.0
+    },
+    {
+      "ts": 101,
+      "value": 1015.26,
+      "baseline": 1019.06,
+      "residual": -3.8,
+      "ewma": -0.869,
+      "cusum": 2.297
+    },
+    {
+      "ts": 102,
+      "value": 1024.73,
+      "baseline": 1019.13,
+      "residual": 5.6,
+      "ewma": 0.749,
+      "cusum": 0.0
+    },
+    {
+      "ts": 103,
+      "value": 1016.3,
+      "baseline": 1019.2,
+      "residual": -2.91,
+      "ewma": -0.165,
+      "cusum": 1.408
+    },
+    {
+      "ts": 104,
+      "value": 1018.38,
+      "baseline": 1019.27,
+      "residual": -0.89,
+      "ewma": -0.346,
+      "cusum": 0.796
+    },
+    {
+      "ts": 105,
+      "value": 1020.84,
+      "baseline": 1019.34,
+      "residual": 1.5,
+      "ewma": 0.117,
+      "cusum": 0.0
+    },
+    {
+      "ts": 106,
+      "value": 1017.46,
+      "baseline": 1019.4,
+      "residual": -1.94,
+      "ewma": -0.398,
+      "cusum": 0.443
+    },
+    {
+      "ts": 107,
+      "value": 1018.74,
+      "baseline": 1019.46,
+      "residual": -0.72,
+      "ewma": -0.478,
+      "cusum": 0.0
+    },
+    {
+      "ts": 108,
+      "value": 1017.82,
+      "baseline": 1019.51,
+      "residual": -1.69,
+      "ewma": -0.781,
+      "cusum": 0.191
+    },
+    {
+      "ts": 109,
+      "value": 1019.17,
+      "baseline": 1019.57,
+      "residual": -0.4,
+      "ewma": -0.686,
+      "cusum": 0.0
+    },
+    {
+      "ts": 110,
+      "value": 1016.11,
+      "baseline": 1019.62,
+      "residual": -3.51,
+      "ewma": -1.393,
+      "cusum": 2.012
+    },
+    {
+      "ts": 111,
+      "value": 1018.35,
+      "baseline": 1019.66,
+      "residual": -1.31,
+      "ewma": -1.373,
+      "cusum": 1.826
+    },
+    {
+      "ts": 112,
+      "value": 1019.09,
+      "baseline": 1019.71,
+      "residual": -0.62,
+      "ewma": -1.185,
+      "cusum": 0.946
+    },
+    {
+      "ts": 113,
+      "value": 1018.75,
+      "baseline": 1019.75,
+      "residual": -1.0,
+      "ewma": -1.139,
+      "cusum": 0.447
+    },
+    {
+      "ts": 114,
+      "value": 1019.96,
+      "baseline": 1019.79,
+      "residual": 0.17,
+      "ewma": -0.812,
+      "cusum": 0.0
+    },
+    {
+      "ts": 115,
+      "value": 1018.94,
+      "baseline": 1019.82,
+      "residual": -0.88,
+      "ewma": -0.829,
+      "cusum": 0.0
+    },
+    {
+      "ts": 116,
+      "value": 1022.11,
+      "baseline": 1019.85,
+      "residual": 2.26,
+      "ewma": -0.057,
+      "cusum": 0.0
+    },
+    {
+      "ts": 117,
+      "value": 1018.91,
+      "baseline": 1019.88,
+      "residual": -0.97,
+      "ewma": -0.285,
+      "cusum": 0.0
+    },
+    {
+      "ts": 118,
+      "value": 1019.5,
+      "baseline": 1019.91,
+      "residual": -0.41,
+      "ewma": -0.316,
+      "cusum": 0.0
+    },
+    {
+      "ts": 119,
+      "value": 1017.94,
+      "baseline": 1019.93,
+      "residual": -1.99,
+      "ewma": -0.736,
+      "cusum": 0.494
+    },
+    {
+      "ts": 120,
+      "value": 1018.37,
+      "baseline": 1019.95,
+      "residual": -1.58,
+      "ewma": -0.947,
+      "cusum": 0.574
+    },
+    {
+      "ts": 121,
+      "value": 1016.17,
+      "baseline": 1019.97,
+      "residual": -3.79,
+      "ewma": -1.658,
+      "cusum": 2.867
+    },
+    {
+      "ts": 122,
+      "value": 1021.54,
+      "baseline": 1019.98,
+      "residual": 1.56,
+      "ewma": -0.855,
+      "cusum": 0.0
+    },
+    {
+      "ts": 123,
+      "value": 1016.56,
+      "baseline": 1019.99,
+      "residual": -3.43,
+      "ewma": -1.498,
+      "cusum": 1.928
+    },
+    {
+      "ts": 124,
+      "value": 1017.76,
+      "baseline": 1020.0,
+      "residual": -2.24,
+      "ewma": -1.683,
+      "cusum": 2.665
+    },
+    {
+      "ts": 125,
+      "value": 1021.08,
+      "baseline": 1020.0,
+      "residual": 1.08,
+      "ewma": -0.993,
+      "cusum": 0.087
+    },
+    {
+      "ts": 126,
+      "value": 1021.21,
+      "baseline": 1020.0,
+      "residual": 1.21,
+      "ewma": -0.443,
+      "cusum": 0.0
+    },
+    {
+      "ts": 127,
+      "value": 1018.8,
+      "baseline": 1020.0,
+      "residual": -1.2,
+      "ewma": -0.632,
+      "cusum": 0.0
+    },
+    {
+      "ts": 128,
+      "value": 1013.93,
+      "baseline": 1019.99,
+      "residual": -6.06,
+      "ewma": -1.988,
+      "cusum": 4.558
+    },
+    {
+      "ts": 129,
+      "value": 1021.24,
+      "baseline": 1019.98,
+      "residual": 1.26,
+      "ewma": -1.176,
+      "cusum": 1.796
+    },
+    {
+      "ts": 130,
+      "value": 1020.75,
+      "baseline": 1019.97,
+      "residual": 0.78,
+      "ewma": -0.687,
+      "cusum": 0.0
+    },
+    {
+      "ts": 131,
+      "value": 1015.72,
+      "baseline": 1019.96,
+      "residual": -4.24,
+      "ewma": -1.575,
+      "cusum": 2.737
+    },
+    {
+      "ts": 132,
+      "value": 1022.25,
+      "baseline": 1019.94,
+      "residual": 2.31,
+      "ewma": -0.603,
+      "cusum": 0.0
+    },
+    {
+      "ts": 133,
+      "value": 1017.81,
+      "baseline": 1019.92,
+      "residual": -2.1,
+      "ewma": -0.978,
+      "cusum": 0.603
+    },
+    {
+      "ts": 134,
+      "value": 1016.51,
+      "baseline": 1019.89,
+      "residual": -3.38,
+      "ewma": -1.578,
+      "cusum": 2.482
+    },
+    {
+      "ts": 135,
+      "value": 1020.15,
+      "baseline": 1019.86,
+      "residual": 0.29,
+      "ewma": -1.112,
+      "cusum": 0.695
+    },
+    {
+      "ts": 136,
+      "value": 1019.3,
+      "baseline": 1019.83,
+      "residual": -0.54,
+      "ewma": -0.968,
+      "cusum": 0.0
+    },
+    {
+      "ts": 137,
+      "value": 1020.41,
+      "baseline": 1019.8,
+      "residual": 0.61,
+      "ewma": -0.574,
+      "cusum": 0.0
+    },
+    {
+      "ts": 138,
+      "value": 1014.95,
+      "baseline": 1019.76,
+      "residual": -4.82,
+      "ewma": -1.635,
+      "cusum": 3.317
+    },
+    {
+      "ts": 139,
+      "value": 1025.16,
+      "baseline": 1019.72,
+      "residual": 5.44,
+      "ewma": 0.133,
+      "cusum": 0.0
+    },
+    {
+      "ts": 140,
+      "value": 1017.87,
+      "baseline": 1019.68,
+      "residual": -1.81,
+      "ewma": -0.352,
+      "cusum": 0.308
+    },
+    {
+      "ts": 141,
+      "value": 1015.01,
+      "baseline": 1019.63,
+      "residual": -4.62,
+      "ewma": -1.419,
+      "cusum": 3.427
+    },
+    {
+      "ts": 142,
+      "value": 1021.44,
+      "baseline": 1019.58,
+      "residual": 1.86,
+      "ewma": -0.6,
+      "cusum": 0.07
+    },
+    {
+      "ts": 143,
+      "value": 1018.47,
+      "baseline": 1019.53,
+      "residual": -1.06,
+      "ewma": -0.716,
+      "cusum": 0.0
+    },
+    {
+      "ts": 144,
+      "value": 1020.45,
+      "baseline": 1019.48,
+      "residual": 0.97,
+      "ewma": -0.293,
+      "cusum": 0.0
+    },
+    {
+      "ts": 145,
+      "value": 1018.4,
+      "baseline": 1019.42,
+      "residual": -1.02,
+      "ewma": -0.475,
+      "cusum": 0.0
+    },
+    {
+      "ts": 146,
+      "value": 1019.18,
+      "baseline": 1019.36,
+      "residual": -0.18,
+      "ewma": -0.401,
+      "cusum": 0.0
+    },
+    {
+      "ts": 147,
+      "value": 1020.03,
+      "baseline": 1019.29,
+      "residual": 0.74,
+      "ewma": -0.116,
+      "cusum": 0.0
+    },
+    {
+      "ts": 148,
+      "value": 1016.99,
+      "baseline": 1019.23,
+      "residual": -2.24,
+      "ewma": -0.647,
+      "cusum": 0.74
+    },
+    {
+      "ts": 149,
+      "value": 1021.19,
+      "baseline": 1019.16,
+      "residual": 2.04,
+      "ewma": 0.024,
+      "cusum": 0.0
+    },
+    {
+      "ts": 150,
+      "value": 1017.67,
+      "baseline": 1019.08,
+      "residual": -1.41,
+      "ewma": -0.335,
+      "cusum": 0.0
+    },
+    {
+      "ts": 151,
+      "value": 1016.4,
+      "baseline": 1019.01,
+      "residual": -2.61,
+      "ewma": -0.903,
+      "cusum": 1.109
+    },
+    {
+      "ts": 152,
+      "value": 1019.16,
+      "baseline": 1018.93,
+      "residual": 0.23,
+      "ewma": -0.62,
+      "cusum": 0.0
+    },
+    {
+      "ts": 153,
+      "value": 1020.18,
+      "baseline": 1018.84,
+      "residual": 1.34,
+      "ewma": -0.131,
+      "cusum": 0.0
+    },
+    {
+      "ts": 154,
+      "value": 1018.07,
+      "baseline": 1018.76,
+      "residual": -0.69,
+      "ewma": -0.27,
+      "cusum": 0.0
+    },
+    {
+      "ts": 155,
+      "value": 1016.08,
+      "baseline": 1018.67,
+      "residual": -2.59,
+      "ewma": -0.849,
+      "cusum": 1.088
+    },
+    {
+      "ts": 156,
+      "value": 1020.44,
+      "baseline": 1018.58,
+      "residual": 1.86,
+      "ewma": -0.172,
+      "cusum": 0.0
+    },
+    {
+      "ts": 157,
+      "value": 1013.2,
+      "baseline": 1018.49,
+      "residual": -5.28,
+      "ewma": -1.449,
+      "cusum": 3.781
+    },
+    {
+      "ts": 158,
+      "value": 1015.3,
+      "baseline": 1018.39,
+      "residual": -3.09,
+      "ewma": -1.86,
+      "cusum": 5.374
+    },
+    {
+      "ts": 159,
+      "value": 1018.41,
+      "baseline": 1018.29,
+      "residual": 0.12,
+      "ewma": -1.366,
+      "cusum": 3.755
+    },
+    {
+      "ts": 160,
+      "value": 1014.1,
+      "baseline": 1018.19,
+      "residual": -4.08,
+      "ewma": -2.045,
+      "cusum": 6.338
+    },
+    {
+      "ts": 161,
+      "value": 1018.16,
+      "baseline": 1018.08,
+      "residual": 0.08,
+      "ewma": -1.513,
+      "cusum": 4.754
+    },
+    {
+      "ts": 162,
+      "value": 1017.81,
+      "baseline": 1017.97,
+      "residual": -0.16,
+      "ewma": -1.176,
+      "cusum": 3.419
+    },
+    {
+      "ts": 163,
+      "value": 1020.56,
+      "baseline": 1017.86,
+      "residual": 2.7,
+      "ewma": -0.208,
+      "cusum": 0.0
+    },
+    {
+      "ts": 164,
+      "value": 1015.0,
+      "baseline": 1017.75,
+      "residual": -2.74,
+      "ewma": -0.842,
+      "cusum": 1.244
+    },
+    {
+      "ts": 165,
+      "value": 1015.75,
+      "baseline": 1017.63,
+      "residual": -1.88,
+      "ewma": -1.101,
+      "cusum": 1.622
+    },
+    {
+      "ts": 166,
+      "value": 1018.51,
+      "baseline": 1017.51,
+      "residual": 1.0,
+      "ewma": -0.576,
+      "cusum": 0.0
+    },
+    {
+      "ts": 167,
+      "value": 1010.02,
+      "baseline": 1017.39,
+      "residual": -7.37,
+      "ewma": -2.275,
+      "cusum": 5.873
+    },
+    {
+      "ts": 168,
+      "value": 1026.56,
+      "baseline": 1017.26,
+      "residual": 9.3,
+      "ewma": 0.619,
+      "cusum": 0.0
+    },
+    {
+      "ts": 169,
+      "value": 1015.04,
+      "baseline": 1017.14,
+      "residual": -2.1,
+      "ewma": -0.06,
+      "cusum": 0.596
+    },
+    {
+      "ts": 170,
+      "value": 1014.82,
+      "baseline": 1017.01,
+      "residual": -2.19,
+      "ewma": -0.592,
+      "cusum": 1.285
+    },
+    {
+      "ts": 171,
+      "value": 1019.46,
+      "baseline": 1016.87,
+      "residual": 2.58,
+      "ewma": 0.202,
+      "cusum": 0.0
+    },
+    {
+      "ts": 172,
+      "value": 1016.62,
+      "baseline": 1016.74,
+      "residual": -0.12,
+      "ewma": 0.121,
+      "cusum": 0.0
+    },
+    {
+      "ts": 173,
+      "value": 1011.26,
+      "baseline": 1016.6,
+      "residual": -5.34,
+      "ewma": -1.244,
+      "cusum": 3.838
+    },
+    {
+      "ts": 174,
+      "value": 1018.34,
+      "baseline": 1016.46,
+      "residual": 1.88,
+      "ewma": -0.462,
+      "cusum": 0.458
+    },
+    {
+      "ts": 175,
+      "value": 1018.88,
+      "baseline": 1016.32,
+      "residual": 2.57,
+      "ewma": 0.295,
+      "cusum": 0.0
+    },
+    {
+      "ts": 176,
+      "value": 1014.82,
+      "baseline": 1016.17,
+      "residual": -1.35,
+      "ewma": -0.116,
+      "cusum": 0.0
+    },
+    {
+      "ts": 177,
+      "value": 1015.18,
+      "baseline": 1016.02,
+      "residual": -0.84,
+      "ewma": -0.299,
+      "cusum": 0.0
+    },
+    {
+      "ts": 178,
+      "value": 1017.33,
+      "baseline": 1015.87,
+      "residual": 1.46,
+      "ewma": 0.141,
+      "cusum": 0.0
+    },
+    {
+      "ts": 179,
+      "value": 1012.99,
+      "baseline": 1015.72,
+      "residual": -2.73,
+      "ewma": -0.576,
+      "cusum": 1.226
+    },
+    {
+      "ts": 180,
+      "value": 1016.88,
+      "baseline": 1015.56,
+      "residual": 1.32,
+      "ewma": -0.103,
+      "cusum": 0.0
+    },
+    {
+      "ts": 181,
+      "value": 1016.0,
+      "baseline": 1015.4,
+      "residual": 0.6,
+      "ewma": 0.072,
+      "cusum": 0.0
+    },
+    {
+      "ts": 182,
+      "value": 1013.22,
+      "baseline": 1015.24,
+      "residual": -2.02,
+      "ewma": -0.452,
+      "cusum": 0.525
+    },
+    {
+      "ts": 183,
+      "value": 1010.9,
+      "baseline": 1015.08,
+      "residual": -4.18,
+      "ewma": -1.383,
+      "cusum": 3.201
+    },
+    {
+      "ts": 184,
+      "value": 1014.24,
+      "baseline": 1014.91,
+      "residual": -0.68,
+      "ewma": -1.207,
+      "cusum": 2.378
+    },
+    {
+      "ts": 185,
+      "value": 1012.12,
+      "baseline": 1014.75,
+      "residual": -2.63,
+      "ewma": -1.562,
+      "cusum": 3.504
+    },
+    {
+      "ts": 186,
+      "value": 1017.58,
+      "baseline": 1014.58,
+      "residual": 3.0,
+      "ewma": -0.42,
+      "cusum": 0.0
+    },
+    {
+      "ts": 187,
+      "value": 1014.84,
+      "baseline": 1014.4,
+      "residual": 0.43,
+      "ewma": -0.207,
+      "cusum": 0.0
+    },
+    {
+      "ts": 188,
+      "value": 1016.58,
+      "baseline": 1014.23,
+      "residual": 2.35,
+      "ewma": 0.431,
+      "cusum": 0.0
+    },
+    {
+      "ts": 189,
+      "value": 1014.46,
+      "baseline": 1014.05,
+      "residual": 0.4,
+      "ewma": 0.424,
+      "cusum": 0.0
+    },
+    {
+      "ts": 190,
+      "value": 1014.66,
+      "baseline": 1013.87,
+      "residual": 0.79,
+      "ewma": 0.516,
+      "cusum": 0.0
+    },
+    {
+      "ts": 191,
+      "value": 1011.34,
+      "baseline": 1013.69,
+      "residual": -2.35,
+      "ewma": -0.201,
+      "cusum": 0.849
+    },
+    {
+      "ts": 192,
+      "value": 1015.51,
+      "baseline": 1013.51,
+      "residual": 2.0,
+      "ewma": 0.351,
+      "cusum": 0.0
+    },
+    {
+      "ts": 193,
+      "value": 1018.68,
+      "baseline": 1013.32,
+      "residual": 5.35,
+      "ewma": 1.601,
+      "cusum": 0.0
+    },
+    {
+      "ts": 194,
+      "value": 1012.21,
+      "baseline": 1013.14,
+      "residual": -0.93,
+      "ewma": 0.969,
+      "cusum": 0.0
+    },
+    {
+      "ts": 195,
+      "value": 1011.17,
+      "baseline": 1012.95,
+      "residual": -1.78,
+      "ewma": 0.282,
+      "cusum": 0.278
+    },
+    {
+      "ts": 196,
+      "value": 1012.28,
+      "baseline": 1012.76,
+      "residual": -0.47,
+      "ewma": 0.093,
+      "cusum": 0.0
+    },
+    {
+      "ts": 197,
+      "value": 1011.12,
+      "baseline": 1012.56,
+      "residual": -1.44,
+      "ewma": -0.291,
+      "cusum": 0.0
+    },
+    {
+      "ts": 198,
+      "value": 1010.26,
+      "baseline": 1012.37,
+      "residual": -2.1,
+      "ewma": -0.744,
+      "cusum": 0.604
+    },
+    {
+      "ts": 199,
+      "value": 1012.58,
+      "baseline": 1012.17,
+      "residual": 0.41,
+      "ewma": -0.455,
+      "cusum": 0.0
+    },
+    {
+      "ts": 200,
+      "value": 1011.1,
+      "baseline": 1011.97,
+      "residual": -0.87,
+      "ewma": -0.559,
+      "cusum": 0.0
+    },
+    {
+      "ts": 201,
+      "value": 1016.08,
+      "baseline": 1011.77,
+      "residual": 4.32,
+      "ewma": 0.66,
+      "cusum": 0.0
+    },
+    {
+      "ts": 202,
+      "value": 1011.57,
+      "baseline": 1011.57,
+      "residual": 0.0,
+      "ewma": 0.495,
+      "cusum": 0.0
+    },
+    {
+      "ts": 203,
+      "value": 1012.33,
+      "baseline": 1011.36,
+      "residual": 0.97,
+      "ewma": 0.614,
+      "cusum": 0.0
+    },
+    {
+      "ts": 204,
+      "value": 1014.01,
+      "baseline": 1011.15,
+      "residual": 2.86,
+      "ewma": 1.175,
+      "cusum": 0.0
+    },
+    {
+      "ts": 205,
+      "value": 1010.04,
+      "baseline": 1010.95,
+      "residual": -0.9,
+      "ewma": 0.655,
+      "cusum": 0.0
+    },
+    {
+      "ts": 206,
+      "value": 1015.05,
+      "baseline": 1010.74,
+      "residual": 4.31,
+      "ewma": 1.569,
+      "cusum": 0.0
+    },
+    {
+      "ts": 207,
+      "value": 1008.63,
+      "baseline": 1010.52,
+      "residual": -1.9,
+      "ewma": 0.702,
+      "cusum": 0.398
+    },
+    {
+      "ts": 208,
+      "value": 1007.89,
+      "baseline": 1010.31,
+      "residual": -2.42,
+      "ewma": -0.08,
+      "cusum": 1.323
+    },
+    {
+      "ts": 209,
+      "value": 1009.0,
+      "baseline": 1010.1,
+      "residual": -1.1,
+      "ewma": -0.334,
+      "cusum": 0.922
+    },
+    {
+      "ts": 210,
+      "value": 1009.53,
+      "baseline": 1009.88,
+      "residual": -0.34,
+      "ewma": -0.337,
+      "cusum": 0.0
+    },
+    {
+      "ts": 211,
+      "value": 1005.46,
+      "baseline": 1009.66,
+      "residual": -4.2,
+      "ewma": -1.304,
+      "cusum": 2.704
+    },
+    {
+      "ts": 212,
+      "value": 1009.34,
+      "baseline": 1009.44,
+      "residual": -0.11,
+      "ewma": -1.004,
+      "cusum": 1.309
+    },
+    {
+      "ts": 213,
+      "value": 1004.22,
+      "baseline": 1009.22,
+      "residual": -5.0,
+      "ewma": -2.004,
+      "cusum": 4.812
+    },
+    {
+      "ts": 214,
+      "value": 1013.17,
+      "baseline": 1009.0,
+      "residual": 4.18,
+      "ewma": -0.459,
+      "cusum": 0.0
+    },
+    {
+      "ts": 215,
+      "value": 1008.53,
+      "baseline": 1008.77,
+      "residual": -0.24,
+      "ewma": -0.405,
+      "cusum": 0.0
+    },
+    {
+      "ts": 216,
+      "value": 1006.62,
+      "baseline": 1008.55,
+      "residual": -1.93,
+      "ewma": -0.785,
+      "cusum": 0.426
+    },
+    {
+      "ts": 217,
+      "value": 1005.6,
+      "baseline": 1008.32,
+      "residual": -2.73,
+      "ewma": -1.27,
+      "cusum": 1.651
+    },
+    {
+      "ts": 218,
+      "value": 1006.94,
+      "baseline": 1008.09,
+      "residual": -1.15,
+      "ewma": -1.241,
+      "cusum": 1.304
+    },
+    {
+      "ts": 219,
+      "value": 1007.19,
+      "baseline": 1007.86,
+      "residual": -0.67,
+      "ewma": -1.098,
+      "cusum": 0.473
+    },
+    {
+      "ts": 220,
+      "value": 1004.5,
+      "baseline": 1007.63,
+      "residual": -3.13,
+      "ewma": -1.607,
+      "cusum": 2.107
+    },
+    {
+      "ts": 221,
+      "value": 1004.64,
+      "baseline": 1007.4,
+      "residual": -2.76,
+      "ewma": -1.895,
+      "cusum": 3.366
+    },
+    {
+      "ts": 222,
+      "value": 1006.61,
+      "baseline": 1007.17,
+      "residual": -0.56,
+      "ewma": -1.562,
+      "cusum": 2.428
+    },
+    {
+      "ts": 223,
+      "value": 1005.37,
+      "baseline": 1006.93,
+      "residual": -1.56,
+      "ewma": -1.562,
+      "cusum": 2.49
+    },
+    {
+      "ts": 224,
+      "value": 1009.52,
+      "baseline": 1006.7,
+      "residual": 2.82,
+      "ewma": -0.467,
+      "cusum": 0.0
+    },
+    {
+      "ts": 225,
+      "value": 1009.88,
+      "baseline": 1006.46,
+      "residual": 3.41,
+      "ewma": 0.503,
+      "cusum": 0.0
+    },
+    {
+      "ts": 226,
+      "value": 1006.27,
+      "baseline": 1006.23,
+      "residual": 0.05,
+      "ewma": 0.389,
+      "cusum": 0.0
+    },
+    {
+      "ts": 227,
+      "value": 1007.41,
+      "baseline": 1005.99,
+      "residual": 1.42,
+      "ewma": 0.647,
+      "cusum": 0.0
+    },
+    {
+      "ts": 228,
+      "value": 1001.74,
+      "baseline": 1005.75,
+      "residual": -4.01,
+      "ewma": -0.516,
+      "cusum": 2.506
+    },
+    {
+      "ts": 229,
+      "value": 1007.42,
+      "baseline": 1005.51,
+      "residual": 1.91,
+      "ewma": 0.091,
+      "cusum": 0.0
+    },
+    {
+      "ts": 230,
+      "value": 1005.18,
+      "baseline": 1005.27,
+      "residual": -0.09,
+      "ewma": 0.045,
+      "cusum": 0.0
+    },
+    {
+      "ts": 231,
+      "value": 1006.48,
+      "baseline": 1005.03,
+      "residual": 1.45,
+      "ewma": 0.398,
+      "cusum": 0.0
+    },
+    {
+      "ts": 232,
+      "value": 1009.59,
+      "baseline": 1004.78,
+      "residual": 4.8,
+      "ewma": 1.498,
+      "cusum": 0.0
+    },
+    {
+      "ts": 233,
+      "value": 997.7,
+      "baseline": 1004.54,
+      "residual": -6.84,
+      "ewma": -0.587,
+      "cusum": 5.343
+    },
+    {
+      "ts": 234,
+      "value": 1005.08,
+      "baseline": 1004.3,
+      "residual": 0.78,
+      "ewma": -0.244,
+      "cusum": 3.06
+    },
+    {
+      "ts": 235,
+      "value": 1000.76,
+      "baseline": 1004.05,
+      "residual": -3.3,
+      "ewma": -1.008,
+      "cusum": 4.857
+    },
+    {
+      "ts": 236,
+      "value": 1005.59,
+      "baseline": 1003.81,
+      "residual": 1.78,
+      "ewma": -0.312,
+      "cusum": 1.58
+    },
+    {
+      "ts": 237,
+      "value": 999.62,
+      "baseline": 1003.56,
+      "residual": -3.94,
+      "ewma": -1.219,
+      "cusum": 4.02
+    },
+    {
+      "ts": 238,
+      "value": 1001.83,
+      "baseline": 1003.32,
+      "residual": -1.49,
+      "ewma": -1.286,
+      "cusum": 4.007
+    },
+    {
+      "ts": 239,
+      "value": 1003.68,
+      "baseline": 1003.07,
+      "residual": 0.61,
+      "ewma": -0.812,
+      "cusum": 1.898
+    },
+    {
+      "ts": 240,
+      "value": 1004.66,
+      "baseline": 1002.82,
+      "residual": 1.84,
+      "ewma": -0.149,
+      "cusum": 0.0
+    },
+    {
+      "ts": 241,
+      "value": 1002.8,
+      "baseline": 1002.57,
+      "residual": 0.22,
+      "ewma": -0.056,
+      "cusum": 0.0
+    },
+    {
+      "ts": 242,
+      "value": 999.95,
+      "baseline": 1002.33,
+      "residual": -2.38,
+      "ewma": -0.636,
+      "cusum": 0.878
+    },
+    {
+      "ts": 243,
+      "value": 1000.42,
+      "baseline": 1002.08,
+      "residual": -1.66,
+      "ewma": -0.892,
+      "cusum": 1.039
+    },
+    {
+      "ts": 244,
+      "value": 1004.48,
+      "baseline": 1001.83,
+      "residual": 2.65,
+      "ewma": -0.006,
+      "cusum": 0.0
+    },
+    {
+      "ts": 245,
+      "value": 1001.56,
+      "baseline": 1001.58,
+      "residual": -0.02,
+      "ewma": -0.009,
+      "cusum": 0.0
+    },
+    {
+      "ts": 246,
+      "value": 996.28,
+      "baseline": 1001.33,
+      "residual": -5.05,
+      "ewma": -1.269,
+      "cusum": 3.551
+    },
+    {
+      "ts": 247,
+      "value": 1003.61,
+      "baseline": 1001.08,
+      "residual": 2.53,
+      "ewma": -0.319,
+      "cusum": 0.0
+    },
+    {
+      "ts": 248,
+      "value": 1002.08,
+      "baseline": 1000.83,
+      "residual": 1.25,
+      "ewma": 0.073,
+      "cusum": 0.0
+    },
+    {
+      "ts": 249,
+      "value": 1003.2,
+      "baseline": 1000.58,
+      "residual": 2.62,
+      "ewma": 0.71,
+      "cusum": 0.0
+    },
+    {
+      "ts": 250,
+      "value": 999.32,
+      "baseline": 1000.33,
+      "residual": -1.01,
+      "ewma": 0.28,
+      "cusum": 0.0
+    },
+    {
+      "ts": 251,
+      "value": 1002.57,
+      "baseline": 1000.08,
+      "residual": 2.48,
+      "ewma": 0.831,
+      "cusum": 0.0
+    },
+    {
+      "ts": 252,
+      "value": 996.65,
+      "baseline": 999.83,
+      "residual": -3.18,
+      "ewma": -0.173,
+      "cusum": 1.683
+    },
+    {
+      "ts": 253,
+      "value": 1001.29,
+      "baseline": 999.58,
+      "residual": 1.71,
+      "ewma": 0.298,
+      "cusum": 0.0
+    },
+    {
+      "ts": 254,
+      "value": 997.86,
+      "baseline": 999.33,
+      "residual": -1.47,
+      "ewma": -0.144,
+      "cusum": 0.0
+    },
+    {
+      "ts": 255,
+      "value": 1001.11,
+      "baseline": 999.08,
+      "residual": 2.02,
+      "ewma": 0.398,
+      "cusum": 0.0
+    },
+    {
+      "ts": 256,
+      "value": 1001.85,
+      "baseline": 998.83,
+      "residual": 3.02,
+      "ewma": 1.052,
+      "cusum": 0.0
+    },
+    {
+      "ts": 257,
+      "value": 996.38,
+      "baseline": 998.58,
+      "residual": -2.21,
+      "ewma": 0.237,
+      "cusum": 0.708
+    },
+    {
+      "ts": 258,
+      "value": 998.18,
+      "baseline": 998.33,
+      "residual": -0.15,
+      "ewma": 0.14,
+      "cusum": 0.0
+    },
+    {
+      "ts": 259,
+      "value": 998.2,
+      "baseline": 998.08,
+      "residual": 0.12,
+      "ewma": 0.134,
+      "cusum": 0.0
+    },
+    {
+      "ts": 260,
+      "value": 1001.41,
+      "baseline": 997.84,
+      "residual": 3.57,
+      "ewma": 0.993,
+      "cusum": 0.0
+    },
+    {
+      "ts": 261,
+      "value": 999.66,
+      "baseline": 997.59,
+      "residual": 2.07,
+      "ewma": 1.262,
+      "cusum": 0.0
+    },
+    {
+      "ts": 262,
+      "value": 993.56,
+      "baseline": 997.34,
+      "residual": -3.78,
+      "ewma": 0.002,
+      "cusum": 2.278
+    },
+    {
+      "ts": 263,
+      "value": 998.29,
+      "baseline": 997.09,
+      "residual": 1.19,
+      "ewma": 0.3,
+      "cusum": 0.0
+    },
+    {
+      "ts": 264,
+      "value": 998.84,
+      "baseline": 996.85,
+      "residual": 2.0,
+      "ewma": 0.724,
+      "cusum": 0.0
+    },
+    {
+      "ts": 265,
+      "value": 1002.67,
+      "baseline": 996.6,
+      "residual": 6.07,
+      "ewma": 2.061,
+      "cusum": 0.0
+    },
+    {
+      "ts": 266,
+      "value": 990.95,
+      "baseline": 996.35,
+      "residual": -5.4,
+      "ewma": 0.196,
+      "cusum": 3.897
+    },
+    {
+      "ts": 267,
+      "value": 994.08,
+      "baseline": 996.11,
+      "residual": -2.03,
+      "ewma": -0.36,
+      "cusum": 4.427
+    },
+    {
+      "ts": 268,
+      "value": 999.38,
+      "baseline": 995.86,
+      "residual": 3.52,
+      "ewma": 0.61,
+      "cusum": 0.0
+    },
+    {
+      "ts": 269,
+      "value": 991.01,
+      "baseline": 995.62,
+      "residual": -4.61,
+      "ewma": -0.694,
+      "cusum": 3.105
+    },
+    {
+      "ts": 270,
+      "value": 991.18,
+      "baseline": 995.37,
+      "residual": -4.2,
+      "ewma": -1.57,
+      "cusum": 5.804
+    },
+    {
+      "ts": 271,
+      "value": 996.02,
+      "baseline": 995.13,
+      "residual": 0.89,
+      "ewma": -0.955,
+      "cusum": 3.412
+    },
+    {
+      "ts": 272,
+      "value": 997.22,
+      "baseline": 994.89,
+      "residual": 2.34,
+      "ewma": -0.132,
+      "cusum": 0.0
+    },
+    {
+      "ts": 273,
+      "value": 991.86,
+      "baseline": 994.65,
+      "residual": -2.79,
+      "ewma": -0.796,
+      "cusum": 1.286
+    },
+    {
+      "ts": 274,
+      "value": 995.19,
+      "baseline": 994.41,
+      "residual": 0.78,
+      "ewma": -0.402,
+      "cusum": 0.0
+    },
+    {
+      "ts": 275,
+      "value": 993.62,
+      "baseline": 994.17,
+      "residual": -0.55,
+      "ewma": -0.439,
+      "cusum": 0.0
+    },
+    {
+      "ts": 276,
+      "value": 997.53,
+      "baseline": 993.93,
+      "residual": 3.6,
+      "ewma": 0.57,
+      "cusum": 0.0
+    },
+    {
+      "ts": 277,
+      "value": 992.67,
+      "baseline": 993.69,
+      "residual": -1.02,
+      "ewma": 0.171,
+      "cusum": 0.0
+    },
+    {
+      "ts": 278,
+      "value": 995.35,
+      "baseline": 993.45,
+      "residual": 1.89,
+      "ewma": 0.601,
+      "cusum": 0.0
+    },
+    {
+      "ts": 279,
+      "value": 989.37,
+      "baseline": 993.22,
+      "residual": -3.85,
+      "ewma": -0.511,
+      "cusum": 2.349
+    },
+    {
+      "ts": 280,
+      "value": 991.23,
+      "baseline": 992.98,
+      "residual": -1.75,
+      "ewma": -0.822,
+      "cusum": 2.604
+    },
+    {
+      "ts": 281,
+      "value": 991.2,
+      "baseline": 992.75,
+      "residual": -1.55,
+      "ewma": -1.004,
+      "cusum": 2.654
+    },
+    {
+      "ts": 282,
+      "value": 994.62,
+      "baseline": 992.52,
+      "residual": 2.1,
+      "ewma": -0.229,
+      "cusum": 0.0
+    },
+    {
+      "ts": 283,
+      "value": 992.65,
+      "baseline": 992.29,
+      "residual": 0.36,
+      "ewma": -0.082,
+      "cusum": 0.0
+    },
+    {
+      "ts": 284,
+      "value": 988.36,
+      "baseline": 992.06,
+      "residual": -3.7,
+      "ewma": -0.985,
+      "cusum": 2.195
+    },
+    {
+      "ts": 285,
+      "value": 992.37,
+      "baseline": 991.83,
+      "residual": 0.55,
+      "ewma": -0.602,
+      "cusum": 0.149
+    },
+    {
+      "ts": 286,
+      "value": 992.35,
+      "baseline": 991.6,
+      "residual": 0.75,
+      "ewma": -0.264,
+      "cusum": 0.0
+    },
+    {
+      "ts": 287,
+      "value": 989.42,
+      "baseline": 991.37,
+      "residual": -1.95,
+      "ewma": -0.687,
+      "cusum": 0.455
+    },
+    {
+      "ts": 288,
+      "value": 988.7,
+      "baseline": 991.15,
+      "residual": -2.45,
+      "ewma": -1.128,
+      "cusum": 1.408
+    },
+    {
+      "ts": 289,
+      "value": 988.6,
+      "baseline": 990.93,
+      "residual": -2.32,
+      "ewma": -1.427,
+      "cusum": 2.229
+    },
+    {
+      "ts": 290,
+      "value": 983.82,
+      "baseline": 990.7,
+      "residual": -6.88,
+      "ewma": -2.791,
+      "cusum": 7.614
+    },
+    {
+      "ts": 291,
+      "value": 989.19,
+      "baseline": 990.48,
+      "residual": -1.29,
+      "ewma": -2.417,
+      "cusum": 7.408
+    },
+    {
+      "ts": 292,
+      "value": 989.05,
+      "baseline": 990.26,
+      "residual": -1.22,
+      "ewma": -2.117,
+      "cusum": 7.124
+    },
+    {
+      "ts": 293,
+      "value": 985.47,
+      "baseline": 990.05,
+      "residual": -4.58,
+      "ewma": -2.732,
+      "cusum": 10.201
+    },
+    {
+      "ts": 294,
+      "value": 990.02,
+      "baseline": 989.83,
+      "residual": 0.19,
+      "ewma": -2.002,
+      "cusum": 8.514
+    },
+    {
+      "ts": 295,
+      "value": 983.4,
+      "baseline": 989.62,
+      "residual": -6.22,
+      "ewma": -3.056,
+      "cusum": 13.232
+    },
+    {
+      "ts": 296,
+      "value": 985.59,
+      "baseline": 989.4,
+      "residual": -3.82,
+      "ewma": -3.246,
+      "cusum": 15.548
+    },
+    {
+      "ts": 297,
+      "value": 985.55,
+      "baseline": 989.19,
+      "residual": -3.65,
+      "ewma": -3.346,
+      "cusum": 17.694
+    },
+    {
+      "ts": 298,
+      "value": 992.67,
+      "baseline": 988.98,
+      "residual": 3.68,
+      "ewma": -1.589,
+      "cusum": 12.511
+    },
+    {
+      "ts": 299,
+      "value": 981.64,
+      "baseline": 988.77,
+      "residual": -7.14,
+      "ewma": -2.976,
+      "cusum": 18.149
+    },
+    {
+      "ts": 300,
+      "value": 987.86,
+      "baseline": 988.57,
+      "residual": -0.71,
+      "ewma": -2.41,
+      "cusum": 17.361
+    },
+    {
+      "ts": 301,
+      "value": 988.73,
+      "baseline": 988.36,
+      "residual": 0.37,
+      "ewma": -1.716,
+      "cusum": 15.494
+    },
+    {
+      "ts": 302,
+      "value": 986.78,
+      "baseline": 988.16,
+      "residual": -1.39,
+      "ewma": -1.634,
+      "cusum": 15.381
+    },
+    {
+      "ts": 303,
+      "value": 988.93,
+      "baseline": 987.96,
+      "residual": 0.97,
+      "ewma": -0.984,
+      "cusum": 12.916
+    },
+    {
+      "ts": 304,
+      "value": 982.11,
+      "baseline": 987.76,
+      "residual": -5.65,
+      "ewma": -2.15,
+      "cusum": 17.064
+    },
+    {
+      "ts": 305,
+      "value": 978.03,
+      "baseline": 987.57,
+      "residual": -9.54,
+      "ewma": -3.998,
+      "cusum": 25.105
+    },
+    {
+      "ts": 306,
+      "value": 986.91,
+      "baseline": 987.37,
+      "residual": -0.46,
+      "ewma": -3.113,
+      "cusum": 24.064
+    },
+    {
+      "ts": 307,
+      "value": 980.77,
+      "baseline": 987.18,
+      "residual": -6.41,
+      "ewma": -3.937,
+      "cusum": 28.972
+    },
+    {
+      "ts": 308,
+      "value": 983.13,
+      "baseline": 986.99,
+      "residual": -3.86,
+      "ewma": -3.917,
+      "cusum": 31.331
+    },
+    {
+      "ts": 309,
+      "value": 980.32,
+      "baseline": 986.8,
+      "residual": -6.48,
+      "ewma": -4.557,
+      "cusum": 36.308
+    },
+    {
+      "ts": 310,
+      "value": 986.77,
+      "baseline": 986.61,
+      "residual": 0.16,
+      "ewma": -3.379,
+      "cusum": 34.65
+    },
+    {
+      "ts": 311,
+      "value": 985.96,
+      "baseline": 986.43,
+      "residual": -0.46,
+      "ewma": -2.65,
+      "cusum": 33.615
+    },
+    {
+      "ts": 312,
+      "value": 980.96,
+      "baseline": 986.24,
+      "residual": -5.28,
+      "ewma": -3.308,
+      "cusum": 37.395
+    },
+    {
+      "ts": 313,
+      "value": 985.59,
+      "baseline": 986.06,
+      "residual": -0.47,
+      "ewma": -2.598,
+      "cusum": 36.365
+    },
+    {
+      "ts": 314,
+      "value": 983.01,
+      "baseline": 985.89,
+      "residual": -2.88,
+      "ewma": -2.668,
+      "cusum": 37.741
+    },
+    {
+      "ts": 315,
+      "value": 981.99,
+      "baseline": 985.71,
+      "residual": -3.72,
+      "ewma": -2.93,
+      "cusum": 39.959
+    },
+    {
+      "ts": 316,
+      "value": 982.35,
+      "baseline": 985.54,
+      "residual": -3.19,
+      "ewma": -2.995,
+      "cusum": 41.647
+    },
+    {
+      "ts": 317,
+      "value": 981.34,
+      "baseline": 985.36,
+      "residual": -4.03,
+      "ewma": -3.253,
+      "cusum": 44.175
+    },
+    {
+      "ts": 318,
+      "value": 983.56,
+      "baseline": 985.2,
+      "residual": -1.63,
+      "ewma": -2.849,
+      "cusum": 44.31
+    },
+    {
+      "ts": 319,
+      "value": 982.42,
+      "baseline": 985.03,
+      "residual": -2.61,
+      "ewma": -2.789,
+      "cusum": 45.419
+    },
+    {
+      "ts": 320,
+      "value": 980.22,
+      "baseline": 984.86,
+      "residual": -4.65,
+      "ewma": -3.254,
+      "cusum": 48.567
+    },
+    {
+      "ts": 321,
+      "value": 984.06,
+      "baseline": 984.7,
+      "residual": -0.64,
+      "ewma": -2.6,
+      "cusum": 47.709
+    },
+    {
+      "ts": 322,
+      "value": 978.99,
+      "baseline": 984.54,
+      "residual": -5.55,
+      "ewma": -3.339,
+      "cusum": 51.763
+    },
+    {
+      "ts": 323,
+      "value": 981.47,
+      "baseline": 984.38,
+      "residual": -2.92,
+      "ewma": -3.234,
+      "cusum": 53.182
+    },
+    {
+      "ts": 324,
+      "value": 981.66,
+      "baseline": 984.23,
+      "residual": -2.57,
+      "ewma": -3.069,
+      "cusum": 54.256
+    },
+    {
+      "ts": 325,
+      "value": 984.61,
+      "baseline": 984.08,
+      "residual": 0.54,
+      "ewma": -2.168,
+      "cusum": 52.219
+    },
+    {
+      "ts": 326,
+      "value": 978.45,
+      "baseline": 983.93,
+      "residual": -5.48,
+      "ewma": -2.995,
+      "cusum": 56.196
+    },
+    {
+      "ts": 327,
+      "value": 984.99,
+      "baseline": 983.78,
+      "residual": 1.21,
+      "ewma": -1.944,
+      "cusum": 53.486
+    },
+    {
+      "ts": 328,
+      "value": 980.08,
+      "baseline": 983.63,
+      "residual": -3.55,
+      "ewma": -2.346,
+      "cusum": 55.538
+    },
+    {
+      "ts": 329,
+      "value": 978.77,
+      "baseline": 983.49,
+      "residual": -4.72,
+      "ewma": -2.94,
+      "cusum": 58.76
+    },
+    {
+      "ts": 330,
+      "value": 977.13,
+      "baseline": 983.35,
+      "residual": -6.22,
+      "ewma": -3.759,
+      "cusum": 63.477
+    },
+    {
+      "ts": 331,
+      "value": 980.71,
+      "baseline": 983.21,
+      "residual": -2.5,
+      "ewma": -3.445,
+      "cusum": 64.478
+    },
+    {
+      "ts": 332,
+      "value": 978.91,
+      "baseline": 983.08,
+      "residual": -4.17,
+      "ewma": -3.627,
+      "cusum": 67.152
+    },
+    {
+      "ts": 333,
+      "value": 975.26,
+      "baseline": 982.95,
+      "residual": -7.69,
+      "ewma": -4.643,
+      "cusum": 73.342
+    },
+    {
+      "ts": 334,
+      "value": 975.0,
+      "baseline": 982.82,
+      "residual": -7.82,
+      "ewma": -5.438,
+      "cusum": 79.666
+    },
+    {
+      "ts": 335,
+      "value": 976.53,
+      "baseline": 982.69,
+      "residual": -6.17,
+      "ewma": -5.62,
+      "cusum": 84.333
+    },
+    {
+      "ts": 336,
+      "value": 975.98,
+      "baseline": 982.57,
+      "residual": -6.59,
+      "ewma": -5.862,
+      "cusum": 89.421
+    },
+    {
+      "ts": 337,
+      "value": 981.1,
+      "baseline": 982.45,
+      "residual": -1.35,
+      "ewma": -4.734,
+      "cusum": 89.27
+    },
+    {
+      "ts": 338,
+      "value": 981.78,
+      "baseline": 982.33,
+      "residual": -0.55,
+      "ewma": -3.689,
+      "cusum": 88.323
+    },
+    {
+      "ts": 339,
+      "value": 980.08,
+      "baseline": 982.21,
+      "residual": -2.13,
+      "ewma": -3.3,
+      "cusum": 88.958
+    },
+    {
+      "ts": 340,
+      "value": 978.37,
+      "baseline": 982.1,
+      "residual": -3.73,
+      "ewma": -3.407,
+      "cusum": 91.184
+    },
+    {
+      "ts": 341,
+      "value": 975.85,
+      "baseline": 981.99,
+      "residual": -6.14,
+      "ewma": -4.091,
+      "cusum": 95.829
+    },
+    {
+      "ts": 342,
+      "value": 977.13,
+      "baseline": 981.88,
+      "residual": -4.76,
+      "ewma": -4.258,
+      "cusum": 99.085
+    },
+    {
+      "ts": 343,
+      "value": 979.45,
+      "baseline": 981.78,
+      "residual": -2.33,
+      "ewma": -3.775,
+      "cusum": 99.911
+    },
+    {
+      "ts": 344,
+      "value": 983.03,
+      "baseline": 981.68,
+      "residual": 1.35,
+      "ewma": -2.493,
+      "cusum": 97.058
+    },
+    {
+      "ts": 345,
+      "value": 979.22,
+      "baseline": 981.58,
+      "residual": -2.36,
+      "ewma": -2.46,
+      "cusum": 97.919
+    },
+    {
+      "ts": 346,
+      "value": 975.48,
+      "baseline": 981.48,
+      "residual": -6.0,
+      "ewma": -3.345,
+      "cusum": 102.421
+    },
+    {
+      "ts": 347,
+      "value": 976.28,
+      "baseline": 981.39,
+      "residual": -5.11,
+      "ewma": -3.785,
+      "cusum": 106.027
+    },
+    {
+      "ts": 348,
+      "value": 974.57,
+      "baseline": 981.3,
+      "residual": -6.73,
+      "ewma": -4.521,
+      "cusum": 111.254
+    },
+    {
+      "ts": 349,
+      "value": 973.52,
+      "baseline": 981.21,
+      "residual": -7.69,
+      "ewma": -5.313,
+      "cusum": 117.441
+    },
+    {
+      "ts": 350,
+      "value": 975.17,
+      "baseline": 981.13,
+      "residual": -5.95,
+      "ewma": -5.473,
+      "cusum": 121.894
+    },
+    {
+      "ts": 351,
+      "value": 976.17,
+      "baseline": 981.05,
+      "residual": -4.87,
+      "ewma": -5.323,
+      "cusum": 125.267
+    },
+    {
+      "ts": 352,
+      "value": 980.96,
+      "baseline": 980.97,
+      "residual": -0.01,
+      "ewma": -3.995,
+      "cusum": 123.78
+    },
+    {
+      "ts": 353,
+      "value": 975.47,
+      "baseline": 980.89,
+      "residual": -5.42,
+      "ewma": -4.352,
+      "cusum": 127.704
+    },
+    {
+      "ts": 354,
+      "value": 979.25,
+      "baseline": 980.82,
+      "residual": -1.57,
+      "ewma": -3.656,
+      "cusum": 127.771
+    },
+    {
+      "ts": 355,
+      "value": 980.35,
+      "baseline": 980.75,
+      "residual": -0.4,
+      "ewma": -2.842,
+      "cusum": 126.669
+    },
+    {
+      "ts": 356,
+      "value": 975.16,
+      "baseline": 980.68,
+      "residual": -5.52,
+      "ewma": -3.512,
+      "cusum": 130.693
+    },
+    {
+      "ts": 357,
+      "value": 979.62,
+      "baseline": 980.62,
+      "residual": -1.0,
+      "ewma": -2.883,
+      "cusum": 130.189
+    },
+    {
+      "ts": 358,
+      "value": 976.83,
+      "baseline": 980.56,
+      "residual": -3.74,
+      "ewma": -3.096,
+      "cusum": 132.424
+    },
+    {
+      "ts": 359,
+      "value": 973.31,
+      "baseline": 980.5,
+      "residual": -7.19,
+      "ewma": -4.12,
+      "cusum": 138.117
+    },
+    {
+      "ts": 360,
+      "value": 975.24,
+      "baseline": 980.45,
+      "residual": -5.2,
+      "ewma": -4.391,
+      "cusum": 141.821
+    },
+    {
+      "ts": 361,
+      "value": 974.41,
+      "baseline": 980.4,
+      "residual": -5.99,
+      "ewma": -4.791,
+      "cusum": 146.313
+    },
+    {
+      "ts": 362,
+      "value": 973.53,
+      "baseline": 980.35,
+      "residual": -6.82,
+      "ewma": -5.298,
+      "cusum": 151.63
+    },
+    {
+      "ts": 363,
+      "value": 973.53,
+      "baseline": 980.31,
+      "residual": -6.78,
+      "ewma": -5.667,
+      "cusum": 156.906
+    },
+    {
+      "ts": 364,
+      "value": 974.46,
+      "baseline": 980.26,
+      "residual": -5.81,
+      "ewma": -5.702,
+      "cusum": 161.213
+    },
+    {
+      "ts": 365,
+      "value": 975.23,
+      "baseline": 980.22,
+      "residual": -5.0,
+      "ewma": -5.526,
+      "cusum": 164.711
+    },
+    {
+      "ts": 366,
+      "value": 971.17,
+      "baseline": 980.19,
+      "residual": -9.01,
+      "ewma": -6.398,
+      "cusum": 172.226
+    },
+    {
+      "ts": 367,
+      "value": 973.71,
+      "baseline": 980.16,
+      "residual": -6.45,
+      "ewma": -6.411,
+      "cusum": 177.174
+    },
+    {
+      "ts": 368,
+      "value": 969.08,
+      "baseline": 980.13,
+      "residual": -11.05,
+      "ewma": -7.57,
+      "cusum": 186.721
+    },
+    {
+      "ts": 369,
+      "value": 974.34,
+      "baseline": 980.1,
+      "residual": -5.76,
+      "ewma": -7.117,
+      "cusum": 190.978
+    },
+    {
+      "ts": 370,
+      "value": 975.35,
+      "baseline": 980.08,
+      "residual": -4.73,
+      "ewma": -6.52,
+      "cusum": 194.208
+    },
+    {
+      "ts": 371,
+      "value": 973.89,
+      "baseline": 980.06,
+      "residual": -6.17,
+      "ewma": -6.432,
+      "cusum": 198.876
+    },
+    {
+      "ts": 372,
+      "value": 974.18,
+      "baseline": 980.04,
+      "residual": -5.86,
+      "ewma": -6.29,
+      "cusum": 203.238
+    },
+    {
+      "ts": 373,
+      "value": 975.01,
+      "baseline": 980.02,
+      "residual": -5.01,
+      "ewma": -5.97,
+      "cusum": 206.748
+    },
+    {
+      "ts": 374,
+      "value": 971.18,
+      "baseline": 980.01,
+      "residual": -8.84,
+      "ewma": -6.686,
+      "cusum": 214.084
+    },
+    {
+      "ts": 375,
+      "value": 972.39,
+      "baseline": 980.01,
+      "residual": -7.62,
+      "ewma": -6.919,
+      "cusum": 220.201
+    },
+    {
+      "ts": 376,
+      "value": 974.57,
+      "baseline": 980.0,
+      "residual": -5.43,
+      "ewma": -6.546,
+      "cusum": 224.128
+    },
+    {
+      "ts": 377,
+      "value": 975.99,
+      "baseline": 980.0,
+      "residual": -4.01,
+      "ewma": -5.913,
+      "cusum": 226.642
+    },
+    {
+      "ts": 378,
+      "value": 974.11,
+      "baseline": 980.0,
+      "residual": -5.9,
+      "ewma": -5.909,
+      "cusum": 231.038
+    },
+    {
+      "ts": 379,
+      "value": 980.52,
+      "baseline": 980.01,
+      "residual": 0.52,
+      "ewma": -4.302,
+      "cusum": 229.019
+    },
+    {
+      "ts": 380,
+      "value": 972.54,
+      "baseline": 980.01,
+      "residual": -7.47,
+      "ewma": -5.095,
+      "cusum": 234.993
+    },
+    {
+      "ts": 381,
+      "value": 975.76,
+      "baseline": 980.03,
+      "residual": -4.26,
+      "ewma": -4.886,
+      "cusum": 237.754
+    },
+    {
+      "ts": 382,
+      "value": 976.52,
+      "baseline": 980.04,
+      "residual": -3.52,
+      "ewma": -4.545,
+      "cusum": 239.774
+    },
+    {
+      "ts": 383,
+      "value": 972.28,
+      "baseline": 980.06,
+      "residual": -7.78,
+      "ewma": -5.354,
+      "cusum": 246.055
+    },
+    {
+      "ts": 384,
+      "value": 970.18,
+      "baseline": 980.08,
+      "residual": -9.9,
+      "ewma": -6.491,
+      "cusum": 254.457
+    },
+    {
+      "ts": 385,
+      "value": 969.05,
+      "baseline": 980.1,
+      "residual": -11.05,
+      "ewma": -7.63,
+      "cusum": 264.005
+    },
+    {
+      "ts": 386,
+      "value": 973.05,
+      "baseline": 980.13,
+      "residual": -7.07,
+      "ewma": -7.491,
+      "cusum": 269.578
+    },
+    {
+      "ts": 387,
+      "value": 975.87,
+      "baseline": 980.16,
+      "residual": -4.29,
+      "ewma": -6.69,
+      "cusum": 272.367
+    },
+    {
+      "ts": 388,
+      "value": 973.32,
+      "baseline": 980.19,
+      "residual": -6.86,
+      "ewma": -6.734,
+      "cusum": 277.732
+    },
+    {
+      "ts": 389,
+      "value": 973.0,
+      "baseline": 980.22,
+      "residual": -7.22,
+      "ewma": -6.856,
+      "cusum": 283.453
+    },
+    {
+      "ts": 390,
+      "value": 971.33,
+      "baseline": 980.26,
+      "residual": -8.94,
+      "ewma": -7.376,
+      "cusum": 290.891
+    },
+    {
+      "ts": 391,
+      "value": 974.13,
+      "baseline": 980.31,
+      "residual": -6.18,
+      "ewma": -7.076,
+      "cusum": 295.568
+    },
+    {
+      "ts": 392,
+      "value": 966.02,
+      "baseline": 980.35,
+      "residual": -14.33,
+      "ewma": -8.889,
+      "cusum": 308.395
+    },
+    {
+      "ts": 393,
+      "value": 973.12,
+      "baseline": 980.4,
+      "residual": -7.28,
+      "ewma": -8.488,
+      "cusum": 314.178
+    },
+    {
+      "ts": 394,
+      "value": 972.49,
+      "baseline": 980.45,
+      "residual": -7.96,
+      "ewma": -8.355,
+      "cusum": 320.634
+    },
+    {
+      "ts": 395,
+      "value": 968.29,
+      "baseline": 980.5,
+      "residual": -12.21,
+      "ewma": -9.319,
+      "cusum": 331.345
+    },
+    {
+      "ts": 396,
+      "value": 978.93,
+      "baseline": 980.56,
+      "residual": -1.63,
+      "ewma": -7.397,
+      "cusum": 331.478
+    },
+    {
+      "ts": 397,
+      "value": 968.24,
+      "baseline": 980.62,
+      "residual": -12.38,
+      "ewma": -8.644,
+      "cusum": 342.36
+    },
+    {
+      "ts": 398,
+      "value": 969.17,
+      "baseline": 980.69,
+      "residual": -11.51,
+      "ewma": -9.361,
+      "cusum": 352.373
+    },
+    {
+      "ts": 399,
+      "value": 968.81,
+      "baseline": 980.75,
+      "residual": -11.94,
+      "ewma": -10.006,
+      "cusum": 362.816
+    },
+    {
+      "ts": 400,
+      "value": 975.75,
+      "baseline": 980.82,
+      "residual": -5.07,
+      "ewma": -8.772,
+      "cusum": 366.384
+    },
+    {
+      "ts": 401,
+      "value": 969.77,
+      "baseline": 980.89,
+      "residual": -11.12,
+      "ewma": -9.36,
+      "cusum": 376.009
+    },
+    {
+      "ts": 402,
+      "value": 974.46,
+      "baseline": 980.97,
+      "residual": -6.51,
+      "ewma": -8.649,
+      "cusum": 381.023
+    },
+    {
+      "ts": 403,
+      "value": 974.23,
+      "baseline": 981.05,
+      "residual": -6.82,
+      "ewma": -8.191,
+      "cusum": 386.34
+    },
+    {
+      "ts": 404,
+      "value": 973.27,
+      "baseline": 981.13,
+      "residual": -7.86,
+      "ewma": -8.108,
+      "cusum": 392.701
+    },
+    {
+      "ts": 405,
+      "value": 968.59,
+      "baseline": 981.21,
+      "residual": -12.62,
+      "ewma": -9.237,
+      "cusum": 403.824
+    },
+    {
+      "ts": 406,
+      "value": 970.7,
+      "baseline": 981.3,
+      "residual": -10.6,
+      "ewma": -9.577,
+      "cusum": 412.92
+    },
+    {
+      "ts": 407,
+      "value": 977.59,
+      "baseline": 981.39,
+      "residual": -3.8,
+      "ewma": -8.133,
+      "cusum": 415.221
+    },
+    {
+      "ts": 408,
+      "value": 968.73,
+      "baseline": 981.48,
+      "residual": -12.75,
+      "ewma": -9.288,
+      "cusum": 426.473
+    },
+    {
+      "ts": 409,
+      "value": 970.14,
+      "baseline": 981.58,
+      "residual": -11.43,
+      "ewma": -9.824,
+      "cusum": 436.408
+    },
+    {
+      "ts": 410,
+      "value": 972.19,
+      "baseline": 981.68,
+      "residual": -9.49,
+      "ewma": -9.74,
+      "cusum": 444.395
+    },
+    {
+      "ts": 411,
+      "value": 975.15,
+      "baseline": 981.78,
+      "residual": -6.63,
+      "ewma": -8.963,
+      "cusum": 449.528
+    },
+    {
+      "ts": 412,
+      "value": 973.52,
+      "baseline": 981.88,
+      "residual": -8.37,
+      "ewma": -8.814,
+      "cusum": 456.393
+    },
+    {
+      "ts": 413,
+      "value": 975.04,
+      "baseline": 981.99,
+      "residual": -6.95,
+      "ewma": -8.349,
+      "cusum": 461.847
+    },
+    {
+      "ts": 414,
+      "value": 969.66,
+      "baseline": 982.1,
+      "residual": -12.44,
+      "ewma": -9.372,
+      "cusum": 472.789
+    },
+    {
+      "ts": 415,
+      "value": 975.75,
+      "baseline": 982.22,
+      "residual": -6.47,
+      "ewma": -8.645,
+      "cusum": 477.754
+    },
+    {
+      "ts": 416,
+      "value": 974.68,
+      "baseline": 982.33,
+      "residual": -7.65,
+      "ewma": -8.397,
+      "cusum": 483.907
+    },
+    {
+      "ts": 417,
+      "value": 968.25,
+      "baseline": 982.45,
+      "residual": -14.2,
+      "ewma": -9.849,
+      "cusum": 496.611
+    },
+    {
+      "ts": 418,
+      "value": 977.71,
+      "baseline": 982.57,
+      "residual": -4.86,
+      "ewma": -8.602,
+      "cusum": 499.971
+    },
+    {
+      "ts": 419,
+      "value": 980.03,
+      "baseline": 982.69,
+      "residual": -2.66,
+      "ewma": -7.117,
+      "cusum": 501.134
+    },
+    {
+      "ts": 420,
+      "value": 970.92,
+      "baseline": 982.82,
+      "residual": -11.91,
+      "ewma": -8.314,
+      "cusum": 511.54
+    },
+    {
+      "ts": 421,
+      "value": 973.46,
+      "baseline": 982.95,
+      "residual": -9.49,
+      "ewma": -8.609,
+      "cusum": 519.533
+    },
+    {
+      "ts": 422,
+      "value": 977.55,
+      "baseline": 983.08,
+      "residual": -5.53,
+      "ewma": -7.839,
+      "cusum": 523.561
+    },
+    {
+      "ts": 423,
+      "value": 968.99,
+      "baseline": 983.22,
+      "residual": -14.22,
+      "ewma": -9.435,
+      "cusum": 536.284
+    },
+    {
+      "ts": 424,
+      "value": 967.55,
+      "baseline": 983.35,
+      "residual": -15.81,
+      "ewma": -11.029,
+      "cusum": 550.594
+    },
+    {
+      "ts": 425,
+      "value": 969.7,
+      "baseline": 983.49,
+      "residual": -13.79,
+      "ewma": -11.719,
+      "cusum": 562.885
+    },
+    {
+      "ts": 426,
+      "value": 971.98,
+      "baseline": 983.64,
+      "residual": -11.66,
+      "ewma": -11.705,
+      "cusum": 573.046
+    },
+    {
+      "ts": 427,
+      "value": 972.03,
+      "baseline": 983.78,
+      "residual": -11.76,
+      "ewma": -11.717,
+      "cusum": 583.301
+    },
+    {
+      "ts": 428,
+      "value": 975.67,
+      "baseline": 983.93,
+      "residual": -8.26,
+      "ewma": -10.852,
+      "cusum": 590.059
+    },
+    {
+      "ts": 429,
+      "value": 974.75,
+      "baseline": 984.08,
+      "residual": -9.33,
+      "ewma": -10.473,
+      "cusum": 597.894
+    },
+    {
+      "ts": 430,
+      "value": 970.29,
+      "baseline": 984.23,
+      "residual": -13.94,
+      "ewma": -11.339,
+      "cusum": 610.332
+    },
+    {
+      "ts": 431,
+      "value": 975.83,
+      "baseline": 984.39,
+      "residual": -8.56,
+      "ewma": -10.644,
+      "cusum": 617.39
+    },
+    {
+      "ts": 432,
+      "value": 979.85,
+      "baseline": 984.54,
+      "residual": -4.7,
+      "ewma": -9.157,
+      "cusum": 620.587
+    },
+    {
+      "ts": 433,
+      "value": 977.92,
+      "baseline": 984.7,
+      "residual": -6.79,
+      "ewma": -8.565,
+      "cusum": 625.876
+    },
+    {
+      "ts": 434,
+      "value": 977.4,
+      "baseline": 984.87,
+      "residual": -7.47,
+      "ewma": -8.291,
+      "cusum": 631.843
+    },
+    {
+      "ts": 435,
+      "value": 974.59,
+      "baseline": 985.03,
+      "residual": -10.44,
+      "ewma": -8.828,
+      "cusum": 640.782
+    },
+    {
+      "ts": 436,
+      "value": 977.59,
+      "baseline": 985.2,
+      "residual": -7.61,
+      "ewma": -8.523,
+      "cusum": 646.891
+    },
+    {
+      "ts": 437,
+      "value": 971.85,
+      "baseline": 985.37,
+      "residual": -13.52,
+      "ewma": -9.772,
+      "cusum": 658.91
+    },
+    {
+      "ts": 438,
+      "value": 977.11,
+      "baseline": 985.54,
+      "residual": -8.43,
+      "ewma": -9.436,
+      "cusum": 665.837
+    },
+    {
+      "ts": 439,
+      "value": 974.71,
+      "baseline": 985.71,
+      "residual": -11.0,
+      "ewma": -9.827,
+      "cusum": 675.339
+    },
+    {
+      "ts": 440,
+      "value": 978.48,
+      "baseline": 985.89,
+      "residual": -7.41,
+      "ewma": -9.222,
+      "cusum": 681.246
+    },
+    {
+      "ts": 441,
+      "value": 976.61,
+      "baseline": 986.07,
+      "residual": -9.46,
+      "ewma": -9.282,
+      "cusum": 689.208
+    },
+    {
+      "ts": 442,
+      "value": 972.06,
+      "baseline": 986.25,
+      "residual": -14.19,
+      "ewma": -10.509,
+      "cusum": 701.897
+    },
+    {
+      "ts": 443,
+      "value": 975.83,
+      "baseline": 986.43,
+      "residual": -10.6,
+      "ewma": -10.531,
+      "cusum": 710.994
+    },
+    {
+      "ts": 444,
+      "value": 979.23,
+      "baseline": 986.62,
+      "residual": -7.39,
+      "ewma": -9.744,
+      "cusum": 716.879
+    },
+    {
+      "ts": 445,
+      "value": 972.31,
+      "baseline": 986.8,
+      "residual": -14.49,
+      "ewma": -10.93,
+      "cusum": 729.867
+    },
+    {
+      "ts": 446,
+      "value": 974.15,
+      "baseline": 986.99,
+      "residual": -12.84,
+      "ewma": -11.407,
+      "cusum": 741.204
+    },
+    {
+      "ts": 447,
+      "value": 973.66,
+      "baseline": 987.18,
+      "residual": -13.53,
+      "ewma": -11.937,
+      "cusum": 753.23
+    },
+    {
+      "ts": 448,
+      "value": 971.61,
+      "baseline": 987.37,
+      "residual": -15.77,
+      "ewma": -12.894,
+      "cusum": 767.497
+    },
+    {
+      "ts": 449,
+      "value": 979.11,
+      "baseline": 987.57,
+      "residual": -8.46,
+      "ewma": -11.785,
+      "cusum": 774.453
+    },
+    {
+      "ts": 450,
+      "value": 980.3,
+      "baseline": 987.77,
+      "residual": -7.47,
+      "ewma": -10.705,
+      "cusum": 780.42
+    },
+    {
+      "ts": 451,
+      "value": 978.91,
+      "baseline": 987.97,
+      "residual": -9.06,
+      "ewma": -10.294,
+      "cusum": 787.98
+    },
+    {
+      "ts": 452,
+      "value": 977.37,
+      "baseline": 988.17,
+      "residual": -10.79,
+      "ewma": -10.419,
+      "cusum": 797.272
+    },
+    {
+      "ts": 453,
+      "value": 976.63,
+      "baseline": 988.37,
+      "residual": -11.74,
+      "ewma": -10.748,
+      "cusum": 807.508
+    },
+    {
+      "ts": 454,
+      "value": 977.65,
+      "baseline": 988.57,
+      "residual": -10.92,
+      "ewma": -10.791,
+      "cusum": 816.93
+    },
+    {
+      "ts": 455,
+      "value": 974.88,
+      "baseline": 988.78,
+      "residual": -13.89,
+      "ewma": -11.567,
+      "cusum": 829.325
+    },
+    {
+      "ts": 456,
+      "value": 979.91,
+      "baseline": 988.99,
+      "residual": -9.08,
+      "ewma": -10.945,
+      "cusum": 836.903
+    },
+    {
+      "ts": 457,
+      "value": 980.51,
+      "baseline": 989.2,
+      "residual": -8.68,
+      "ewma": -10.38,
+      "cusum": 844.087
+    },
+    {
+      "ts": 458,
+      "value": 980.32,
+      "baseline": 989.41,
+      "residual": -9.08,
+      "ewma": -10.055,
+      "cusum": 851.669
+    },
+    {
+      "ts": 459,
+      "value": 976.09,
+      "baseline": 989.62,
+      "residual": -13.53,
+      "ewma": -10.925,
+      "cusum": 863.702
+    },
+    {
+      "ts": 460,
+      "value": 978.07,
+      "baseline": 989.83,
+      "residual": -11.76,
+      "ewma": -11.135,
+      "cusum": 873.967
+    },
+    {
+      "ts": 461,
+      "value": 977.49,
+      "baseline": 990.05,
+      "residual": -12.56,
+      "ewma": -11.49,
+      "cusum": 885.024
+    },
+    {
+      "ts": 462,
+      "value": 983.51,
+      "baseline": 990.27,
+      "residual": -6.75,
+      "ewma": -10.306,
+      "cusum": 890.279
+    },
+    {
+      "ts": 463,
+      "value": 978.85,
+      "baseline": 990.49,
+      "residual": -11.64,
+      "ewma": -10.64,
+      "cusum": 900.419
+    },
+    {
+      "ts": 464,
+      "value": 972.82,
+      "baseline": 990.71,
+      "residual": -17.89,
+      "ewma": -12.452,
+      "cusum": 916.806
+    },
+    {
+      "ts": 465,
+      "value": 979.83,
+      "baseline": 990.93,
+      "residual": -11.1,
+      "ewma": -12.115,
+      "cusum": 926.41
+    },
+    {
+      "ts": 466,
+      "value": 984.44,
+      "baseline": 991.15,
+      "residual": -6.71,
+      "ewma": -10.764,
+      "cusum": 931.623
+    },
+    {
+      "ts": 467,
+      "value": 981.01,
+      "baseline": 991.38,
+      "residual": -10.36,
+      "ewma": -10.664,
+      "cusum": 940.488
+    },
+    {
+      "ts": 468,
+      "value": 981.76,
+      "baseline": 991.6,
+      "residual": -9.84,
+      "ewma": -10.459,
+      "cusum": 948.829
+    },
+    {
+      "ts": 469,
+      "value": 979.4,
+      "baseline": 991.83,
+      "residual": -12.43,
+      "ewma": -10.952,
+      "cusum": 959.761
+    },
+    {
+      "ts": 470,
+      "value": 973.55,
+      "baseline": 992.06,
+      "residual": -18.51,
+      "ewma": -12.843,
+      "cusum": 976.775
+    },
+    {
+      "ts": 471,
+      "value": 974.2,
+      "baseline": 992.29,
+      "residual": -18.09,
+      "ewma": -14.155,
+      "cusum": 993.366
+    },
+    {
+      "ts": 472,
+      "value": 976.06,
+      "baseline": 992.52,
+      "residual": -16.46,
+      "ewma": -14.73,
+      "cusum": 1008.324
+    },
+    {
+      "ts": 473,
+      "value": 979.59,
+      "baseline": 992.75,
+      "residual": -13.16,
+      "ewma": -14.338,
+      "cusum": 1019.984
+    },
+    {
+      "ts": 474,
+      "value": 981.08,
+      "baseline": 992.99,
+      "residual": -11.91,
+      "ewma": -13.731,
+      "cusum": 1030.394
+    },
+    {
+      "ts": 475,
+      "value": 982.39,
+      "baseline": 993.22,
+      "residual": -10.83,
+      "ewma": -13.006,
+      "cusum": 1039.726
+    },
+    {
+      "ts": 476,
+      "value": 979.48,
+      "baseline": 993.46,
+      "residual": -13.98,
+      "ewma": -13.25,
+      "cusum": 1052.208
+    },
+    {
+      "ts": 477,
+      "value": 983.55,
+      "baseline": 993.7,
+      "residual": -10.15,
+      "ewma": -12.475,
+      "cusum": 1060.857
+    },
+    {
+      "ts": 478,
+      "value": 980.01,
+      "baseline": 993.93,
+      "residual": -13.92,
+      "ewma": -12.836,
+      "cusum": 1073.276
+    },
+    {
+      "ts": 479,
+      "value": 978.92,
+      "baseline": 994.17,
+      "residual": -15.25,
+      "ewma": -13.44,
+      "cusum": 1087.03
+    }
+  ],
+  "ewma_limit": -4.5,
+  "cusum_limit": 12.0,
+  "fixed_limit": -200.0
+}

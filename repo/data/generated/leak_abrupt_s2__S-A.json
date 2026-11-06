@@ -1,0 +1,44 @@
+{
+ "scenario": "leak_abrupt_s2",
+ "layout": "S-A",
+ "description": "급한 누수: 세그먼트 2, 롤 2, 입구 (25 L/min)",
+ "n_samples": 4320,
+ "dt_s": 60,
+ "groups": [
+  [
+   1
+  ],
+  [
+   2,
+   3
+  ],
+  [
+   4,
+   5
+  ],
+  [
+   6,
+   7
+  ],
+  [
+   8,
+   9,
+   10,
+   11,
+   12,
+   13
+  ]
+ ],
+ "events": [
+  {
+   "kind": "leak",
+   "start_ts": 2040,
+   "ramp_min": 0,
+   "end_ts": null,
+   "peak": 25.0,
+   "segment": 2,
+   "roll": 2,
+   "side": "in"
+  }
+ ]
+}

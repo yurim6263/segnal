@@ -1,0 +1,162 @@
+{
+ "S-A": {
+  "eval_leak (위치 균일)": {
+   "n": 30,
+   "missed": 0,
+   "weibull_fit": {
+    "shape": 2.09,
+    "scale": 765.2
+   },
+   "none": {
+    "n": 30,
+    "joint_top1": 0.067,
+    "joint_top3": 0.067,
+    "joint_top10": 0.2,
+    "mean_rank": 39.8,
+    "segment_top1": 0.5,
+    "group_top1": 1.0
+   },
+   "weibull": {
+    "n": 30,
+    "joint_top1": 0.067,
+    "joint_top3": 0.133,
+    "joint_top10": 0.167,
+    "mean_rank": 42.4,
+    "segment_top1": 0.5,
+    "group_top1": 1.0
+   }
+  },
+  "evalp_w (진짜 Weibull)": {
+   "n": 30,
+   "missed": 0,
+   "weibull_fit": {
+    "shape": 2.09,
+    "scale": 765.2
+   },
+   "none": {
+    "n": 30,
+    "joint_top1": 0.067,
+    "joint_top3": 0.133,
+    "joint_top10": 0.3,
+    "mean_rank": 29.0,
+    "segment_top1": 0.467,
+    "group_top1": 1.0
+   },
+   "weibull": {
+    "n": 30,
+    "joint_top1": 0.067,
+    "joint_top3": 0.2,
+    "joint_top10": 0.5,
+    "mean_rank": 21.0,
+    "segment_top1": 0.4,
+    "group_top1": 1.0
+   }
+  },
+  "evalp_l (진짜 lognormal, 모델은 Weibull)": {
+   "n": 30,
+   "missed": 0,
+   "weibull_fit": {
+    "shape": 2.09,
+    "scale": 777.0
+   },
+   "none": {
+    "n": 30,
+    "joint_top1": 0.0,
+    "joint_top3": 0.033,
+    "joint_top10": 0.3,
+    "mean_rank": 33.8,
+    "segment_top1": 0.3,
+    "group_top1": 1.0
+   },
+   "weibull": {
+    "n": 30,
+    "joint_top1": 0.033,
+    "joint_top3": 0.1,
+    "joint_top10": 0.367,
+    "mean_rank": 23.9,
+    "segment_top1": 0.4,
+    "group_top1": 1.0
+   }
+  }
+ },
+ "S-B": {
+  "eval_leak (위치 균일)": {
+   "n": 30,
+   "missed": 0,
+   "weibull_fit": {
+    "shape": 2.09,
+    "scale": 765.2
+   },
+   "none": {
+    "n": 30,
+    "joint_top1": 0.033,
+    "joint_top3": 0.1,
+    "joint_top10": 0.467,
+    "mean_rank": 11.5,
+    "segment_top1": 1.0,
+    "group_top1": 1.0
+   },
+   "weibull": {
+    "n": 30,
+    "joint_top1": 0.067,
+    "joint_top3": 0.133,
+    "joint_top10": 0.5,
+    "mean_rank": 11.1,
+    "segment_top1": 1.0,
+    "group_top1": 1.0
+   }
+  },
+  "evalp_w (진짜 Weibull)": {
+   "n": 30,
+   "missed": 0,
+   "weibull_fit": {
+    "shape": 2.09,
+    "scale": 765.2
+   },
+   "none": {
+    "n": 30,
+    "joint_top1": 0.1,
+    "joint_top3": 0.3,
+    "joint_top10": 0.5,
+    "mean_rank": 9.5,
+    "segment_top1": 1.0,
+    "group_top1": 1.0
+   },
+   "weibull": {
+    "n": 30,
+    "joint_top1": 0.133,
+    "joint_top3": 0.333,
+    "joint_top10": 0.8,
+    "mean_rank": 6.0,
+    "segment_top1": 1.0,
+    "group_top1": 1.0
+   }
+  },
+  "evalp_l (진짜 lognormal, 모델은 Weibull)": {
+   "n": 30,
+   "missed": 0,
+   "weibull_fit": {
+    "shape": 2.09,
+    "scale": 777.0
+   },
+   "none": {
+    "n": 30,
+    "joint_top1": 0.033,
+    "joint_top3": 0.167,
+    "joint_top10": 0.467,
+    "mean_rank": 10.8,
+    "segment_top1": 1.0,
+    "group_top1": 1.0
+   },
+   "weibull": {
+    "n": 30,
+    "joint_top1": 0.1,
+    "joint_top3": 0.233,
+    "joint_top10": 0.8,
+    "mean_rank": 6.8,
+    "segment_top1": 1.0,
+    "group_top1": 1.0
+   }
+  }
+ }
+}

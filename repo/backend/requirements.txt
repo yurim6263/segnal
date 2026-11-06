@@ -1,0 +1,13 @@
+fastapi>=0.110
+uvicorn>=0.29
+pydantic>=2.6
+numpy>=1.26
+scipy>=1.11
+pandas>=2.1
+scikit-learn>=1.4
+statsmodels>=0.14
+pyyaml>=6.0
+httpx>=0.27
+pytest>=8.0
+# 선택(11/7 저녁 오토인코더 시도 시): torch (CPU) — 별도 설치
+# 선택(11/8 에이전트 단계): anthropic

@@ -1,0 +1,51 @@
+# 연주기 설비 구성과 시뮬레이터 가정 — 현재 값은 모두 [가설]입니다.
+# 현업 답변이 오면 이 파일의 값만 고치고 시뮬레이터를 다시 돌리면 됩니다 (코드에 칸 수를 쓰지 않습니다).
+
+n_segments: 13
+# 계측 묶음: 세그먼트 번호 목록. SAIL 특허는 세그먼트 0·1 개별 + 2-3, 4-5, 6-7, 8-13 묶음(6개 계측선)이며,
+# 여기서는 1번 개별 + 4묶음으로 단순화했다.
+sensor_groups:
+  - [1]
+  - [2, 3]
+  - [4, 5]
+  - [6, 7]
+  - [8, 9, 10, 11, 12, 13]
+rolls_per_segment: 10
+joints_per_roll: 2          # 입구(in) / 출구(out)
+
+sim:
+  dt_s: 60                  # 샘플 간격(초)
+  v_nom: 1.2                # 기준 주조 속도 (m/min)
+  # 세그먼트별 정상 유량 (L/min) — SAIL 특허의 출구 계측선 유량을 세그먼트로 나눈 값 [가설]
+  nominal_flow_lpm: [600, 500, 500, 500, 500, 500, 500, 433, 433, 433, 433, 433, 433]
+  pump:
+    p0_bar: 8.0             # 펌프 차단 양정
+    p_header_nom_bar: 5.5   # 정상 운전 공급 헤더 압력 (SAIL: 5.5 bar)
+  p_return_bar: 2.5         # 회수 압력 (SAIL: 약 2.5 bar)
+  t_in_c: 35.0              # 공급 수온 평균 (SAIL: 30~40 ℃)
+  t_in_daily_swing_c: 2.0
+  delta_t_nom_c: 38.0       # 세그먼트 1번의 정상 출입구 온도차 (출구 60~80 ℃가 되도록) [가설]
+  heat_profile_slope: 0.02  # 세그먼트 번호가 클수록 열부하가 줄어드는 정도
+  heat_speed_exponent: 0.8  # 열부하 ∝ (v/v_nom)^지수
+  grade_heat_factor: {A: 1.0, B: 1.1}
+  valve_speed_gain: 0.5     # 유량 설정이 주조 속도에 따라 변하는 정도 (φ = 1 + gain·(v/v_nom − 1))
+  holdup_tau_min: 3.0       # 입구-출구 유량 지연(보유량) 시정수 (분)
+  leak_exponent: 0.5        # Q_leak = C·P^0.5 (압력 의존 누설)
+  sensor:
+    flow_noise_rel: 0.0025  # 유량 잡음 (상대)
+    flow_offset_rel: 0.004  # 유량계 고정 오프셋 표준편차 (상대)
+    flow_drift_rel_per_sqrt_day: 0.0005
+    pressure_noise_bar: 0.02
+    temp_noise_c: 0.10
+  seed: 20261109
+
+# 합성 정비 이력 — 로터리 조인트 수명. 실제 교체 이력이 없으므로 모두 [가설]입니다.
+maintenance:
+  true_dist: weibull        # weibull | lognormal  (lognormal이면 "분포 불일치" 시나리오: 모델은 Weibull을 가정)
+  weibull_shape: 2.2        # 마모형 고장
+  weibull_scale_days: 650   # 특성 수명 (일)
+  lognormal_sigma: 0.55     # true_dist=lognormal일 때 (평균 수명이 Weibull과 비슷하게 맞춤)
+  seg_scale_gradient: 0.4   # 하류 세그먼트일수록 수명이 길어지는 정도 (1번 = 1.0배, 마지막 = 1.4배)
+  horizon_days: 1500        # 과거 이력 길이
+  hazard_window_days: 30    # 사전확률 계산 구간 (다음 30일 내 고장 확률)
+  inspect_log_per_joint: 2  # 조인트당 평균 점검 기록 수

@@ -1,0 +1,44 @@
+{
+ "scenario": "leak_ramp_s5",
+ "layout": "S-A",
+ "description": "서서히 커지는 미세 누수: 세그먼트 5, 롤 4, 입구 (6시간에 걸쳐 14 L/min)",
+ "n_samples": 4320,
+ "dt_s": 60,
+ "groups": [
+  [
+   1
+  ],
+  [
+   2,
+   3
+  ],
+  [
+   4,
+   5
+  ],
+  [
+   6,
+   7
+  ],
+  [
+   8,
+   9,
+   10,
+   11,
+   12,
+   13
+  ]
+ ],
+ "events": [
+  {
+   "kind": "leak",
+   "start_ts": 1800,
+   "ramp_min": 360,
+   "end_ts": null,
+   "peak": 14.0,
+   "segment": 5,
+   "roll": 4,
+   "side": "in"
+  }
+ ]
+}

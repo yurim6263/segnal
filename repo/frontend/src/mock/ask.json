@@ -1,0 +1,10 @@
+{
+  "answer": "(예시) 묶음 3의 회수 유량 잔차가 기준선보다 낮아져 EWMA가 경보를 냈습니다.",
+  "tools_used": [
+    "get_status",
+    "get_residual_trend"
+  ],
+  "numbers_verified": true,
+  "from_cache": true,
+  "disclaimer": "AI가 작성한 내용이며 사람의 확인이 필요합니다."
+}

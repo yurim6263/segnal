@@ -1,0 +1,297 @@
+{
+  "scenario_id": "leak_ramp_s5",
+  "ts": 1620,
+  "cast_speed": 1.25,
+  "steel_grade": "A",
+  "segments": [
+    {
+      "segment": 1,
+      "level": "normal",
+      "group": 0
+    },
+    {
+      "segment": 2,
+      "level": "normal",
+      "group": 1
+    },
+    {
+      "segment": 3,
+      "level": "normal",
+      "group": 1
+    },
+    {
+      "segment": 4,
+      "level": "alarm",
+      "group": 2
+    },
+    {
+      "segment": 5,
+      "level": "alarm",
+      "group": 2
+    },
+    {
+      "segment": 6,
+      "level": "normal",
+      "group": 3
+    },
+    {
+      "segment": 7,
+      "level": "normal",
+      "group": 3
+    },
+    {
+      "segment": 8,
+      "level": "normal",
+      "group": 4
+    },
+    {
+      "segment": 9,
+      "level": "normal",
+      "group": 4
+    },
+    {
+      "segment": 10,
+      "level": "normal",
+      "group": 4
+    },
+    {
+      "segment": 11,
+      "level": "normal",
+      "group": 4
+    },
+    {
+      "segment": 12,
+      "level": "normal",
+      "group": 4
+    },
+    {
+      "segment": 13,
+      "level": "normal",
+      "group": 4
+    }
+  ],
+  "alert": {
+    "level": "alarm",
+    "cause": "leak",
+    "since_ts": 1510,
+    "group": 2,
+    "message": "묶음 3의 회수 유량이 기준선보다 낮아지는 추세 (누수 후보)",
+    "detectors": {
+      "fixed_alarm_ts": null,
+      "ewma_alarm_ts": 1510,
+      "cusum_alarm_ts": 1498
+    }
+  },
+  "candidates": [
+    {
+      "id": "S4-R9-in",
+      "segment": 4,
+      "roll": 9,
+      "side": "in",
+      "prob": 0.0855,
+      "prior": 0.077,
+      "evidence": [
+        "묶음 3 회수 유량 잔차 감소",
+        "공급 헤더 압력 소폭 저하"
+      ],
+      "rank": 1,
+      "inspect_minutes": 36.9,
+      "access_risk": 0.27,
+      "priority_score": 0.00202,
+      "priority_rank": 1
+    },
+    {
+      "id": "S4-R6-out",
+      "segment": 4,
+      "roll": 6,
+      "side": "out",
+      "prob": 0.057,
+      "prior": 0.0513,
+      "evidence": [
+        "묶음 3 회수 유량 잔차 감소",
+        "공급 헤더 압력 소폭 저하"
+      ],
+      "rank": 2,
+      "inspect_minutes": 39.1,
+      "access_risk": 0.15,
+      "priority_score": 0.00135,
+      "priority_rank": 6
+    },
+    {
+      "id": "S4-R2-in",
+      "segment": 4,
+      "roll": 2,
+      "side": "in",
+      "prob": 0.0451,
+      "prior": 0.0406,
+      "evidence": [
+        "묶음 3 회수 유량 잔차 감소",
+        "공급 헤더 압력 소폭 저하"
+      ],
+      "rank": 3,
+      "inspect_minutes": 38.9,
+      "access_risk": 0.23,
+      "priority_score": 0.00104,
+      "priority_rank": 8
+    },
+    {
+      "id": "S5-R9-out",
+      "segment": 5,
+      "roll": 9,
+      "side": "out",
+      "prob": 0.0448,
+      "prior": 0.0403,
+      "evidence": [
+        "묶음 3 회수 유량 잔차 감소",
+        "공급 헤더 압력 소폭 저하"
+      ],
+      "rank": 4,
+      "inspect_minutes": 23.1,
+      "access_risk": 0.35,
+      "priority_score": 0.00149,
+      "priority_rank": 3
+    },
+    {
+      "id": "S5-R3-in",
+      "segment": 5,
+      "roll": 3,
+      "side": "in",
+      "prob": 0.0447,
+      "prior": 0.0402,
+      "evidence": [
+        "묶음 3 회수 유량 잔차 감소",
+        "공급 헤더 압력 소폭 저하"
+      ],
+      "rank": 5,
+      "inspect_minutes": 34.2,
+      "access_risk": 0.24,
+      "priority_score": 0.00115,
+      "priority_rank": 7
+    },
+    {
+      "id": "S5-R7-out",
+      "segment": 5,
+      "roll": 7,
+      "side": "out",
+      "prob": 0.0411,
+      "prior": 0.037,
+      "evidence": [
+        "묶음 3 회수 유량 잔차 감소",
+        "공급 헤더 압력 소폭 저하"
+      ],
+      "rank": 6,
+      "inspect_minutes": 23.9,
+      "access_risk": 0.1,
+      "priority_score": 0.00159,
+      "priority_rank": 2
+    },
+    {
+      "id": "S5-R9-in",
+      "segment": 5,
+      "roll": 9,
+      "side": "in",
+      "prob": 0.0409,
+      "prior": 0.0368,
+      "evidence": [
+        "묶음 3 회수 유량 잔차 감소",
+        "공급 헤더 압력 소폭 저하"
+      ],
+      "rank": 7,
+      "inspect_minutes": 19.2,
+      "access_risk": 0.44,
+      "priority_score": 0.00146,
+      "priority_rank": 5
+    },
+    {
+      "id": "S4-R9-out",
+      "segment": 4,
+      "roll": 9,
+      "side": "out",
+      "prob": 0.0386,
+      "prior": 0.0347,
+      "evidence": [
+        "묶음 3 회수 유량 잔차 감소",
+        "공급 헤더 압력 소폭 저하"
+      ],
+      "rank": 8,
+      "inspect_minutes": 13.7,
+      "access_risk": 0.61,
+      "priority_score": 0.00149,
+      "priority_rank": 4
+    },
+    {
+      "id": "S4-R3-in",
+      "segment": 4,
+      "roll": 3,
+      "side": "in",
+      "prob": 0.0314,
+      "prior": 0.0283,
+      "evidence": [
+        "묶음 3 회수 유량 잔차 감소",
+        "공급 헤더 압력 소폭 저하"
+      ],
+      "rank": 9,
+      "inspect_minutes": 23.3,
+      "access_risk": 0.68,
+      "priority_score": 0.00085,
+      "priority_rank": 9
+    },
+    {
+      "id": "S4-R1-in",
+      "segment": 4,
+      "roll": 1,
+      "side": "in",
+      "prob": 0.031,
+      "prior": 0.0279,
+      "evidence": [
+        "묶음 3 회수 유량 잔차 감소",
+        "공급 헤더 압력 소폭 저하"
+      ],
+      "rank": 10,
+      "inspect_minutes": 32.9,
+      "access_risk": 0.44,
+      "priority_score": 0.00074,
+      "priority_rank": 10
+    },
+    {
+      "id": "S4-R1-out",
+      "segment": 4,
+      "roll": 1,
+      "side": "out",
+      "prob": 0.0307,
+      "prior": 0.0276,
+      "evidence": [
+        "묶음 3 회수 유량 잔차 감소",
+        "공급 헤더 압력 소폭 저하"
+      ],
+      "rank": 11,
+      "inspect_minutes": 40.4,
+      "access_risk": 0.61,
+      "priority_score": 0.00058,
+      "priority_rank": 12
+    },
+    {
+      "id": "S5-R6-in",
+      "segment": 5,
+      "roll": 6,
+      "side": "in",
+      "prob": 0.0294,
+      "prior": 0.0265,
+      "evidence": [
+        "묶음 3 회수 유량 잔차 감소",
+        "공급 헤더 압력 소폭 저하"
+      ],
+      "rank": 12,
+      "inspect_minutes": 38.4,
+      "access_risk": 0.37,
+      "priority_score": 0.00064,
+      "priority_rank": 11
+    }
+  ],
+  "impact": {
+    "start_m": 3.1,
+    "end_m": 5.6,
+    "label": "슬래브 No.318 몰드 출구로부터 3.1~5.6 m 표면 검사 대상 후보"
+  },
+  "is_synthetic": true
+}

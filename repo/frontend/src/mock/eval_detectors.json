@@ -1,0 +1,23 @@
+[
+  {
+    "detector": "고정 임계값(SAIL 예시)",
+    "detection_delay_min": null,
+    "false_alarms": 4,
+    "note": "20% 편차 기준은 작은 누수를 못 잡음"
+  },
+  {
+    "detector": "EWMA",
+    "detection_delay_min": 112,
+    "false_alarms": 1
+  },
+  {
+    "detector": "CUSUM",
+    "detection_delay_min": 98,
+    "false_alarms": 1
+  },
+  {
+    "detector": "Isolation Forest",
+    "detection_delay_min": 140,
+    "false_alarms": 1
+  }
+]
