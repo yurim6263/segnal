@@ -28,6 +28,7 @@ from sim.config import load_config
 from sim.scenarios import DATA_DIR, load_scenario
 
 LAYOUT = "S-A"
+UNEXPLAINED_HOURS = 24      # 원인을 못 가린 경보 기준 초과를 '주의'로 남기는 시간
 EWMA_LAM = 0.1
 CUSUM_K = 0.5
 DIAG_DELAY = 60
@@ -360,9 +361,12 @@ def state_at(scenario_id: str, ts: int | None) -> dict:
     latest_by_seg = {i["segment"]: i["result"] for i in insps}
 
     alerted = d.alarm_ts is not None and ts >= d.alarm_ts
-    # 원인을 판정하지 못했어도 지금 평활 불균형이 경보 기준을 넘어 있으면 '정상'이라고 하지 않는다(작은 누수 등) → 주의, 원인 확인 중
-    if not alerted and any(rt.ewma_imb[g][ts] > st.thr_ewma[g] for g in st.groups):
-        alerted = True
+    # 원인을 판정하지 못했어도 최근 24시간 안에 평활 불균형이 경보 기준을 넘은 묶음이 있으면 '정상'이라고 하지 않는다
+    # (검출 한계 근처의 작은 누수는 기준을 잠깐 넘었다가 내려오기도 한다) → 주의, 원인 미판정
+    unexplained = []
+    if not alerted:
+        unexplained = [g for g in st.groups if (rt.ewma_imb[g][max(ts - UNEXPLAINED_HOURS * 60, 0): ts + 1] > st.thr_ewma[g]).any()]
+        alerted = bool(unexplained)
     confirmed = d.diag_ts is not None and ts >= d.diag_ts and d.cause != "unknown"
     cause = d.cause if confirmed else "unknown"
     conf_leaks = [i for i in insps if i["result"] == "leak_confirmed"]
@@ -398,7 +402,7 @@ def state_at(scenario_id: str, ts: int | None) -> dict:
             lv = "alarm"
         elif confirmed and (d.group is None or d.group == g):
             lv = "watch"
-        elif alerted and rt.ewma_imb[g][ts] > 0.6 * st.thr_ewma[g]:
+        elif alerted and (g in unexplained or rt.ewma_imb[g][ts] > 0.6 * st.thr_ewma[g]):
             lv = "watch"
         seg_levels.append({"segment": s, "level": lv, "group": g - 1, "inspected": latest_by_seg.get(s)})
 
@@ -410,7 +414,7 @@ def state_at(scenario_id: str, ts: int | None) -> dict:
         lv = "normal"
         if confirmed and (d.group is None or d.group == g):
             lv = "alarm" if confirmed_seg is not None and (confirmed_seg in segs) else "watch"
-        elif alerted and abs(dev) > 0.6:
+        elif alerted and (g in unexplained or abs(dev) > 0.6):
             lv = "watch"
         groups.append({"group": gi, "segments": segs, "level": lv, "deviation": round(dev, 2)})
 
@@ -471,7 +475,13 @@ def state_at(scenario_id: str, ts: int | None) -> dict:
                        confirmed_seg, len(insps), mins_to_confirm, changed,
                        [i["segment"] for i in insps if i["result"] == "no_issue"])
     if level == "watch" and not confirmed:
-        summary = {"headline": "이상 징후가 감지되었습니다. 원인을 확인하는 중입니다.", "detail": "패턴이 완성될 때까지 기다리는 중입니다."}
+        if unexplained:
+            names = ", ".join(f"묶음 {g}(세그먼트 {', '.join(map(str, st.cfg.sensor_groups[g - 1]))})" for g in unexplained)
+            summary = {"headline": f"{names}에서 경보 기준을 넘은 적이 있지만 원인을 가리지 못했습니다.",
+                       "detail": "기준을 넘었다가 내려왔습니다. 작은 누수이거나 일시적인 변동일 수 있어 유량계 확인이나 점검을 권고합니다. 누수 후보 순위는 만들지 않습니다.",
+                       "secondary_label": "진단 보기", "secondary_tab": "diagnosis"}
+        else:
+            summary = {"headline": "이상 징후가 감지되었습니다. 원인을 확인하는 중입니다.", "detail": "패턴이 완성될 때까지 기다리는 중입니다."}
 
     msg = CAUSE_MESSAGE.get(cause, "정상") if level != "normal" else "이상 징후 없음"
     if level == "watch" and not confirmed:

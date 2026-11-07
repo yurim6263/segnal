@@ -171,13 +171,18 @@ export interface JointRisk {
   replace_count: number;
 }
 
+export interface ProposedAction { segment: number; result: InspectResult; reason: string }
 export interface AskOut {
   answer: string;
   tools_used: string[];
   numbers_verified: boolean;
   from_cache: boolean;
   disclaimer: string;
+  mode: "llm" | "cache" | "template";
+  proposed_action: ProposedAction | null;
+  note: string;
 }
+export interface AgentStatus { llm_available: boolean; model_qa: string | null; model_note: string | null; presets: string[] }
 
 export interface HandoverValue { label: string; value: string; source: string }
 export interface HandoverSection { title: string; text: string; values: HandoverValue[] }

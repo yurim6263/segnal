@@ -1,6 +1,6 @@
 // API 호출. 백엔드(8000)에 연결되지 않으면 mock JSON으로 대신한다 (병렬 개발용).
 import type {
-  AskOut, DetectorEval, EvalSummary, Handover, InspectionRecord, JointRisk, PlantConfig, PriorEval,
+  AgentStatus, AskOut, DetectorEval, EvalSummary, Handover, InspectionRecord, JointRisk, PlantConfig, PriorEval,
   ScenarioInfo, Series, State,
 } from "./types";
 import mockConfig from "./mock/config.json";
@@ -69,6 +69,7 @@ export const api = {
   deleteInspection: async (scenario_id: string, id: number) => {
     try { await fetch(`${BASE}/api/inspections/${id}?scenario_id=${scenario_id}`, { method: "DELETE" }); } catch { /* 백엔드 꺼짐 */ }
   },
-  ask: (scenario_id: string, question: string) =>
-    post<AskOut>("/api/agent/ask", { scenario_id, question }, mockAsk),
+  ask: (scenario_id: string, question: string, ts: number) =>
+    post<AskOut>("/api/agent/ask", { scenario_id, question, ts }, mockAsk as unknown as AskOut),
+  agentStatus: () => get<AgentStatus | null>("/api/agent/status", null),
 };

@@ -197,6 +197,13 @@ class InspectionOut(BaseModel):
 class AskIn(BaseModel):
     scenario_id: str
     question: str
+    ts: Optional[int] = None
+
+
+class ProposedAction(BaseModel):
+    segment: int
+    result: str
+    reason: str = ""
 
 
 class AskOut(BaseModel):
@@ -205,6 +212,9 @@ class AskOut(BaseModel):
     numbers_verified: bool = True
     from_cache: bool = False
     disclaimer: str = "AI가 작성한 내용이며 사람의 확인이 필요합니다."
+    mode: str = "template"                       # llm | cache | template
+    proposed_action: Optional[ProposedAction] = None
+    note: str = ""
 
 
 class HandoverValue(BaseModel):

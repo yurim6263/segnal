@@ -34,6 +34,16 @@ npm run dev      # http://localhost:5173
 ```
 `run.bat`이 위 실행을 한 번에 합니다.
 
+## 질문창·노트 다듬기 (Claude API, 선택)
+키가 없어도 모든 기능이 정해진 양식으로 동작합니다. 키를 넣으면 질의응답과 인수인계 노트 문장 다듬기에 Claude를 씁니다.
+```
+backend\.env.example 을 backend\.env 로 복사한 뒤  ANTHROPIC_API_KEY=키  를 넣는다   (.env 는 git에 올라가지 않음)
+.venv\Scripts\python -m agent.warm     # 발표용: 사전 질문 3개 답을 미리 저장
+```
+- 질의응답: Haiku 5.5, 읽기 전용 조회 도구로만 값을 가져오고, 답의 숫자가 도구 값과 맞는지 검사합니다(틀리면 1회 재시도, 그래도 틀리면 양식 답변). 점검 결과 기록은 제안만 만들고 사람이 확인 버튼을 눌러야 저장됩니다.
+- 노트 문장 다듬기: Sonnet 5.5, 숫자·시각 값이 그대로인지 검사해 어긋난 구역은 양식 문장을 씁니다.
+- 모델은 환경변수 `AGENT_MODEL_QA`, `AGENT_MODEL_NOTE`로 바꿀 수 있습니다.
+
 ## 테스트
 ```
 cd backend
