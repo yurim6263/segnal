@@ -42,9 +42,10 @@ npm run dev      # http://localhost:5173
 ```
 cd backend
 .venv\Scripts\python -m sim.health_generate         # (처음 한 번) 1분 센서 CSV 생성
-.venv\Scripts\python -m llm.build_docs              # 조치 카드 AC-01~06, 사례집 HIST-01 재생성 (나머지 문서는 docs/corp/*.md를 직접 수정)
+.venv\Scripts\python -m llm.build_docs              # 조치 카드 AC-01~06, 사례집 HIST-01 생성 (이미 있으면 건너뜀, 덮어쓰기는 --force). 문서는 docs/corp/*.md를 직접 수정
 .venv\Scripts\python -m eval.risk_eval              # 위험 모델 이동 백테스트 → data/health/risk_eval.json
 .venv\Scripts\python -m eval.redteam_eval --rules   # 공격 시험(모델 없이). --rules를 빼면 키가 있을 때 Claude 모드도 실행
+.venv\Scripts\python -m eval.workorder_eval 7          # 작업지시서 자동 검증 통과율(Claude 호출 7회, 몇 분) → data/health/workorder_eval.json
 ```
 - 화면: `위험 예측`(순위판·작업지시서 생성·승인), `질의응답`, `AI 보안·감사`(역할별 열람 범위·공격 시험 결과·감사 로그). 위쪽 `역할(데모)`을 바꾸면 AI가 받는 근거가 달라집니다.
 - 사내문서는 `docs/corp/*.md`이고 조항 머리줄의 `{tier=등급 roles=역할 causes=원인코드}`가 권한과 검색 기준입니다. 검색은 권한 필터를 먼저 적용합니다.

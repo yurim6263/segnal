@@ -132,7 +132,7 @@ def build_rows(data: Data, future: bool = True) -> pd.DataFrame:
     ins = data.installs.sort_values("install_ts")[["segment_serial", "install_ts", "pressure_test"]].rename(columns={"pressure_test": "pt"})
     df = pd.merge_asof(df.sort_values("date"), ins, left_on="date", right_on="install_ts", by="segment_serial", direction="backward").sort_values(["segment_serial", "day"])
     df["pt"] = df["pt"].fillna(0).astype(float)
-    # 사건
+    # 사건: 원인별 위험률을 따로 맞추려고 확인된 원인(cause_code)을 라벨로 쓴다. 평가는 걸러 낸 과거 라벨만으로 맞춘 모델을 쓴다(eval/risk_eval).
     lk = data.leaks.assign(day=((data.leaks["ts"].dt.normalize() - data.start_date).dt.days).astype(int))[["segment_serial", "day", "cause_code"]]
     df = df.merge(lk, on=["segment_serial", "day"], how="left").rename(columns={"cause_code": "event"})
     df["event"] = df["event"].fillna("")

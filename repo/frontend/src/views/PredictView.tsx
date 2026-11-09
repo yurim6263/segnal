@@ -6,6 +6,7 @@ import { Bar, Card } from "../components/ui";
 import { ApiError, llm, type Checks, type Role, type RiskBoard, type RiskSegment, type SegmentHistoryData, type WoRow, type WorkOrder } from "../llmApi";
 
 const causeColor = (cause: string) => `var(--cause-${cause})`;
+const CAUSE_NAME: Record<string, string> = { WEAR: "씰 정상 마모", HAMMER: "스팀 해머성 씰 파손", BEARING: "베어링 손상", THERMAL: "열 사이클 피로", WATER: "수질 손상", ASSEMBLY: "조립 불량", RANDOM: "우연형" };
 const pct = (x: number, d = 1) => `${(x * 100).toFixed(d)}%`;
 
 function Ok({ ok, label }: { ok: boolean | undefined; label: string }) {
@@ -36,6 +37,10 @@ export default function PredictView({ role, user, onPlan }: { role: Role; user: 
   const [msg, setMsg] = useState("");
   const [hist, setHist] = useState<SegmentHistoryData | null>(null);
   const woRef = useRef<HTMLDivElement>(null);
+  const [rGrade, setRGrade] = useState("2");
+  const [rCause, setRCause] = useState("");
+  const [rNote, setRNote] = useState("");
+  const [rDone, setRDone] = useState<{ match: boolean; cause: string } | null>(null);
 
   const reload = () => llm.listWo().then(setOrders).catch(() => setOrders([]));
   useEffect(() => { llm.board().then((b) => { setBoard(b); setSel(b.segments[0]?.segment ?? ""); }).catch((e) => setErr(e.message)); reload(); }, []);
@@ -64,6 +69,13 @@ export default function PredictView({ role, user, onPlan }: { role: Role; user: 
     if (!wo) return;
     try { await llm.approveWo(wo.wo_id, role, user); setWo({ ...wo, status: "approved" }); setMsg(`${wo.wo_id} 승인됨 (승인자: ${user}, 역할: ${role})`); reload(); }
     catch (e) { setMsg(`승인 거부: ${(e as ApiError).message}`); }
+  };
+  const saveResult = async () => {
+    if (!wo || !rCause) return;
+    try {
+      const r = await llm.recordResult(wo.wo_id, role, user, rGrade, rCause, rNote);
+      setWo({ ...wo, status: "done" }); setRDone({ match: r.prediction_match, cause: rCause }); setMsg(`${wo.wo_id} 점검 결과를 기록했습니다.`); reload();
+    } catch (e) { setMsg(`기록 거부: ${(e as ApiError).message}`); }
   };
   const saveEdit = async () => {
     if (!wo || edit === null) return;
@@ -175,6 +187,21 @@ export default function PredictView({ role, user, onPlan }: { role: Role; user: 
             <button className="btn btn-primary" disabled={wo.status !== "draft" || edit !== null} onClick={approve}>승인</button>
             <span className="muted self-center text-[12.5px]">승인은 정비 계획 담당·관리자만 할 수 있습니다. 설비 제어나 자동 발행은 없습니다.</span>
           </div>
+          {(wo.status === "approved" || wo.status === "done") && (
+            <div className="mt-4 rounded-md border p-3" style={{ borderColor: "var(--line)" }}>
+              <div className="mb-2 text-[14px] font-semibold">점검 결과 입력 (작업 후)</div>
+              <div className="flex flex-wrap items-end gap-3 text-[13.5px]">
+                <label className="flex flex-col gap-0.5">씰 마모 등급
+                  <select value={rGrade} onChange={(e) => setRGrade(e.target.value)}><option value="1">1등급 (양호)</option><option value="2">2등급</option><option value="3">3등급 (심함)</option></select></label>
+                <label className="flex flex-col gap-0.5">실제 원인
+                  <select value={rCause} onChange={(e) => setRCause(e.target.value)}><option value="">선택</option>{Object.entries(CAUSE_NAME).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></label>
+                <label className="flex min-w-[220px] flex-1 flex-col gap-0.5">메모
+                  <input className="rounded-md border px-2 py-1" style={{ borderColor: "var(--line)", background: "var(--card)", color: "var(--text)" }} value={rNote} onChange={(e) => setRNote(e.target.value)} placeholder="예: 씰 면 균열, B4 필터 막힘" /></label>
+                <button className="btn" disabled={!rCause} onClick={saveResult}>결과 저장</button>
+              </div>
+              {rDone && <p className="mt-2 text-[13.5px]"><span className={`chip ${rDone.match ? "chip-ok" : "chip-watch"}`}>{rDone.match ? "예측한 원인과 일치" : "예측한 원인과 다름"}</span> 실제 원인: {CAUSE_NAME[rDone.cause]}. 기록만 쌓고 모델은 다시 학습하지 않습니다.</p>}
+            </div>
+          )}
         </Card>
       )}
 
