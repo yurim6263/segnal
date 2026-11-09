@@ -229,6 +229,32 @@ class HandoverOut(BaseModel):
     sources: list[HandoverValue] = []
 
 
+class CostIn(BaseModel):
+    """세그먼트 교체 비용 입력. 모두 현장 값을 넣는다 (금액 단위는 호출자가 통일, 시간은 시간(h)·분(min)).
+    비워 두면 계산하지 않고 missing 으로 알려 준다. 기본 금액은 없다."""
+    direct_planned: Optional[float] = Field(None, ge=0, description="계획 교체 직접 정비비")
+    direct_unplanned: Optional[float] = Field(None, ge=0, description="비계획 교체 직접 정비비")
+    stop_hours_planned: Optional[float] = Field(None, ge=0, description="계획 교체로 늘어나는 정지 시간(h). 정기 정지에 편승하면 0")
+    stop_hours_unplanned: Optional[float] = Field(None, ge=0, description="비계획 교체 정지 시간(h)")
+    loss_per_hour: Optional[float] = Field(None, ge=0, description="시간당 생산 손실")
+    restart_loss: Optional[float] = Field(None, ge=0, description="재가동 손실(정지 1회당). 생략하면 0")
+    collateral_unplanned: Optional[float] = Field(None, ge=0, description="비계획 시 부수 손실. 생략하면 0(보수적)")
+    failure_after_leak_min: Optional[float] = Field(None, ge=0, description="누수 시작부터 강제 정지까지(분)")
+    wait_to_window_min: Optional[float] = Field(None, ge=0, description="경보부터 다음 정비 창까지(분)")
+
+
+class CostOut(BaseModel):
+    ready: bool
+    missing: list[str] = []
+    planned: Optional[dict] = None
+    unplanned: Optional[dict] = None
+    saving_per_event: Optional[float] = None
+    collateral_included: bool = False
+    conversion: Optional[dict] = None
+    detector_delay_min: Optional[dict] = None
+    note: str = ""
+
+
 class DetectorEval(BaseModel):
     detector: str
     detection_delay_min: Optional[float]
