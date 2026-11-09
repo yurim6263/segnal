@@ -25,14 +25,14 @@ function PickList({ title, items }: { title: string; items: RiskSegment[] }) {
   );
 }
 
-export default function PlanView({ role, user }: { role: Role; user: string }) {
+export default function PlanView({ role, user, onOpenWo }: { role: Role; user: string; onOpenWo: (id: string) => void }) {
   const [board, setBoard] = useState<RiskBoard | null>(null);
   const [err, setErr] = useState("");
   const [capacity, setCapacity] = useState("2");
   const [cost, setCost] = useState("");
   const [loss, setLoss] = useState("");
   const [busy, setBusy] = useState("");
-  const [results, setResults] = useState<{ segment: string; ok: boolean; text: string }[]>([]);
+  const [results, setResults] = useState<{ segment: string; ok: boolean; text: string; woId?: string }[]>([]);
 
   useEffect(() => { llm.board().then(setBoard).catch((e) => setErr(e.message)); }, []);
   if (err) return <Card title="휴지 교체 계획"><p className="muted">{err}</p></Card>;
@@ -55,7 +55,7 @@ export default function PlanView({ role, user }: { role: Role; user: string }) {
       setBusy(s.segment);
       try {
         const r = await llm.createWo(role, user, s.segment);
-        setResults((p) => [...p, r.ok === false ? { segment: s.segment, ok: false, text: r.message ?? "생성할 수 없습니다." } : { segment: s.segment, ok: true, text: `${r.wo_id} 초안 · ${r.mode === "llm" ? "Claude 작성" : "양식 모드"}` }]);
+        setResults((p) => [...p, r.ok === false ? { segment: s.segment, ok: false, text: r.message ?? "생성할 수 없습니다." } : { segment: s.segment, ok: true, woId: r.wo_id, text: `초안 · ${r.mode === "llm" ? "Claude 작성" : "양식 모드"}` }]);
       } catch (e) { setResults((p) => [...p, { segment: s.segment, ok: false, text: (e as ApiError).message }]); }
     }
     setBusy("");
@@ -86,8 +86,8 @@ export default function PlanView({ role, user }: { role: Role; user: string }) {
       </CasterArc>
 
       {results.length > 0 && (
-        <Card className="mt-3" title="작업지시서 묶음" sub="위험 예측 탭의 목록에서 검토·승인합니다">
-          <ul className="space-y-1 text-[14px]">{results.map((r) => <li key={r.segment} className="flex flex-wrap items-center gap-2"><span className={`chip ${r.ok ? "chip-ok" : "chip-alarm"}`}>{r.ok ? "✓" : "✕"}</span><b className="mono">{r.segment}</b><span className={r.ok ? "" : "muted"}>{r.text}</span></li>)}</ul>
+        <Card className="mt-3" title="작업지시서 묶음" sub="번호를 누르면 작업지시서 탭에서 열립니다. 승인은 정비 계획 담당·관리자만 할 수 있습니다">
+          <ul className="space-y-1 text-[14px]">{results.map((r) => <li key={r.segment} className="flex flex-wrap items-center gap-2"><span className={`chip ${r.ok ? "chip-ok" : "chip-alarm"}`}>{r.ok ? "✓" : "✕"}</span><b className="mono">{r.segment}</b>{r.woId && <button className="mono underline" style={{ color: "var(--primary)", cursor: "pointer" }} onClick={() => onOpenWo(r.woId!)}>{r.woId}</button>}<span className={r.ok ? "" : "muted"}>{r.text}</span></li>)}</ul>
         </Card>
       )}
 

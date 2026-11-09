@@ -96,7 +96,7 @@ export default function CasterArc({ cells, focus, focusLabel, onSelect, ariaLabe
         <text x="1282" y="663" textAnchor="end" fontFamily={LABEL} fontSize={12.5} style={{ fill: "var(--water)" }}>회수 (점선)</text>
       </svg>
       {children && (
-        <section className="card mt-3 flex flex-col gap-3 xl:absolute xl:left-[30.86%] xl:top-[2.7%] xl:mt-0 xl:h-[67.5%] xl:w-[67.57%]" style={{ padding: "18px 22px" }}>{children}</section>
+        <section className="arc-panel card mt-3 flex flex-col gap-3 xl:absolute xl:left-[30.86%] xl:top-[2.7%] xl:mt-0 xl:h-[67.5%] xl:w-[67.57%]" style={{ padding: "18px 22px" }}>{children}</section>
       )}
     </div>
   );

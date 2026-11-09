@@ -86,6 +86,14 @@ body {
   line-height: 1.45;
 }
 
+/* 글씨가 px로 고정돼 있어 화면 전체를 비율로 키운다 */
+/* shortcut: viewBox로 그린 단면도·그래프 안 글자는 폭에 맞춰져 커지지 않는다, 그 글자까지 키워야 하면 SVG 글자 크기와 배치를 함께 고친다 */
+:root[data-font="large"] { zoom: 1.15; }
+:root[data-font="xlarge"] { zoom: 1.3; }
+/* 미디어쿼리는 zoom을 모르므로, 도면 안쪽 패널이 넘치지 않게 xl(1280px) 기준을 배율만큼 높여 패널을 도면 아래로 내린다 */
+@media (max-width: 1471px) { :root[data-font="large"] .arc-panel { position: static; width: auto; height: auto; margin-top: 0.75rem; } }
+@media (max-width: 1663px) { :root[data-font="xlarge"] .arc-panel { position: static; width: auto; height: auto; margin-top: 0.75rem; } }
+
 .mono { font-family: "JetBrains Mono", Consolas, monospace; }
 .topbar { background: var(--topbar); border-bottom: 1px solid var(--line); }
 .tab { min-height: 44px; padding: 0 12px; font-size: 16.5px; color: var(--text); border-bottom: 2px solid transparent; background: none; cursor: pointer; }

@@ -1,74 +1,40 @@
-import { useEffect, useRef, useState } from "react";
-import AnswerText from "../components/AnswerText";
+import { useEffect, useState } from "react";
 import CasterArc from "../components/CasterArc";
 import SegmentHistory, { HeroTrend } from "../components/SegmentHistory";
 import { Bar, Card } from "../components/ui";
-import { ApiError, llm, type Checks, type Role, type RiskBoard, type RiskSegment, type SegmentHistoryData, type WoRow, type WorkOrder } from "../llmApi";
+import { ApiError, llm, type Role, type RiskBoard, type RiskSegment, type SegmentHistoryData } from "../llmApi";
 
 const causeColor = (cause: string) => `var(--cause-${cause})`;
 const pct =(x: number, d = 1) => `${(x * 100).toFixed(d)}%`;
 
-function Ok({ ok, label }: { ok: boolean | undefined; label: string }) {
-  return <span className={`chip ${ok ? "chip-ok" : "chip-alarm"}`}>{ok ? "✓" : "✕"} {label}</span>;
-}
-
-function CheckRow({ c }: { c: Checks }) {
-  return (
-    <div className="flex flex-wrap gap-1.5">
-      <Ok ok={c.numbers_ok} label="숫자가 모델 값과 일치" />
-      <Ok ok={c.required_ok} label="필수 항목 있음" />
-      <Ok ok={c.actions_cited_ok} label="작업마다 조항 인용" />
-      <Ok ok={c.citations_ok} label="인용 조항이 건네준 조항" />
-      <Ok ok={c.pii_ok && c.no_forbidden_leak} label="개인정보·권한 밖 문구 없음" />
-      <span className={`chip ${c.off_card ? "chip-watch" : ""}`}>카드 밖 제안 {c.off_card ?? 0}건</span>
-    </div>
-  );
-}
-
-export default function PredictView({ role, user, onPlan }: { role: Role; user: string; onPlan: () => void }) {
+export default function PredictView({ role, user, onPlan, onOpenWo }: { role: Role; user: string; onPlan: () => void; onOpenWo: (id: string) => void }) {
   const [board, setBoard] = useState<RiskBoard | null>(null);
   const [err, setErr] = useState("");
   const [sel, setSel] = useState<string>("");
   const [busy, setBusy] = useState(false);
-  const [wo, setWo] = useState<WorkOrder | null>(null);
-  const [orders, setOrders] = useState<WoRow[]>([]);
-  const [edit, setEdit] = useState<string | null>(null);
   const [msg, setMsg] = useState("");
   const [hist, setHist] = useState<SegmentHistoryData | null>(null);
-  const woRef = useRef<HTMLDivElement>(null);
 
-  const reload = () => llm.listWo().then(setOrders).catch(() => setOrders([]));
-  useEffect(() => { llm.board().then((b) => { setBoard(b); setSel(b.segments[0]?.segment ?? ""); }).catch((e) => setErr(e.message)); reload(); }, []);
+  useEffect(() => { llm.board().then((b) => { setBoard(b); setSel(b.segments[0]?.segment ?? ""); }).catch((e) => setErr(e.message)); }, []);
   useEffect(() => { if (sel) llm.history(sel).then(setHist).catch(() => setHist(null)); }, [sel]);
-  useEffect(() => { if (wo) woRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }); }, [wo?.wo_id]);
 
   if (err) return <Card title="위험 예측"><p className="muted">{err}</p></Card>;
   if (!board) return <Card title="위험 예측"><p className="muted">모델을 맞추는 중…(처음 한 번 몇 초)</p></Card>;
   const seg: RiskSegment | undefined = board.segments.find((s) => s.segment === sel);
   const max = Math.max(...board.segments.map((s) => s.prob_next_stop));
-  const pick = (segment: string) => { setSel(segment); setWo(null); setMsg(""); };
+  const pick = (segment: string) => { setSel(segment); setMsg(""); };
   const byTons = [...board.segments].sort((a, b) => b.joint_age_t - a.joint_age_t);
   const topCause = seg?.causes.find((c) => c.cause === seg.top_cause);
 
   const make = async () => {
     if (!seg) return;
-    setBusy(true); setMsg(""); setWo(null); setEdit(null);
+    setBusy(true); setMsg("");
     try {
       const r = await llm.createWo(role, user, seg.segment);
       if (r.ok === false) setMsg(r.message ?? "생성할 수 없습니다.");
-      else { setWo(r); reload(); }
+      else onOpenWo(r.wo_id);
     } catch (e) { setMsg((e as ApiError).message); }
     setBusy(false);
-  };
-  const approve = async () => {
-    if (!wo) return;
-    try { await llm.approveWo(wo.wo_id, role, user); setWo({ ...wo, status: "approved" }); setMsg(`${wo.wo_id} 승인됨 (승인자: ${user}, 역할: ${role})`); reload(); }
-    catch (e) { setMsg(`승인 거부: ${(e as ApiError).message}`); }
-  };
-  const saveEdit = async () => {
-    if (!wo || edit === null) return;
-    try { await llm.editWo(wo.wo_id, role, user, edit); setWo({ ...wo, draft_md: edit, checks: { ...wo.checks, numbers_ok: false } }); setEdit(null); setMsg("수정했습니다. 수정한 문서는 자동 숫자 검증을 다시 통과한 것이 아니므로 검증 표시를 껐습니다."); }
-    catch (e) { setMsg((e as ApiError).message); }
   };
 
   return (
@@ -161,32 +127,6 @@ export default function PredictView({ role, user, onPlan }: { role: Role; user: 
       {seg && hist?.segment === seg.segment && <SegmentHistory h={hist} causeLabel={Object.fromEntries(seg.causes.map((c) => [c.cause, c.label]))} />}
 
       {msg && <p className="info-strip mt-3">{msg}</p>}
-
-      <div ref={woRef} />
-      {wo && (
-        <Card className="mt-3" title={`작업지시서 ${wo.wo_id}`} sub={wo.status === "approved" ? "승인됨" : "초안 — 담당자 승인 전"}
-          right={`${wo.mode === "llm" ? `Claude(${wo.model})가 작성` : "양식 모드(규칙 기반)"}${wo.retries ? ` · 검증 실패 후 재생성 ${wo.retries}회` : ""}`}>
-          <div className="mb-3"><CheckRow c={wo.checks} /></div>
-          {wo.checks.llm_error && <p className="muted mb-2 text-[12.5px]">모델 호출이 실패해 양식 모드로 대체됨: {wo.checks.llm_error}</p>}
-          {edit === null ? <AnswerText text={wo.draft_md} /> : <textarea className="w-full text-[14px]" rows={16} value={edit} onChange={(e) => setEdit(e.target.value)} />}
-          <p className="muted mt-2 text-[12.5px]">인용 조항: {wo.cited.join(", ")} · 개인정보 마스킹 {wo.masked_count}건</p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {edit === null ? <button className="btn" disabled={wo.status !== "draft"} onClick={() => setEdit(wo.draft_md)}>수정</button> : <button className="btn" onClick={saveEdit}>수정 저장</button>}
-            <button className="btn btn-primary" disabled={wo.status !== "draft" || edit !== null} onClick={approve}>승인</button>
-            <span className="muted self-center text-[12.5px]">승인은 정비 계획 담당·관리자만 할 수 있습니다. 설비 제어나 자동 발행은 없습니다.</span>
-          </div>
-        </Card>
-      )}
-
-      <Card className="mt-3" title="작업지시서 목록">
-        {orders.length === 0 ? <p className="muted text-[14px]">아직 없습니다.</p> : (
-          <table className="tbl"><thead><tr><th>번호</th><th>세그먼트</th><th>작업 시점</th><th>확률</th><th>숫자 검증</th><th>카드 밖</th><th>상태</th></tr></thead>
-            <tbody>{orders.map((o) => (
-              <tr key={o.wo_id}><td>{o.wo_id}</td><td>{o.segment_serial}</td><td>{o.planned_stop_date}</td><td>{pct(o.prob)}</td>
-                <td>{o.numbers_ok ? "✓" : "—"}</td><td>{o.off_card}</td><td><span className={`chip ${o.status === "approved" ? "chip-ok" : "chip-watch"}`}>{o.status === "approved" ? `승인(${o.approver})` : "초안"}</span></td></tr>
-            ))}</tbody></table>
-        )}
-      </Card>
     </div>
   );
 }

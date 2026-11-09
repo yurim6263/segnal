@@ -1,14 +1,24 @@
 import { useEffect, useState } from "react";
 import PredictView from "./views/PredictView";
 import PlanView from "./views/PlanView";
+import WorkOrderView from "./views/WorkOrderView";
+import AskPanel from "./components/AskPanel";
 import { llm, ROLES, type ApiError, type Role } from "./llmApi";
 
-type Tab = "predict" | "plan";
+type Tab = "predict" | "plan" | "workorders";
 type Theme = "light" | "dark";
 const TABS: { id: Tab; label: string }[] = [
-  { id: "predict", label: "위험 예측" }, { id: "plan", label: "휴지 교체 계획" },
+  { id: "predict", label: "위험 예측" }, { id: "plan", label: "휴지 교체 계획" }, { id: "workorders", label: "작업지시서" },
 ];
 const THEME_KEY = "segnal-theme";     // 예전 키("theme")에는 이전 기본값 light가 저장돼 있어 다크 기본이 적용되지 않는다
+const FONT_KEY = "segnal-font";
+const FONT_SIZES = [{ id: "normal", label: "보통" }, { id: "large", label: "크게" }, { id: "xlarge", label: "더 크게" }] as const;   // 배율은 index.css의 data-font
+type FontSize = (typeof FONT_SIZES)[number]["id"];
+
+function loadFont(): FontSize {
+  try { const f = localStorage.getItem(FONT_KEY); if (FONT_SIZES.some((x) => x.id === f)) return f as FontSize; } catch { /* 저장소 사용 불가 */ }
+  return "normal";
+}
 
 function loadTheme(): Theme {
   try { const t = localStorage.getItem(THEME_KEY); if (t === "dark" || t === "light") return t; } catch { /* 저장소 사용 불가 */ }
@@ -21,11 +31,19 @@ export default function App() {
   const user = `${role}-01`;
   const [online, setOnline] = useState<boolean | null>(null);
   const [theme, setTheme] = useState<Theme>(loadTheme);
+  const [fontSize, setFontSize] = useState<FontSize>(loadFont);
+  const [openWo, setOpenWo] = useState<string | null>(null);     // 다른 탭에서 만들거나 누른 작업지시서를 작업지시서 탭에서 연다
+  const openWorkOrder = (id: string) => { setOpenWo(id); setTab("workorders"); };
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     try { localStorage.setItem(THEME_KEY, theme); } catch { /* 저장소 사용 불가 */ }
   }, [theme]);
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-font", fontSize);
+    try { localStorage.setItem(FONT_KEY, fontSize); } catch { /* 저장소 사용 불가 */ }
+  }, [fontSize]);
 
   // 백엔드가 아직 켜지는 중이면 3초마다 자동으로 다시 시도한다. 연결 실패(status 0)만 꺼진 것으로 본다
   useEffect(() => {
@@ -50,7 +68,7 @@ export default function App() {
         </h1>
         <nav className="flex flex-wrap" aria-label="화면">
           {TABS.map((t) => (
-            <button key={t.id} className="tab" aria-current={tab === t.id} onClick={() => setTab(t.id)}>{t.label}</button>
+            <button key={t.id} className="tab" aria-current={tab === t.id} onClick={() => { setOpenWo(null); setTab(t.id); }}>{t.label}</button>
           ))}
         </nav>
         <span className="ml-auto flex flex-wrap items-center gap-2 py-2">
@@ -58,6 +76,15 @@ export default function App() {
             <select value={role} onChange={(e) => setRole(e.target.value as Role)} aria-label="역할">{ROLES.map((r) => <option key={r} value={r}>{r}</option>)}</select>
           </label>
           <span className="chip chip-dash">합성 데이터</span>
+          <span className="muted text-[12.5px]">글씨</span>
+          <span className="inline-flex overflow-hidden rounded-md border" style={{ borderColor: "var(--line)" }} role="group" aria-label="글씨 크기">
+            {FONT_SIZES.map((f) => (
+              <button key={f.id} className="px-2.5 py-1 text-[12.5px]" aria-pressed={fontSize === f.id} onClick={() => setFontSize(f.id)}
+                style={{ background: fontSize === f.id ? "var(--primary)" : "var(--card)", color: fontSize === f.id ? "var(--primary-fg)" : "var(--text)", fontWeight: fontSize === f.id ? 700 : 400 }}>
+                {f.label}
+              </button>
+            ))}
+          </span>
           <span className="inline-flex overflow-hidden rounded-md border" style={{ borderColor: "var(--line)" }} role="group" aria-label="테마">
             {(["light", "dark"] as Theme[]).map((t) => (
               <button key={t} className="px-2.5 py-1 text-[12.5px]" aria-pressed={theme === t} onClick={() => setTheme(t)}
@@ -92,7 +119,10 @@ export default function App() {
     <div>
       {header}
       <main className="mx-auto max-w-[1440px] space-y-3 p-4">
-        {tab === "predict" ? <PredictView role={role} user={user} onPlan={() => setTab("plan")} /> : <PlanView role={role} user={user} />}
+        {tab === "predict" ? <PredictView role={role} user={user} onPlan={() => setTab("plan")} onOpenWo={openWorkOrder} />
+          : tab === "plan" ? <PlanView role={role} user={user} onOpenWo={openWorkOrder} />
+          : <WorkOrderView role={role} user={user} openWoId={openWo} />}
+        <AskPanel role={role} user={user} />
 
         <footer className="muted pt-2 text-[12.5px]">
           모든 데이터는 합성입니다. 예측값과 작업지시서는 판단을 돕는 초안이며, 최종 판단과 승인은 담당자가 합니다.
