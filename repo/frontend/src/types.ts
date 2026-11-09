@@ -245,6 +245,7 @@ export interface Handover {
   sections: HandoverSection[];
   missing: string[];
   sources: HandoverValue[];
+  fallback_reason?: string;
 }
 
 export interface DetectorRow {

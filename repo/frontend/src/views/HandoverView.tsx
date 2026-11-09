@@ -12,7 +12,7 @@ function highlight(text: string, values: string[]) {
   return parts.map((p, i) => (values.includes(p) ? <span key={i} className="calc">{p}</span> : <Fragment key={i}>{p}</Fragment>));
 }
 
-export default function HandoverView({ handover }: { handover: Handover | null }) {
+export default function HandoverView({ handover, polishing, onPolish }: { handover: Handover | null; polishing: boolean; onPolish: () => void }) {
   const [checked, setChecked] = useState<boolean[]>([false, false, false]);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState("");
@@ -34,7 +34,7 @@ export default function HandoverView({ handover }: { handover: Handover | null }
           <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
             <h3 className="text-[17px] font-bold">{handover.title || "인수인계 노트 (초안)"}</h3>
             <span className="flex items-center gap-2">
-              <span className="muted text-[12.5px]">{handover.generated_by === "llm" ? "문장은 LLM이 다듬음" : "정해진 양식으로 작성"}</span>
+              <span className="muted text-[12.5px]">{handover.generated_by === "llm" ? "문장은 언어 모델이 정해진 틀에 맞춰 정리했습니다" : "정해진 양식으로 작성"}</span>
               <span className={`chip ${copied ? "chip-ok" : ""}`}>{copied === "confirm" ? "확인 후 복사함" : copied === "copy" ? "복사함" : "전달 전"}</span>
             </span>
           </div>
@@ -44,6 +44,7 @@ export default function HandoverView({ handover }: { handover: Handover | null }
               아직 노트를 완성할 수 없습니다. 누수가 점검으로 확인되면 완성됩니다.{handover.missing.length > 0 && <> 빠진 내용: {handover.missing.join(", ")}.</>}
             </p>
           )}
+          {handover.fallback_reason && <p className="info-strip mb-3 text-[14px]">정해진 양식을 그대로 유지했습니다. {handover.fallback_reason}</p>}
 
           {editing ? (
             <textarea className="w-full text-[14.5px]" rows={9} value={draft} onChange={(e) => setDraft(e.target.value)} />
@@ -61,6 +62,7 @@ export default function HandoverView({ handover }: { handover: Handover | null }
           <p className="muted mt-2 flex items-center gap-2 text-[12.5px]"><span className="calc">파란 바탕</span>은 계산에서 그대로 옮긴 값입니다.</p>
           <div className="mt-4 flex flex-wrap gap-2 border-t pt-3" style={{ borderColor: "var(--line)" }}>
             <button className="btn btn-primary" disabled={!all || !handover.ready} onClick={() => copy("confirm")}>확인하고 복사</button>
+            <button className="btn" disabled={polishing || editing || handover.sections.length === 0 || handover.generated_by === "llm"} onClick={onPolish}>{polishing ? "다듬는 중…" : "문장 다듬기"}</button>
             <button className="btn" onClick={() => setEditing((e) => !e)}>{editing ? "고치기 끝" : "고치기"}</button>
             <button className="btn" onClick={() => copy("copy")}>복사</button>
             {copied && <span className="ml-1 self-center text-[13px]" style={{ color: "var(--ok)" }}>클립보드에 복사했습니다. 전달은 사람이 직접 합니다.</span>}

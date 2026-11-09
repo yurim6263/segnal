@@ -10,4 +10,4 @@ pyyaml>=6.0
 httpx>=0.27
 pytest>=8.0
 # 선택(11/7 저녁 오토인코더 시도 시): torch (CPU) — 별도 설치
-anthropic>=1.1
+anthropic>=2.6

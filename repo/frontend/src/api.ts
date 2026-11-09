@@ -58,6 +58,8 @@ export const api = {
     get<Series>(`/api/series?scenario_id=${scenarioId}&group=${group}&ts=${ts}&channel=${channel}`, mockSeries),
   joints: () => get<JointRisk[]>("/api/joints", mockJoints),
   handover: (scenarioId: string, ts: number) => get<Handover>(`/api/handover?scenario_id=${scenarioId}&ts=${ts}`, mockHandover as unknown as Handover),
+  polishHandover: (scenario_id: string, ts: number, current: Handover) =>
+    post<Handover>("/api/handover/polish", { scenario_id, ts }, { ...current, fallback_reason: "백엔드에 연결하지 못했습니다." }),
   evalSummary: () => get<EvalSummary | null>("/api/eval/summary", null),
   detectors: () => get<DetectorEval[]>("/api/eval/detectors", mockDetectors),
   priors: () => get<PriorEval[]>("/api/eval/priors", mockPriors),

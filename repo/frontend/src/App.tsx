@@ -33,6 +33,7 @@ export default function App() {
   const [state, setState] = useState<State | null>(null);
   const [series, setSeries] = useState<Series | null>(null);
   const [handover, setHandover] = useState<Handover | null>(null);
+  const [polishing, setPolishing] = useState(false);
   const [tab, setTab] = useState<Tab>("monitor");
   const [online, setOnline] = useState<boolean | null>(null);
   const [version, setVersion] = useState(0);
@@ -96,6 +97,14 @@ export default function App() {
   const onDelete = async (id: number) => {
     await api.deleteInspection(scenarioId, id);
     setVersion((v) => v + 1);
+  };
+  const onPolish = async () => {
+    if (!handover) return;
+    const id = reqId.current;
+    setPolishing(true);
+    const polished = await api.polishHandover(scenarioId, ts, handover);
+    setPolishing(false);
+    if (id === reqId.current) setHandover(polished);     // 기다리는 동안 시각이 바뀌었으면 옛 시각의 노트를 덮어쓰지 않는다
   };
 
   const header = (
@@ -185,7 +194,7 @@ export default function App() {
         ) : tab === "inspect" ? (
           <InspectView config={config} state={state} onInspect={onInspect} onDelete={onDelete} />
         ) : (
-          <HandoverView handover={handover} />
+          <HandoverView handover={handover} polishing={polishing} onPolish={onPolish} />
         )}
 
         <AskPanel scenarioId={scenarioId} ts={ts} onRecord={onInspect} />
