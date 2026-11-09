@@ -71,6 +71,12 @@ def _subj(role: str, user: str = "demo") -> llm_policy.Subject:
         raise HTTPException(400, str(e))
 
 
+class LlmAskIn(BaseModel):
+    role: str
+    user: str = "demo"
+    question: str
+
+
 class WoCreateIn(BaseModel):
     role: str
     user: str = "demo"
@@ -94,6 +100,11 @@ def llm_roles():
             "adapter": _gateway().adapter.name, "llm_available": _gateway().adapter.available()}
 
 
+@app.post("/api/llm/ask")
+def llm_ask(body: LlmAskIn):
+    return _gateway().ask(_subj(body.role, body.user), body.question)
+
+
 @app.post("/api/llm/workorders")
 def llm_wo_create(body: WoCreateIn):
     try:
@@ -105,6 +116,16 @@ def llm_wo_create(body: WoCreateIn):
 @app.get("/api/llm/workorders")
 def llm_wo_list():
     return llm_wo.list_orders()
+
+
+@app.get("/api/llm/workorders/{wo_id}")
+def llm_wo_get(wo_id: str, role: str):
+    if _subj(role).role not in llm_wo.CREATE_ROLES:      # 수처리 담당에게 숨기는 베어링 신호가 본문에 있을 수 있다
+        raise HTTPException(403, f"'{role}' 역할은 작업지시서를 열람할 수 없습니다.")
+    wo = llm_wo.get(wo_id)
+    if not wo:
+        raise HTTPException(404, "작업지시서 없음")
+    return wo
 
 
 @app.put("/api/llm/workorders/{wo_id}")

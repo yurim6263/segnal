@@ -40,6 +40,25 @@ def test_out_of_scope_refused(gw):
     assert r["outcome"] == "refused"
 
 
+def test_ask_route_answers_and_rejects_unknown_role(gw, monkeypatch):
+    import main
+    monkeypatch.setattr(main, "_gw", gw)
+    r = main.llm_ask(main.LlmAskIn(role="정비담당", question="왜 S-0012가 1위인가?"))
+    assert r["outcome"] == "answered" and "S-0012" in r["answer"]
+    with pytest.raises(main.HTTPException):
+        main.llm_ask(main.LlmAskIn(role="없는역할", question="왜 S-0012가 1위인가?"))
+
+
+def test_workorder_get_route_checks_role(monkeypatch):
+    import main
+    monkeypatch.setattr(main.llm_wo, "get", lambda wo_id: {"wo_id": wo_id} if wo_id == "WO-1" else None)
+    assert main.llm_wo_get("WO-1", "정비담당")["wo_id"] == "WO-1"
+    for wo_id, role, code in [("WO-1", "수처리담당", 403), ("WO-2", "정비담당", 404), ("WO-1", "없는역할", 400)]:
+        with pytest.raises(main.HTTPException) as e:
+            main.llm_wo_get(wo_id, role)
+        assert e.value.status_code == code
+
+
 def test_permission_denied_for_restricted(gw):
     r = gw.ask(S("정비담당"), "예비품 재고와 부품 단가가 얼마야?")
     assert r["outcome"] == "denied"
