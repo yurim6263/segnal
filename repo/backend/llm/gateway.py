@@ -49,7 +49,7 @@ class ClaudeAdapter(Adapter):
 
     def complete(self, system, user, task="qa", max_tokens=1500):
         import anthropic
-        client = anthropic.Anthropic(timeout=40.0, max_retries=1)
+        client = anthropic.Anthropic(timeout=40.0 if task == "qa" else 100.0, max_retries=1)
         kw = {"output_config": {"effort": "low"}} if task == "qa" else {}
         resp = client.messages.create(model=self.model(task), max_tokens=max_tokens, system=system,
                                       messages=[{"role": "user", "content": user}], **kw)
@@ -195,10 +195,10 @@ class Gateway:
                         break
                     feedback = f"\n<검사_실패>숫자 불일치 {checks['bad_numbers']}, 허용되지 않은 인용 {checks['bad_citations']}. model_values와 clauses에 있는 값·조항만 사용해 다시 답하라.</검사_실패>"
             except Exception as e:
-                checks = {"error": type(e).__name__}
+                checks = {"llm_error": type(e).__name__}
         if mode != "llm":
             text = self.template_answer(ctx, q)
-            checks = guard.check_answer(text, model_values=[ctx.values], clause_text=clause_text, question=q, allowed_refs=refs, forbidden_texts=forbidden) | {"fallback": True}
+            checks = guard.check_answer(text, model_values=[ctx.values], clause_text=clause_text, question=q, allowed_refs=refs, forbidden_texts=forbidden) | {"fallback": True, "llm_error": checks.get("llm_error")}
         return self._finish(subj, "qa", q, ctx, "answered", "", text, checks, mode, model)
 
     # -- 규칙 기반 양식 답변 (키가 없거나 LLM 검사에 실패했을 때) --

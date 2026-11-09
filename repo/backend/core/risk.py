@@ -295,7 +295,7 @@ def snapshot(model: RiskModel, rows: pd.DataFrame, data: Data, horizon_days: flo
         top = sorted(shares.items(), key=lambda kv: -kv[1])[:3]
         out.append({
             "segment": r["segment_serial"], "position": int(r["position"]), "bundle": r["bundle_id"],
-            "prob_next_stop": round(float(pr.loc[idx, "prob"]), 4), "prob_14d": round(float(pr14.loc[idx, "prob"]), 4),
+            "prob_next_stop": round(min(float(pr.loc[idx, "prob"]), 0.99), 4), "prob_14d": round(min(float(pr14.loc[idx, "prob"]), 0.99), 4),   # 표시 상한 99%: 학습 범위 밖 외삽 방지
             "horizon_days": h, "joint_age_t": int(r["t0"] * TON), "days_since_install": int(r["s0"]),
             "top_cause": pr.loc[idx, "top_cause"], "top_cause_label": CAUSE_LABEL[pr.loc[idx, "top_cause"]],
             "causes": [{"cause": c, "label": CAUSE_LABEL[c], "share": round(s, 3), "card": CARD[c]} for c, s in top],

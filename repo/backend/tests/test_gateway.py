@@ -95,3 +95,50 @@ def test_llm_answer_failing_checks_falls_back_to_template(board, tmp_path):
     g = Gateway(board_fn=lambda: board, audit_path=tmp_path / "a.db", adapter=FakeAdapter())
     r = g.ask(S("정비담당"), "S-0012 위험이 얼마야?")
     assert r["mode"] == "template" and r["checks"].get("fallback") and "99.9" not in r["answer"]
+
+
+# ---- 작업지시서 ----
+from llm import workorder
+
+
+def test_workorder_template_flow(board, tmp_path):
+    g = Gateway(board_fn=lambda: board, audit_path=tmp_path / "a.db", adapter=Adapter())
+    r = workorder.generate(g, S("정비담당"), "S-0012", tmp_path / "w.db")
+    assert r["ok"] and r["status"] == "draft" and r["mode"] == "template" and r["wo_id"].startswith("WO-")
+    c = r["checks"]
+    assert c["numbers_ok"] and c["required_ok"] and c["actions_cited_ok"] and c["off_card"] == 0
+    assert "AC-03" in r["draft_md"] and "83.2%" in r["draft_md"] and "SAF-01" in r["draft_md"]
+    # 권한: 수처리 담당은 생성 불가, 정비 담당은 승인 불가, 정비 계획 담당은 승인 가능
+    assert workorder.generate(g, S("수처리담당"), "S-0012", tmp_path / "w.db")["ok"] is False
+    with pytest.raises(PermissionError):
+        workorder.approve(S("정비담당"), r["wo_id"], tmp_path / "w.db", tmp_path / "a.db")
+    done = workorder.approve(policy.Subject("정비계획", "planner1"), r["wo_id"], tmp_path / "w.db", tmp_path / "a.db")
+    assert done["status"] == "approved" and done["approver"] == "planner1"
+    with pytest.raises(ValueError):
+        workorder.approve(S("관리자"), r["wo_id"], tmp_path / "w.db", tmp_path / "a.db")     # 이미 승인됨
+
+
+def test_workorder_verify_detects_problems():
+    good = "### 1. 대상\nx\n### 2. 작업 시점\nx\n### 3. 판단 근거\n확률 83.2%\n### 4. 작업 내용\n- 교체 [AC-03 3]\n### 5. 안전 조치\nx\n### 6. 완료 확인\nx\n### 8. 근거 문서\nAC-03 3\n### 9. 추가 제안 (근거 확인 필요)\n없음"
+    base = dict(values={"p": 83.2}, clause_text="", allowed_refs={"AC-03 3"}, forbidden=[])
+    assert workorder.ok(workorder.verify(good, **base))
+    bad = good.replace("83.2%", "93.2%").replace("- 교체 [AC-03 3]", "- 밸브를 닫는다").replace("### 6. 완료 확인\nx\n", "")
+    c = workorder.verify(bad, **base)
+    assert not c["numbers_ok"] and not c["actions_cited_ok"] and "완료 확인" in c["missing_sections"] and not workorder.ok(c)
+    c2 = workorder.verify(good.replace("없음", "- 열화상 카메라로 점검"), **base)
+    assert c2["off_card"] == 1
+
+
+def test_llm_api_roles_and_permissions(board):
+    from fastapi.testclient import TestClient
+    import main
+    main._gw = Gateway(board_fn=lambda: board, audit_path=None, adapter=Adapter())
+    import tempfile, pathlib
+    main._gw.audit_path = pathlib.Path(tempfile.mkdtemp()) / "a.db"
+    c = TestClient(main.app)
+    assert len(c.get("/api/llm/roles").json()["roles"]) == 4
+    r = c.post("/api/llm/ask", json={"role": "정비담당", "question": "S-0012 위험이 얼마야?"}).json()
+    assert r["outcome"] == "answered" and r["role"] == "정비담당"
+    assert c.post("/api/llm/ask", json={"role": "해커", "question": "x"}).status_code == 400
+    assert c.get("/api/llm/audit", params={"role": "정비담당"}).status_code == 403
+    assert len(c.get("/api/llm/audit", params={"role": "관리자"}).json()) >= 1

@@ -187,3 +187,107 @@ def eval_priors():
 @app.get("/api/eval/summary")
 def eval_summary():
     return service.eval_summary()
+
+# ---- 보안 LLM (기획서 4-6): 질의응답·작업지시서·감사 로그. 역할은 데모용으로 요청에 담아 보낸다(실서비스는 사내 인증 연동) ----
+from pydantic import BaseModel
+from llm import policy as llm_policy, workorder as llm_wo
+from llm.gateway import Gateway as _Gateway
+
+_gw: _Gateway | None = None
+
+
+def _gateway() -> _Gateway:
+    global _gw
+    if _gw is None:
+        _gw = _Gateway()
+    return _gw
+
+
+def _subj(role: str, user: str = "demo") -> llm_policy.Subject:
+    try:
+        return llm_policy.Subject(role, user or "demo")
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+
+
+class LlmAskIn(BaseModel):
+    role: str
+    user: str = "demo"
+    question: str
+
+
+class WoCreateIn(BaseModel):
+    role: str
+    user: str = "demo"
+    segment: str
+
+
+class WoEditIn(BaseModel):
+    role: str
+    user: str = "demo"
+    draft_md: str
+
+
+class WoApproveIn(BaseModel):
+    role: str
+    user: str = "demo"
+
+
+@app.get("/api/llm/roles")
+def llm_roles():
+    return {"roles": [{"role": r, "max_tier": v["max_tier"], "desc": v["desc"]} for r, v in llm_policy.ROLES.items()],
+            "adapter": _gateway().adapter.name, "llm_available": _gateway().adapter.available()}
+
+
+@app.post("/api/llm/ask")
+def llm_ask(body: LlmAskIn):
+    return _gateway().ask(_subj(body.role, body.user), body.question)
+
+
+@app.post("/api/llm/workorders")
+def llm_wo_create(body: WoCreateIn):
+    try:
+        return llm_wo.generate(_gateway(), _subj(body.role, body.user), body.segment)
+    except KeyError as e:
+        raise HTTPException(404, str(e))
+
+
+@app.get("/api/llm/workorders")
+def llm_wo_list():
+    return llm_wo.list_orders()
+
+
+@app.get("/api/llm/workorders/{wo_id}")
+def llm_wo_get(wo_id: str):
+    wo = llm_wo.get(wo_id)
+    if not wo:
+        raise HTTPException(404, "작업지시서 없음")
+    return wo
+
+
+@app.put("/api/llm/workorders/{wo_id}")
+def llm_wo_edit(wo_id: str, body: WoEditIn):
+    try:
+        return llm_wo.edit(_subj(body.role, body.user), wo_id, body.draft_md)
+    except PermissionError as e:
+        raise HTTPException(403, str(e))
+    except ValueError as e:
+        raise HTTPException(409, str(e))
+
+
+@app.post("/api/llm/workorders/{wo_id}/approve")
+def llm_wo_approve(wo_id: str, body: WoApproveIn):
+    try:
+        return llm_wo.approve(_subj(body.role, body.user), wo_id)
+    except PermissionError as e:
+        raise HTTPException(403, str(e))
+    except ValueError as e:
+        raise HTTPException(409, str(e))
+
+
+@app.get("/api/llm/audit")
+def llm_audit(role: str, limit: int = 50):
+    try:
+        return _gateway().audit_log(_subj(role), limit)
+    except PermissionError as e:
+        raise HTTPException(403, str(e))
