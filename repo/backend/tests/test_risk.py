@@ -58,3 +58,8 @@ def test_service_board():
     b = service.risk_board()
     assert b["next_planned_stop"] == "2026-11-12" and len(b["segments"]) == 13
     assert b["segments"][0]["segment"] == "S-0012"
+
+
+def test_service_eval_file():
+    import service
+    assert "with_vibration" in service.risk_eval()
