@@ -1,7 +1,7 @@
 // API 계약 — backend/schemas.py 와 같은 모양으로 유지한다.
 
 export type Level = "normal" | "watch" | "alarm";
-export type Cause = "leak" | "clog" | "pump" | "sensor" | "unknown";
+export type Cause = "leak" | "clog" | "pump" | "sensor" | "ambiguous" | "unknown";
 export type Side = "in" | "out";
 
 export interface PlantConfig {
@@ -114,6 +114,53 @@ export interface Alert {
   detectors: DetectorState;
 }
 
+export interface PatternRank { cls: string; label: string; angle: number }
+export interface PatternSignal { key: string; label: string; sigma: number }
+/** 원인 구분(신호 변화 방향 비교) 결과와 근거 */
+export interface PatternInfo {
+  group: number;
+  window_min: number;
+  ambiguous: boolean;
+  gap_deg: number;
+  ranking: PatternRank[];
+  signals: PatternSignal[];
+  verdict: string;
+  how_to_check: string;
+}
+/** 교체 필요 크기까지의 추세 시간 (지금 속도가 이어진다는 직선 가정) */
+export interface ForecastInfo {
+  available: boolean;
+  crossed: boolean;
+  hours: number | null;
+  low_hours: number | null;
+  high_hours: number | null;
+  slope_pct_per_hour: number | null;
+  current_pct: number;
+  limit_pct: number;
+  basis_min: number;
+  reason: string;
+  text: string;
+  limit_lpm?: number | null;
+  progress?: number | null;
+}
+export type AdviceAction = "now" | "next_break" | "watch" | "verify";
+export interface AdviceWindow { ts: number; label: string; in_hours: number }
+/** 교체 시점 권고. 교체 필요 크기와 정비 창 일정은 가정 */
+export interface AdviceInfo {
+  action: AdviceAction;
+  headline: string;
+  reasons: string[];
+  cases: { label: string; text: string }[];
+  action_ts: number | null;
+  next_break: AdviceWindow | null;
+  planned_stop: AdviceWindow | null;
+  limit_lpm: number;
+  current_lpm: number | null;
+  progress: number | null;
+  assumptions: string[];
+}
+export interface LeakEstimate { lpm: number; low_lpm: number; high_lpm: number; pct: number; flow_lpm: number; conditional: boolean }
+
 export interface State {
   scenario_id: string;
   ts: number;
@@ -136,6 +183,10 @@ export interface State {
   minutes_to_confirm: number | null;
   cause_table: CauseRow[];
   operating: OperatingInfo | null;
+  pattern?: PatternInfo | null;
+  forecast?: ForecastInfo | null;
+  leak_estimate?: LeakEstimate | null;
+  advice?: AdviceInfo | null;
 }
 
 export interface SeriesPoint {
@@ -216,13 +267,32 @@ export interface SensitivityRow {
   top3_hit: number | null; mean_inspections: number | null; inspection_success: number | null;
 }
 export interface LongrunRow { drift_scale: number; label: string; days_total: number; ours_episodes: number; fixed_episodes: number; ours_per_30d_plant: number; fixed_per_30d_plant: number }
+export interface ClassRow { n: number; correct: number; acc: number | null; ambiguous?: number; unknown?: number; wrong?: number }
+export interface NormalRow { drift_scale: number; label: string; [method: string]: unknown }
+export interface ForecastStat { n_forecasts: number; n_available: number; n_scored: number; median_abs_err_h?: number; median_rel_err?: number; coverage?: number; available_but_never_reached: number }
+export type Verdicts = { 적절?: number; 조기?: number; 늦음?: number; 놓침?: number };
+export interface AdviceEval {
+  plan: Record<string, number | number[]>;
+  n_leaks: number;
+  skipped_not_leak: number;
+  main: { n: number; by_action: Record<string, Verdicts>; policy_ours: Verdicts; policy_wait: Verdicts; policy_break: Verdicts };
+  lead: { n_reach_limit: number; ours_median_min: number | null; ours_before_limit: number; fixed_detected: number; fixed_median_min: number | null; fixed_before_limit: number; fixed_never: number };
+  sensitivity: { limit_lpm: number; break_every_min: number; n: number; ours: Verdicts; wait: Verdicts; break: Verdicts }[];
+  note: string;
+}
+export interface PatternEval {
+  normal?: { runs_per_setting: number; days_per_run: number; rows: { drift_scale: number; label: string; [m: string]: unknown }[] } | null;
+  calibration?: { chosen_delta_deg: number | null; holdout: string; rule: string; rows: { delta_deg: number; leak: ClassRow & { wrong: number; ambiguous: number }; sensor: ClassRow & { wrong: number; ambiguous: number } }[] } | null;
+  advice?: AdviceEval | null;
+}
 export interface EvalSummary {
   longrun?: { days_per_run: number; seeds: number; rows: LongrunRow[]; note: string } | null;
   detectors: DetectorRow[];
   headline?: { ours: DetectorRow | null; fixed: DetectorRow | null };
   inspection: Record<"random" | "prob" | "o1", InspectionPolicy> | null;
   localize: Record<string, { n: number; missed: number; none: LocalizeRow; weibull: LocalizeRow }> | null;
-  classify: { accuracy: number; per_class: Record<string, { n: number; correct: number; acc: number | null }> } | null;
+  classify: { accuracy: number; per_class: Record<string, ClassRow>; previous_rule?: { accuracy: number; per_class: Record<string, ClassRow> } | null; method?: string } | null;
+  pattern?: PatternEval | null;
   sensitivity: { n_cases: number; note: string; rows: SensitivityRow[] } | null;
 }
 

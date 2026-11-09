@@ -9,7 +9,7 @@ from typing import Literal, Optional
 from pydantic import BaseModel, Field
 
 Level = Literal["normal", "watch", "alarm"]
-Cause = Literal["leak", "clog", "pump", "sensor", "unknown"]
+Cause = Literal["leak", "clog", "pump", "sensor", "ambiguous", "unknown"]
 Side = Literal["in", "out"]
 
 
@@ -124,6 +124,82 @@ class Summary(BaseModel):
     secondary_tab: Optional[str] = None
 
 
+class PatternRank(BaseModel):
+    cls: str
+    label: str
+    angle: float = Field(description="관측한 변화 방향과 이 고장의 기준 방향 사이각(도). 작을수록 가깝다")
+
+
+class PatternSignal(BaseModel):
+    key: str
+    label: str
+    sigma: float = Field(description="평소 흔들림 폭(σ)의 몇 배 움직였나. 부호 있음")
+
+
+class PatternOut(BaseModel):
+    """원인 구분(신호 변화 방향 비교) 결과와 근거."""
+    group: int                                  # 1부터
+    window_min: int
+    ambiguous: bool
+    gap_deg: float = Field(description="1위와 2위 사이각 차이(도). 작으면 구분 불가")
+    ranking: list[PatternRank] = []
+    signals: list[PatternSignal] = []
+    verdict: str = ""
+    how_to_check: str = ""
+
+
+class ForecastOut(BaseModel):
+    """교체 필요 크기까지의 추세 시간 (지금 속도가 이어진다고 가정한 직선 추세)."""
+    available: bool
+    crossed: bool = False
+    hours: Optional[float] = None
+    low_hours: Optional[float] = None
+    high_hours: Optional[float] = None
+    slope_pct_per_hour: Optional[float] = None
+    current_pct: float = 0.0
+    limit_pct: float = 0.0
+    basis_min: int = 0
+    reason: str = ""
+    text: str = ""
+    limit_lpm: Optional[float] = None
+    progress: Optional[float] = Field(default=None, description="지금 추정 누수량 / 교체 필요 크기. 1이면 도달")
+
+
+class AdviceCase(BaseModel):
+    label: str
+    text: str
+
+
+class WindowOut(BaseModel):
+    ts: int
+    label: str
+    in_hours: float
+
+
+class AdviceOut(BaseModel):
+    """교체 시점 권고. 교체 필요 크기와 정비 창 일정은 가정이다."""
+    action: Literal["now", "next_break", "watch", "verify"]
+    headline: str
+    reasons: list[str] = []
+    cases: list[AdviceCase] = []
+    action_ts: Optional[int] = None
+    next_break: Optional[WindowOut] = None
+    planned_stop: Optional[WindowOut] = None
+    limit_lpm: float
+    current_lpm: Optional[float] = None
+    progress: Optional[float] = None
+    assumptions: list[str] = []
+
+
+class LeakEstimateOut(BaseModel):
+    lpm: float
+    low_lpm: float
+    high_lpm: float
+    pct: float
+    flow_lpm: float
+    conditional: bool = Field(default=False, description="True면 원인이 구분 불가라 '누수라면'의 값")
+
+
 class StateOut(BaseModel):
     scenario_id: str
     ts: int
@@ -146,6 +222,10 @@ class StateOut(BaseModel):
     minutes_to_confirm: Optional[int] = None
     cause_table: list[CauseRow] = []
     operating: Optional[OperatingInfo] = None
+    pattern: Optional[PatternOut] = None
+    forecast: Optional[ForecastOut] = None
+    leak_estimate: Optional[LeakEstimateOut] = None
+    advice: Optional[AdviceOut] = None
 
 
 class SeriesPoint(BaseModel):

@@ -59,6 +59,18 @@ def default_specs() -> list[ScenarioSpec]:
             "sensor_fault", "센서 고장: 묶음 3 회수 유량계 고착", 3 * DAY, 8,
             lambda c: [Event(kind="sensor", start=DAY + 8 * 60, sensor_group=2, sensor_name="flow_out", sensor_mode="stuck")],
         ),
+        ScenarioSpec(
+            "flow_offset_s5", "유량계 오차: 묶음 3 입구 유량계가 +2% 치우침 (누수 아님)", 3 * DAY, 9,
+            lambda c: [Event(kind="sensor", start=DAY + 8 * 60, sensor_group=2, sensor_name="flow_in", sensor_mode="offset", sensor_value=0.02)],
+        ),
+        ScenarioSpec(
+            "leak_grow_s6", "계속 커지는 누수: 세그먼트 6, 롤 5, 입구 (24시간에 걸쳐 30 L/min)", 3 * DAY, 11,
+            lambda c: [_leak(6, 5, "in", DAY + 2 * 60, 30.0, 24 * 60)],
+        ),
+        ScenarioSpec(
+            "leak_small_s1", "유량이 작은 묶음의 작은 누수: 세그먼트 1, 롤 3, 입구 (5시간에 걸쳐 8 L/min)", 3 * DAY, 10,
+            lambda c: [_leak(1, 3, "in", DAY + 6 * 60, 8.0, 5 * 60)],
+        ),
     ]
 
 

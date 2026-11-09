@@ -22,7 +22,7 @@ const DEMOS = [
 const EVENTS: { id: string; label: string }[] = [
   { id: "leak_ramp_s5", label: "서서히 커지는 누수" }, { id: "leak_abrupt_s2", label: "급한 누수" }, { id: "clog_s7", label: "막힘" },
   { id: "pump_degrade", label: "펌프 저하" }, { id: "sensor_fault", label: "센서 고장" }, { id: "normal_opchange", label: "운전 조건 변경" },
-  { id: "leak_small_s9", label: "아주 작은 누수" },
+  { id: "leak_small_s9", label: "아주 작은 누수" }, { id: "leak_grow_s6", label: "계속 커지는 누수" }, { id: "flow_offset_s5", label: "유량계 오차 (누수 아님)" }, { id: "leak_small_s1", label: "누수인지 구분 불가" },
 ];
 
 export default function ScenarioView({ scenarios, scenarioId, onPick, onReset, playing, onTogglePlay, speed, onSpeed, ts, nSamples, onSeek }: Props) {

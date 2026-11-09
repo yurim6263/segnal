@@ -16,6 +16,7 @@ class PlantConfig:
     rolls_per_segment: int
     joints_per_roll: int
     sim: dict = field(default_factory=dict)
+    plan: dict = field(default_factory=dict)      # 교체 시점 권고에 쓰는 정비 가정(모두 [가정])
 
     # ---- 편의 함수 -------------------------------------------------
     def group_of_segment(self, segment: int) -> int:
@@ -55,6 +56,7 @@ def load_config(path: Path | str | None = None) -> PlantConfig:
         rolls_per_segment=int(raw["rolls_per_segment"]),
         joints_per_roll=int(raw.get("joints_per_roll", 2)),
         sim=sim,
+        plan=dict(raw.get("plan", {})),
     )
     cfg.validate()
     return cfg

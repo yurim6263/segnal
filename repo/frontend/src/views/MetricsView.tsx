@@ -35,6 +35,106 @@ function BarPair({ title, rows, unit }: { title: string; rows: { label: string; 
   );
 }
 
+function clsLines(ev: EvalSummary): string[] {
+  const pc = ev.classify?.per_class;
+  if (!pc) return ["가상 시나리오 66건"];
+  const v = Object.values(pc);
+  const n = v.reduce((a, r) => a + r.n, 0), ok = v.reduce((a, r) => a + r.correct, 0);
+  const amb = v.reduce((a, r) => a + (r.ambiguous ?? 0), 0), wrong = v.reduce((a, r) => a + (r.wrong ?? 0), 0);
+  const prev = ev.classify?.previous_rule;
+  return [`${n}건 중 정답 ${ok} · 구분 불가 ${amb} · 오답 ${wrong}`, prev ? `옛 규칙은 ${pct(prev.accuracy, 1)}(오답 ${Object.values(prev.per_class).reduce((a, r) => a + (r.wrong ?? 0), 0) || "—"}건 포함)` : ""].filter(Boolean);
+}
+
+const CAUSE_NAME: Record<string, string> = { leak: "누수", clog: "막힘", pump: "펌프 저하", sensor: "센서·계측기" };
+
+function PatternEvalCards({ ev }: { ev: EvalSummary }) {
+  const pc = ev.classify?.per_class;
+  const prev = ev.classify?.previous_rule?.per_class;
+  const pe = ev.pattern;
+  const ad = pe?.advice;
+  return (
+    <div className="mb-3 grid gap-3 lg:grid-cols-2">
+      {pc && (
+        <Card title="원인 구분 결과" sub="평가용 시나리오 66건 (구분 불가는 틀린 것으로 세지 않고 따로 셉니다)" right="방식: 신호 방향 비교 + 규칙">
+          <table className="tbl">
+            <thead><tr><th>실제 원인</th><th>건수</th><th>정답</th><th>구분 불가</th><th>오답</th><th>옛 규칙 정답</th></tr></thead>
+            <tbody>
+              {Object.entries(pc).map(([k, r]) => (
+                <tr key={k}>
+                  <td className="font-semibold">{CAUSE_NAME[k] ?? k}</td><td>{r.n}</td><td>{r.correct}</td>
+                  <td style={(r.ambiguous ?? 0) > 0 ? { color: "var(--watch)", fontWeight: 700 } : undefined}>{r.ambiguous ?? 0}</td>
+                  <td style={(r.wrong ?? 0) > 0 ? { color: "var(--alarm)", fontWeight: 700 } : undefined}>{r.wrong ?? 0}</td>
+                  <td className="muted">{prev?.[k] ? `${prev[k].correct}/${prev[k].n}` : "—"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p className="muted mt-1 text-[12.5px]">누수 중 "구분 불가"는 유량이 작은 묶음에서 누수와 입구 유량계 오차의 모습이 비슷해 남긴 것입니다. 구분 불가 기준 각도{pe?.calibration?.chosen_delta_deg != null ? ` ${pe.calibration.chosen_delta_deg}°` : ""}는 평가 시나리오와 다른 시드의 홀드아웃 100건에서 오답이 2% 이하가 되는 가장 작은 값으로 정했습니다. 합성 데이터이고, 펌프가 압력을 정하는 구조를 가정했습니다.</p>
+        </Card>
+      )}
+      {pe?.normal && (
+        <Card title="정상 운전에서 원인이 확정된 비율" sub={`누수 없는 ${pe.normal.days_per_run}일 × ${pe.normal.runs_per_setting}회`} right="합성 데이터">
+          <table className="tbl">
+            <thead><tr><th>유량계 표류</th><th>방식</th><th>누수로 확정</th><th>계측기로 확정</th><th>구분 불가</th></tr></thead>
+            <tbody>
+              {pe.normal.rows.flatMap((r) => ["옛 규칙", "다신호 방향 비교"].map((m) => {
+                const c = ((r[m] as { counts?: Record<string, number> } | undefined)?.counts) ?? {};
+                return (
+                  <tr key={`${r.drift_scale}-${m}`}>
+                    <td className="font-semibold">{m === "옛 규칙" ? r.label : ""}</td><td className="muted">{m}</td>
+                    <td>{c.leak ?? 0}</td><td>{c.sensor ?? 0}</td><td>{c.ambiguous ?? 0}</td>
+                  </tr>
+                );
+              }))}
+            </tbody>
+          </table>
+          <p className="muted mt-1 text-[12.5px]">표류 2배에서 "계측기로 확정"이 늘어난 것은 유량계가 실제로 어긋난 상황이라 계측기 점검 안내가 맞는 쪽입니다. 누수로 잘못 확정한 건수는 두 방식이 같습니다.</p>
+        </Card>
+      )}
+      {ad && (
+        <Card title="교체 시점 권고의 정확도" sub={`누수 ${ad.n_leaks}건 · 판정 시점 ${ad.main.n}개 (누수로 판정된 직후와 3·6시간 뒤)`} right="합성 데이터 · 교체 필요 크기·정비 창은 가정" className="lg:col-span-2">
+          <div className="grid gap-4 lg:grid-cols-2">
+            <div>
+              <p className="mb-1 text-[13px] font-semibold">정책별 결과 <span className="muted font-normal">(필요했던 교체를 놓친 것이 가장 위험)</span></p>
+              <table className="tbl">
+                <thead><tr><th>정책</th><th>적절</th><th>조기</th><th>늦음</th><th>놓침</th></tr></thead>
+                <tbody>
+                  <tr style={{ background: "var(--card2)" }}><td className="font-semibold">우리 권고</td><td>{ad.main.policy_ours.적절 ?? 0}</td><td>{ad.main.policy_ours.조기 ?? 0}</td><td>{ad.main.policy_ours.늦음 ?? 0}</td><td style={{ fontWeight: 700 }}>{ad.main.policy_ours.놓침 ?? 0}</td></tr>
+                  <tr><td className="muted">항상 계획 정지까지 기다림</td><td>{ad.main.policy_wait.적절 ?? 0}</td><td>—</td><td>—</td><td style={{ color: "var(--alarm)", fontWeight: 700 }}>{ad.main.policy_wait.놓침 ?? 0}</td></tr>
+                  <tr><td className="muted">항상 다음 휴지에 교체</td><td>{ad.main.policy_break.적절 ?? 0}</td><td style={{ color: "var(--watch)", fontWeight: 700 }}>{ad.main.policy_break.조기 ?? 0}</td><td style={{ color: "var(--alarm)", fontWeight: 700 }}>{ad.main.policy_break.늦음 ?? 0}</td><td>—</td></tr>
+                </tbody>
+              </table>
+              <p className="muted mt-1 text-[12.5px]">조기 = 필요 없었는데 앞당겨 권고, 늦음 = 필요한 교체를 한계 도달 뒤에 권고, 놓침 = 감시 유지라고 했는데 한계가 계획 정지 전에 옴.</p>
+            </div>
+            <div>
+              <p className="mb-1 text-[13px] font-semibold">한계에 닿은 누수에서 확보한 여유 <span className="muted font-normal">({ad.lead.n_reach_limit}건)</span></p>
+              <dl className="grid grid-cols-[150px_1fr] gap-y-1.5 text-[14px]">
+                <dt className="muted">우리 방식</dt><dd><b>한계 도달 {ad.lead.ours_median_min != null ? `${Math.round(ad.lead.ours_median_min)}분 전` : "—"}</b>에 알림 (중앙값, {ad.lead.ours_before_limit}/{ad.lead.n_reach_limit}건이 도달 전)</dd>
+                <dt className="muted">고정 임계값</dt><dd>{ad.lead.fixed_median_min != null ? `한계 도달 ${Math.round(Math.abs(ad.lead.fixed_median_min))}분 ${ad.lead.fixed_median_min >= 0 ? "전" : "뒤"}` : "—"}에 알림 (중앙값, {ad.lead.fixed_before_limit}건만 도달 전, {ad.lead.fixed_never}건은 못 잡음)</dd>
+              </dl>
+              <p className="muted mt-1 text-[12.5px]">한계(교체 필요 크기)에 실제로 닿은 누수가 적어(시나리오 대부분은 일정 크기에서 멈춤) 표본이 작습니다.</p>
+            </div>
+          </div>
+          <p className="mb-1 mt-3 text-[13px] font-semibold">가정을 바꾸면 <span className="muted font-normal">(판정 직후 시점, 같은 누수 {ad.sensitivity[0]?.n}건)</span></p>
+          <table className="tbl">
+            <thead><tr><th>교체 필요 크기</th><th>휴지 간격</th><th>우리: 적절/조기/늦음/놓침</th><th>항상 기다림: 놓침</th><th>항상 다음 휴지: 조기/늦음</th></tr></thead>
+            <tbody>
+              {ad.sensitivity.filter((r) => r.break_every_min === 360).map((r) => (
+                <tr key={r.limit_lpm}>
+                  <td className="font-semibold">{r.limit_lpm} L/min</td><td>{r.break_every_min / 60}시간</td>
+                  <td>{r.ours.적절 ?? 0} / {r.ours.조기 ?? 0} / {r.ours.늦음 ?? 0} / <b style={(r.ours.놓침 ?? 0) > 0 ? { color: "var(--alarm)" } : undefined}>{r.ours.놓침 ?? 0}</b></td>
+                  <td>{r.wait.놓침 ?? 0}</td><td>{r.break.조기 ?? 0} / {r.break.늦음 ?? 0}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p className="muted mt-1 text-[12.5px]">휴지 간격을 3·6·12시간으로 바꿔도 결과가 거의 같았습니다(전체 표는 advice_eval.json). 교체 필요 크기와 정비 창 일정은 가정이며, 현업 답변으로 바꿉니다.</p>
+        </Card>
+      )}
+    </div>
+  );
+}
+
 export default function MetricsView({ state, series, ts }: { state: State | null; series: Series | null; ts: number }) {
   const [ev, setEv] = useState<EvalSummary | null | undefined>(undefined);
   useEffect(() => { api.evalSummary().then(setEv); }, []);
@@ -59,7 +159,7 @@ export default function MetricsView({ state, series, ts }: { state: State | null
         <Kpi title="정상인데 뜬 오경보" num={o ? o.false_alarms_per_14d_per_group.toFixed(2) : "—"} unit="회" lines={[`고정 임계값 방식 ${f ? f.false_alarms_per_14d_per_group.toFixed(2) : "—"}회`, f ? `다만 고정 방식은 ${f.n}건 중 ${f.missed}건을 놓침` : "", "누수 직전 구간 기준 · 장기 시험은 아래"].filter(Boolean)} />
         <Kpi title="확정까지 점검 횟수" num={ins ? ins.prob.mean_inspections.toFixed(1) : "—"} unit="회" lines={[`순서 없이 점검하면 ${ins ? ins.random.mean_inspections.toFixed(1) : "—"}회`, "후보 순서대로 점검할 때"]} />
         <Kpi title="위치 후보 적중률" num={loc ? pct(loc.group_top1) : "—"} unit="" lines={[`계측 묶음 1순위 기준`, loc ? `세그먼트 1순위 ${pct(loc.segment_top1)}` : ""].filter(Boolean)} />
-        <Kpi title="원인 분류 정확도" num={ev.classify ? pct(ev.classify.accuracy) : "—"} unit="" lines={["누수·막힘·펌프 저하·센서 고장", "가상 시나리오 66건"]} />
+        <Kpi title="원인 구분 정답률" num={ev.classify ? pct(ev.classify.accuracy) : "—"} unit="" lines={clsLines(ev)} />
       </div>
 
       <div className="mb-3 grid gap-3 lg:grid-cols-[1fr_380px]">
@@ -95,6 +195,8 @@ export default function MetricsView({ state, series, ts }: { state: State | null
           )}
         </Card>
       </div>
+
+      {ev.pattern && <PatternEvalCards ev={ev} />}
 
       {ev.longrun && (
         <Card title="오경보 장기 시험" sub={`정상 운전 ${ev.longrun.days_per_run}일 × ${ev.longrun.seeds}회를 이어서 돌린 결과`} right="공장 전체 · 월(30일) 환산" className="mb-3">

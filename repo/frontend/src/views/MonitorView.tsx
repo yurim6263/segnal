@@ -1,6 +1,8 @@
 import type { PlantConfig, Series, State } from "../types";
 import LineOverview from "../components/LineOverview";
 import TrendPanel from "../components/TrendPanel";
+import { AdviceCard, LeakSizeCard } from "../components/PatternCard";
+import EarlyStrip from "../components/EarlyStrip";
 import { Card, LEVEL_LABEL, LEVEL_VAR, StatusShape, groupName } from "../components/ui";
 
 function GroupRow({ g }: { g: State["groups"][number] }) {
@@ -26,6 +28,9 @@ function GroupRow({ g }: { g: State["groups"][number] }) {
 export default function MonitorView({ config, state, series, ts }: { config: PlantConfig; state: State; series: Series; ts: number }) {
   const op = state.operating;
   return (
+    <div>
+      <EarlyStrip state={state} />
+      {state.advice && <div className="mb-3"><AdviceCard a={state.advice} /></div>}
     <div className="grid gap-3 lg:grid-cols-[1fr_340px]">
       <div className="min-w-0 space-y-3">
         <Card title="라인 도면" sub={state.alert.level === "normal" ? "주의 구간 없음" : "주의 구간과 점검 후보"}>
@@ -34,6 +39,7 @@ export default function MonitorView({ config, state, series, ts }: { config: Pla
         <TrendPanel series={series} detectors={state.alert.detectors} currentTs={ts} />
       </div>
       <div className="space-y-3">
+        <LeakSizeCard est={state.leak_estimate} f={state.forecast} />
         <Card title="묶음 상태" sub="기준선 대비 편차">
           <div className="grid grid-cols-[72px_1fr_64px] gap-2 text-[12px] muted"><span /><span className="flex justify-between"><span>낮음</span><span>기준선</span><span>높음</span></span><span /></div>
           {state.groups.map((g) => <GroupRow key={g.group} g={g} />)}
@@ -54,6 +60,7 @@ export default function MonitorView({ config, state, series, ts }: { config: Pla
           <p className="muted mt-2 text-[14px]">유량이 낮아져도 운전 조건 때문이면 경보를 내지 않습니다. 차이가 한쪽으로 계속 벌어지면 주의를 알립니다.</p>
         </Card>
       </div>
+    </div>
     </div>
   );
 }

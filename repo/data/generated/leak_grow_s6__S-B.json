@@ -1,0 +1,60 @@
+{
+ "scenario": "leak_grow_s6",
+ "layout": "S-B",
+ "description": "계속 커지는 누수: 세그먼트 6, 롤 5, 입구 (24시간에 걸쳐 30 L/min)",
+ "n_samples": 4320,
+ "dt_s": 60,
+ "groups": [
+  [
+   1
+  ],
+  [
+   2
+  ],
+  [
+   3
+  ],
+  [
+   4
+  ],
+  [
+   5
+  ],
+  [
+   6
+  ],
+  [
+   7
+  ],
+  [
+   8
+  ],
+  [
+   9
+  ],
+  [
+   10
+  ],
+  [
+   11
+  ],
+  [
+   12
+  ],
+  [
+   13
+  ]
+ ],
+ "events": [
+  {
+   "kind": "leak",
+   "start_ts": 1560,
+   "ramp_min": 1440,
+   "end_ts": null,
+   "peak": 30.0,
+   "segment": 6,
+   "roll": 5,
+   "side": "in"
+  }
+ ]
+}

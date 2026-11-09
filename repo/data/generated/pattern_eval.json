@@ -1,0 +1,58 @@
+{
+ "runs_per_setting": 30,
+ "days_per_run": 3,
+ "rows": [
+  {
+   "drift_scale": 0.0,
+   "label": "표류 0",
+   "옛 규칙": {
+    "counts": {
+     "none": 30
+    },
+    "confirmed_false_rate": 0.0
+   },
+   "다신호 방향 비교": {
+    "counts": {
+     "none": 30
+    },
+    "confirmed_false_rate": 0.0
+   }
+  },
+  {
+   "drift_scale": 1.0,
+   "label": "현재 설정",
+   "옛 규칙": {
+    "counts": {
+     "none": 30
+    },
+    "confirmed_false_rate": 0.0
+   },
+   "다신호 방향 비교": {
+    "counts": {
+     "none": 30
+    },
+    "confirmed_false_rate": 0.0
+   }
+  },
+  {
+   "drift_scale": 2.0,
+   "label": "표류 2배",
+   "옛 규칙": {
+    "counts": {
+     "none": 21,
+     "sensor": 7,
+     "leak": 2
+    },
+    "confirmed_false_rate": 0.3
+   },
+   "다신호 방향 비교": {
+    "counts": {
+     "none": 16,
+     "sensor": 12,
+     "leak": 2
+    },
+    "confirmed_false_rate": 0.467
+   }
+  }
+ ]
+}

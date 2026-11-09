@@ -24,6 +24,9 @@ python -m venv .venv
 .venv\Scripts\python -m sim.generate --eval-n 30 --eval-events 12 --eval-prior 30
 # 평가 다시 돌리기: python -m eval.tune_detectors / classify_eval / localize_eval / inspection_eval / sensitivity_eval
 # (선택) 오토인코더 비교: pip install torch (CPU)
+# 세그먼트 수명·누수 원인 데이터(기획서 5-1): 대부분의 CSV는 data/health/에 들어 있다.
+# 용량이 커서(약 8MB) git에서 뺀 1분 센서 시계열(sensor_1min.csv)은 아래 명령으로 만든다 (시드 고정, 몇 초).
+.venv\Scripts\python -m sim.health_generate
 # 서버
 .venv\Scripts\python -m uvicorn main:app --reload --port 8000
 
@@ -33,6 +36,19 @@ npm install
 npm run dev      # http://localhost:5173
 ```
 `run.bat`이 위 실행을 한 번에 합니다.
+
+## 누수 위험 예측·보안 LLM (기획서 최종본 F3~F6, F8)
+```
+cd backend
+.venv\Scripts\python -m sim.health_generate         # (처음 한 번) 1분 센서 CSV 생성
+.venv\Scripts\python -m llm.build_docs              # 조치 카드 AC-01~06, 사례집 HIST-01 재생성 (나머지 문서는 docs/corp/*.md를 직접 수정)
+.venv\Scripts\python -m eval.risk_eval              # 위험 모델 이동 백테스트 → data/health/risk_eval.json
+.venv\Scripts\python -m eval.redteam_eval --rules   # 공격 시험(모델 없이). --rules를 빼면 키가 있을 때 Claude 모드도 실행
+```
+- 화면: `위험 예측`(순위판·작업지시서 생성·승인), `질의응답`, `AI 보안·감사`(역할별 열람 범위·공격 시험 결과·감사 로그). 위쪽 `역할(데모)`을 바꾸면 AI가 받는 근거가 달라집니다.
+- 사내문서는 `docs/corp/*.md`이고 조항 머리줄의 `{tier=등급 roles=역할 causes=원인코드}`가 권한과 검색 기준입니다. 검색은 권한 필터를 먼저 적용합니다.
+- LLM 호출은 `llm/gateway.py`의 어댑터 한 곳을 거칩니다(사내 자체 LLM으로 교체 지점). 감사 로그 `data/audit.db`, 작업지시서 `data/workorders.db`는 git에 올라가지 않습니다.
+- 키가 없으면 질의응답·작업지시서가 규칙 기반 양식 모드로 동작합니다.
 
 ## 질문창·노트 다듬기 (Claude API, 선택)
 키가 없어도 모든 기능이 정해진 양식으로 동작합니다. 키를 넣으면 질의응답과 인수인계 노트 문장 다듬기에 Claude를 씁니다.

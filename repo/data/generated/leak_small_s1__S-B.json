@@ -1,0 +1,60 @@
+{
+ "scenario": "leak_small_s1",
+ "layout": "S-B",
+ "description": "유량이 작은 묶음의 작은 누수: 세그먼트 1, 롤 3, 입구 (5시간에 걸쳐 8 L/min)",
+ "n_samples": 4320,
+ "dt_s": 60,
+ "groups": [
+  [
+   1
+  ],
+  [
+   2
+  ],
+  [
+   3
+  ],
+  [
+   4
+  ],
+  [
+   5
+  ],
+  [
+   6
+  ],
+  [
+   7
+  ],
+  [
+   8
+  ],
+  [
+   9
+  ],
+  [
+   10
+  ],
+  [
+   11
+  ],
+  [
+   12
+  ],
+  [
+   13
+  ]
+ ],
+ "events": [
+  {
+   "kind": "leak",
+   "start_ts": 1800,
+   "ramp_min": 300,
+   "end_ts": null,
+   "peak": 8.0,
+   "segment": 1,
+   "roll": 3,
+   "side": "in"
+  }
+ ]
+}

@@ -1,37 +1,47 @@
 {
  "layout": "S-A",
- "accuracy": 0.848,
+ "method": "pattern",
+ "accuracy": 0.955,
  "per_class": {
   "leak": {
    "n": 30,
-   "correct": 24,
-   "acc": 0.8
+   "correct": 27,
+   "ambiguous": 3,
+   "unknown": 0,
+   "wrong": 0,
+   "acc": 0.9
   },
   "clog": {
    "n": 12,
    "correct": 12,
+   "ambiguous": 0,
+   "unknown": 0,
+   "wrong": 0,
    "acc": 1.0
   },
   "pump": {
    "n": 12,
    "correct": 12,
+   "ambiguous": 0,
+   "unknown": 0,
+   "wrong": 0,
    "acc": 1.0
   },
   "sensor": {
    "n": 12,
-   "correct": 8,
-   "acc": 0.667
+   "correct": 12,
+   "ambiguous": 0,
+   "unknown": 0,
+   "wrong": 0,
+   "acc": 1.0
   }
  },
  "confusion": {
-  "leak->leak": 24,
-  "leak->sensor": 5,
-  "leak->unknown": 1,
+  "leak->leak": 27,
+  "leak->ambiguous": 3,
   "clog->clog": 12,
   "pump->pump": 12,
-  "sensor->leak": 3,
-  "sensor->sensor": 8,
-  "sensor->unknown": 1
+  "sensor->sensor": 12
  },
  "normal_scenario_alarm": false,
  "rows": [
@@ -44,7 +54,7 @@
   {
    "scenario": "eval_leak_01",
    "truth": "leak",
-   "pred": "sensor",
+   "pred": "leak",
    "alarm_delay_min": 212
   },
   {
@@ -92,7 +102,7 @@
   {
    "scenario": "eval_leak_09",
    "truth": "leak",
-   "pred": "leak",
+   "pred": "ambiguous",
    "alarm_delay_min": 108
   },
   {
@@ -116,13 +126,13 @@
   {
    "scenario": "eval_leak_13",
    "truth": "leak",
-   "pred": "unknown",
+   "pred": "leak",
    "alarm_delay_min": 297
   },
   {
    "scenario": "eval_leak_14",
    "truth": "leak",
-   "pred": "leak",
+   "pred": "ambiguous",
    "alarm_delay_min": 5
   },
   {
@@ -134,7 +144,7 @@
   {
    "scenario": "eval_leak_16",
    "truth": "leak",
-   "pred": "sensor",
+   "pred": "leak",
    "alarm_delay_min": 189
   },
   {
@@ -146,7 +156,7 @@
   {
    "scenario": "eval_leak_18",
    "truth": "leak",
-   "pred": "sensor",
+   "pred": "leak",
    "alarm_delay_min": 76
   },
   {
@@ -158,13 +168,13 @@
   {
    "scenario": "eval_leak_20",
    "truth": "leak",
-   "pred": "leak",
+   "pred": "ambiguous",
    "alarm_delay_min": 7
   },
   {
    "scenario": "eval_leak_21",
    "truth": "leak",
-   "pred": "sensor",
+   "pred": "leak",
    "alarm_delay_min": 476
   },
   {
@@ -194,7 +204,7 @@
   {
    "scenario": "eval_leak_26",
    "truth": "leak",
-   "pred": "sensor",
+   "pred": "leak",
    "alarm_delay_min": 110
   },
   {
@@ -368,7 +378,7 @@
   {
    "scenario": "eval_sensor_01",
    "truth": "sensor",
-   "pred": "leak",
+   "pred": "sensor",
    "alarm_delay_min": 5
   },
   {
@@ -380,7 +390,7 @@
   {
    "scenario": "eval_sensor_03",
    "truth": "sensor",
-   "pred": "leak",
+   "pred": "sensor",
    "alarm_delay_min": 4
   },
   {
@@ -404,7 +414,7 @@
   {
    "scenario": "eval_sensor_07",
    "truth": "sensor",
-   "pred": "unknown",
+   "pred": "sensor",
    "alarm_delay_min": 5
   },
   {
@@ -416,7 +426,7 @@
   {
    "scenario": "eval_sensor_09",
    "truth": "sensor",
-   "pred": "leak",
+   "pred": "sensor",
    "alarm_delay_min": 7
   },
   {
@@ -431,5 +441,52 @@
    "pred": "sensor",
    "alarm_delay_min": 128
   }
- ]
+ ],
+ "previous_rule": {
+  "accuracy": 0.848,
+  "per_class": {
+   "leak": {
+    "n": 30,
+    "correct": 24,
+    "ambiguous": 0,
+    "unknown": 1,
+    "wrong": 5,
+    "acc": 0.8
+   },
+   "clog": {
+    "n": 12,
+    "correct": 12,
+    "ambiguous": 0,
+    "unknown": 0,
+    "wrong": 0,
+    "acc": 1.0
+   },
+   "pump": {
+    "n": 12,
+    "correct": 12,
+    "ambiguous": 0,
+    "unknown": 0,
+    "wrong": 0,
+    "acc": 1.0
+   },
+   "sensor": {
+    "n": 12,
+    "correct": 8,
+    "ambiguous": 0,
+    "unknown": 1,
+    "wrong": 3,
+    "acc": 0.667
+   }
+  },
+  "confusion": {
+   "leak->leak": 24,
+   "leak->sensor": 5,
+   "leak->unknown": 1,
+   "clog->clog": 12,
+   "pump->pump": 12,
+   "sensor->leak": 3,
+   "sensor->sensor": 8,
+   "sensor->unknown": 1
+  }
+ }
 }

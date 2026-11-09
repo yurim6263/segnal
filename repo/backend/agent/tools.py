@@ -1,4 +1,4 @@
-"""질의응답 에이전트의 도구. 읽기 전용 조회 도구 6개 + 쓰기 도구 1개(사람 확인 전에는 실행하지 않는다).
+"""질의응답 에이전트의 도구. 읽기 전용 조회 도구 8개 + 쓰기 도구 1개(사람 확인 전에는 실행하지 않는다).
 
 도구는 service.py의 계산 결과를 그대로 돌려준다. 모델이 숫자를 새로 만들지 못하도록, 답에 쓰일 값은 모두 여기서 나온다.
 """
@@ -24,7 +24,13 @@ TOOLS = [
      "description": "현재 시각의 전체 상태: 단계(정상/주의/경보), 한 줄 요약, 묶음별 상태와 편차, 운전 조건, 경보 시각, 두 방식(추세 감지·고정 임계값)의 경보 시점, 점검으로 확인된 세그먼트.",
      "input_schema": {"type": "object", "properties": {}, "additionalProperties": False}},
     {"name": "get_cause_table",
-     "description": "원인 분류표: 누수/막힘/펌프 저하 각각의 판정 규칙, 지금 신호 값, 판정.",
+     "description": "원인 분류표: 누수/계측기 오차/막힘/펌프 저하 각각의 판정 규칙, 지금 신호 값, 판정.",
+     "input_schema": {"type": "object", "properties": {}, "additionalProperties": False}},
+    {"name": "get_diagnosis_detail",
+     "description": "원인 구분 근거(누수와 계측기 오차 중 어느 쪽에 가까운지: 후보별 사이각, 신호별 변화량 σ, 구분 불가 여부, 확인 방법), 교체 필요 크기까지의 추세 시간과 범위, 추정 누수량(L/min과 범위). 없는 값은 null이다.",
+     "input_schema": {"type": "object", "properties": {}, "additionalProperties": False}},
+    {"name": "get_replacement_advice",
+     "description": "교체 시점 권고: action(now 지금 점검 / next_break 다음 시퀀스 휴지에 교체 / watch 계획 정지까지 감시 / verify 원인 확인 먼저), 한 줄 권고, 근거, 두 경우('지금 속도가 이어지면'/'증가가 멈추면'), 다음 휴지·계획 정지 시각, 교체 필요 크기와 지금 추정 누수량, 가정 목록. 누수로 판정되지 않았으면 null이다.",
      "input_schema": {"type": "object", "properties": {}, "additionalProperties": False}},
     {"name": "get_location_candidates",
      "description": "점검할 세그먼트 후보: 확률(가능성), 순위, 점검 순서(점검 부담 반영), 이미 점검한 곳, 근거 문장. 후보는 세그먼트 단위이고 롤·조인트는 신호로 구분되지 않는다.",
@@ -77,6 +83,27 @@ def run_tool(name: str, args: dict, ctx: Ctx) -> dict:
         }
     if name == "get_cause_table":
         return {"rows": service.state_at(sid, ts)["cause_table"]}
+    if name == "get_diagnosis_detail":
+        s = service.state_at(sid, ts)
+        p, f, e = s.get("pattern"), s.get("forecast"), s.get("leak_estimate")
+        return {
+            "cause": s["alert"]["cause"],
+            "pattern": None if not p else {"verdict": p["verdict"], "how_to_check": p["how_to_check"], "ambiguous": p["ambiguous"],
+                                          "gap_deg": p["gap_deg"], "observed_window_min": p["window_min"],
+                                          "angle_by_candidate_deg": {r["label"]: r["angle"] for r in p["ranking"]},
+                                          "signal_change_in_sigma": {x["label"]: x["sigma"] for x in p["signals"]}},
+            "trend_to_replace_limit": None if not f else {k: f.get(k) for k in ("text", "hours", "low_hours", "high_hours", "slope_pct_per_hour", "progress", "limit_lpm", "reason", "crossed")},
+            "leak_estimate": e,
+            "note": "합성 데이터. 도달 시각은 누수가 일정 속도로 커진다는 직선 가정이며, 진행이 멈추면 닿지 않는다. 사이각이 작을수록 그 고장의 모습에 가깝다.",
+        }
+    if name == "get_replacement_advice":
+        a = service.state_at(sid, ts).get("advice")
+        if not a:
+            return {"advice": None, "note": "누수로 판정되지 않아 교체 시점 권고가 없다."}
+        return {"action": a["action"], "headline": a["headline"], "reasons": a["reasons"], "cases": a["cases"],
+                "next_sequence_break": a["next_break"], "next_planned_stop": a["planned_stop"],
+                "replace_limit_lpm": a["limit_lpm"], "current_estimate_lpm": a["current_lpm"], "progress_to_limit": a["progress"],
+                "assumptions": a["assumptions"], "note": "교체 필요 크기와 정비 창 일정은 가정이다. 도달 시간은 직선 추세라 멈추면 닿지 않는다."}
     if name == "get_location_candidates":
         s = service.state_at(sid, ts)
         return {
