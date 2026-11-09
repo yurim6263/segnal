@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { api } from "../api";
 import type { Series, State } from "../types";
 import Chart from "../components/Chart";
-import { ForecastCard, PatternCard } from "../components/PatternCard";
+import { LeakSizeCard, PatternCard } from "../components/PatternCard";
 import { Bar, Card, NumBadge, PageHead, pct } from "../components/ui";
 
 function trendText(s: Series | null): string {
@@ -90,7 +90,7 @@ export default function DiagnosisView({ state, scenarioId, ts, imbSeries }: { st
         </div>
 
         <div className="space-y-3">
-          <ForecastCard f={state.forecast} est={state.leak_estimate} />
+          <LeakSizeCard est={state.leak_estimate} f={state.forecast} />
           <Card title="위치 후보" sub={`확신도가 높은 순 · 묶음 ${g + 1} 안의 세그먼트`} right="방식: 서명 매칭 + 확률 갱신">
             {top3.length === 0 ? (
               <p className="muted text-[14px]">{level === "normal" ? "이상 징후가 없어 후보가 없습니다." : state.alert.cause === "ambiguous" ? "누수인지 계측기 오차인지 구분되지 않아 위치 후보를 만들지 않습니다." : "누수로 판정된 경우에만 위치 후보를 만듭니다."}</p>

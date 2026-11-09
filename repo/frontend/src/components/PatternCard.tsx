@@ -1,4 +1,4 @@
-import type { ForecastInfo, LeakEstimate, PatternInfo } from "../types";
+import type { AdviceInfo, ForecastInfo, LeakEstimate, PatternInfo } from "../types";
 import { Card } from "./ui";
 
 /** 신호가 평소 흔들림(σ)의 몇 배 움직였는지 가운데 기준으로 보여 준다. */
@@ -50,29 +50,60 @@ export function PatternCard({ p }: { p: PatternInfo }) {
   );
 }
 
-export function ForecastCard({ f, est }: { f?: ForecastInfo | null; est?: LeakEstimate | null }) {
-  if (!f && !est) return null;
+const ACTION_LABEL: Record<AdviceInfo["action"], string> = { now: "지금 점검", next_break: "다음 휴지에 교체", watch: "감시 유지", verify: "원인 확인 먼저" };
+const ACTION_COLOR: Record<AdviceInfo["action"], string> = { now: "var(--alarm)", next_break: "var(--watch)", watch: "var(--ok)", verify: "var(--muted)" };
+
+/** 교체 시점 권고: 이 시스템의 결론 카드 */
+export function AdviceCard({ a }: { a: AdviceInfo }) {
+  const prog = a.progress != null ? Math.max(0, Math.min(1.2, a.progress)) : null;
+  return (
+    <Card title="교체 시점 권고" sub="누수가 맞다면 언제 무엇을 할지" right="방식: 추정 누수량 · 증가 추세 · 정비 창 비교" className="border-l-4" >
+      <div className="flex flex-wrap items-start gap-3">
+        <span className="rounded px-2.5 py-1 text-[14px] font-bold text-white" style={{ background: ACTION_COLOR[a.action] }}>{ACTION_LABEL[a.action]}</span>
+        <p className="min-w-[260px] flex-1 text-[16px] font-bold leading-snug">{a.headline}</p>
+      </div>
+      {a.reasons.length > 0 && <ul className="mt-2 list-disc space-y-0.5 pl-5 text-[13.5px]">{a.reasons.map((r, i) => <li key={i}>{r}</li>)}</ul>}
+      <div className="mt-3 grid gap-3 md:grid-cols-[1fr_1fr]">
+        <div className="space-y-2">
+          {a.cases.map((c) => (
+            <div key={c.label} className="rounded border p-2.5 text-[13.5px]" style={{ borderColor: "var(--line)", background: "var(--card2)" }}>
+              <b>{c.label}</b><p className="mt-0.5">{c.text}</p>
+            </div>
+          ))}
+        </div>
+        <div className="text-[13.5px]">
+          {prog != null && (
+            <div>
+              <p>추정 누수량 <b>{a.current_lpm?.toFixed(0)} L/min</b> · 교체 필요 크기({a.limit_lpm.toFixed(0)} L/min)의 <b>{Math.round((a.progress ?? 0) * 100)}%</b></p>
+              <div className="relative mt-1 h-2.5 rounded" style={{ background: "var(--line)" }}>
+                <div className="h-2.5 rounded" style={{ width: `${Math.min(prog, 1) * 100}%`, background: prog >= 1 ? "var(--alarm)" : "var(--primary)" }} />
+              </div>
+            </div>
+          )}
+          <dl className="mt-2.5 grid grid-cols-[88px_1fr] gap-y-1">
+            <dt className="muted">다음 시퀀스 휴지</dt><dd>{a.next_break ? `${a.next_break.label} (${a.next_break.in_hours.toFixed(0)}시간 뒤)` : "—"}</dd>
+            <dt className="muted">다음 계획 정지</dt><dd>{a.planned_stop ? `${a.planned_stop.label} (${a.planned_stop.in_hours.toFixed(0)}시간 뒤)` : "일정 없음"}</dd>
+          </dl>
+        </div>
+      </div>
+      <p className="mt-3 text-[12.5px]" style={{ color: "var(--watch)" }}>가정: {a.assumptions.join(" · ")}. 현업 답변이 오면 값만 바꿉니다. 도달 시간은 지금 속도가 이어진다는 직선 추세라 멈추면 닿지 않을 수 있습니다.</p>
+    </Card>
+  );
+}
+
+export function LeakSizeCard({ est, f }: { est?: LeakEstimate | null; f?: ForecastInfo | null }) {
+  if (!est) return null;
   const prog = f?.progress != null ? Math.max(0, Math.min(1.2, f.progress)) : null;
   return (
-    <Card title="누수량과 경보선 도달 예상" sub="상태(주의·경보)와 별도로 표시" right="방식: 불균형 추세 외삽">
-      {est && (
-        <div>
-          <p className="muted text-[13px]">{est.conditional ? "누수라면 추정 누수량" : "추정 누수량"}</p>
-          <p className="text-[22px] font-bold tabular-nums">약 {est.lpm.toFixed(0)} L/min <span className="muted text-[13.5px] font-normal">(범위 {est.low_lpm.toFixed(0)}~{est.high_lpm.toFixed(0)}, 입구 유량의 {est.pct.toFixed(2)}%)</span></p>
-        </div>
-      )}
-      {prog != null && f?.line_leak_pct != null && (
-        <div className="mt-3">
-          <p className="text-[13px]">기존 방식 경보선 크기(입구 유량의 약 {f.line_leak_pct.toFixed(2)}%) 대비 <b>{Math.round((f.progress ?? 0) * 100)}%</b></p>
+    <Card title="추정 누수량" sub="최근 60분 평균, 상태와 별도로 표시">
+      <p className="text-[22px] font-bold tabular-nums">약 {est.lpm.toFixed(0)} L/min <span className="muted text-[13.5px] font-normal">(범위 {est.low_lpm.toFixed(0)}~{est.high_lpm.toFixed(0)}, 입구 유량의 {est.pct.toFixed(2)}%)</span></p>
+      {est.conditional && <p className="muted text-[12.5px]">원인이 구분되지 않아 "누수라면"의 값입니다.</p>}
+      {prog != null && f?.limit_lpm != null && (
+        <div className="mt-2">
+          <p className="text-[13px]">교체 필요 크기({f.limit_lpm.toFixed(0)} L/min) 대비 <b>{Math.round((f.progress ?? 0) * 100)}%</b></p>
           <div className="relative mt-1 h-2.5 rounded" style={{ background: "var(--line)" }}>
             <div className="h-2.5 rounded" style={{ width: `${Math.min(prog, 1) * 100}%`, background: prog >= 1 ? "var(--alarm)" : "var(--primary)" }} />
           </div>
-        </div>
-      )}
-      {f && (
-        <div className="mt-3">
-          <p className="text-[14.5px] font-semibold">{f.text}</p>
-          <p className="muted mt-1 text-[12.5px]">누수가 지금 속도로 계속 커진다고 가정한 직선 추세입니다. 진행이 멈추거나 급변하면 닿지 않거나 더 빨라질 수 있습니다. 기울기가 뚜렷하지 않으면 시각을 내지 않습니다.</p>
         </div>
       )}
     </Card>

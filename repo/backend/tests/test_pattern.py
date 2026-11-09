@@ -72,3 +72,31 @@ def test_indistinct_case_is_kept_as_ambiguous_without_candidates():
 def test_normal_scenario_has_no_pattern():
     s = client.get("/api/state?scenario_id=normal_opchange&ts=3000").json()
     assert s["alert"]["level"] == "normal" and s["pattern"] is None and s["forecast"] is None
+
+
+def test_advice_actions_follow_the_rules():
+    from core.advice import advise
+    plan = {"replace_limit_lpm": 20.0, "watch_ratio": 0.7, "prep_minutes": 60, "sequence_break_every_min": 360,
+            "sequence_break_offset_min": 180, "planned_stop_min": [3420]}
+    est = lambda q: {"lpm": q, "low_lpm": q - 2, "high_lpm": q + 2, "pct": 1.0, "flow_lpm": 1000.0}
+    none = {"available": False, "crossed": False, "reason": "증가 추세가 뚜렷하지 않아 도달 시각을 내지 않습니다", "hours": None, "low_hours": None, "high_hours": None}
+    grow = lambda h, lo: {"available": True, "crossed": False, "hours": h, "low_hours": lo, "high_hours": h * 1.2, "reason": ""}
+    assert advise("leak", est(25), none, 2000, plan)["action"] == "now"                  # 한계 도달
+    assert advise("leak", est(10), grow(3.0, 2.5), 2000, plan)["action"] == "now"        # 다음 휴지(2340)보다 먼저 한계
+    assert advise("leak", est(10), grow(8.0, 7.0), 2000, plan)["action"] == "next_break"  # 계획 정지 전에 한계
+    assert advise("leak", est(15), none, 2000, plan)["action"] == "next_break"           # 추세 불분명이어도 한계의 70% 이상
+    assert advise("leak", est(8), none, 2000, plan)["action"] == "watch"
+    assert advise("ambiguous", est(8), None, 2000, plan)["action"] == "verify"
+    assert advise("clog", None, None, 2000, plan) is None
+
+
+def test_advice_in_state_for_demo_scenarios():
+    s = client.get("/api/state?scenario_id=leak_abrupt_s2&ts=2400").json()
+    assert s["advice"]["action"] == "now" and s["advice"]["assumptions"]
+    s = client.get("/api/state?scenario_id=leak_ramp_s5&ts=2200").json()
+    assert s["advice"]["action"] == "watch" and s["advice"]["planned_stop"] is not None
+    assert len(s["advice"]["cases"]) == 2
+    s = client.get("/api/state?scenario_id=leak_small_s1&ts=3400").json()
+    assert s["advice"]["action"] == "verify"
+    s = client.get("/api/state?scenario_id=normal_opchange&ts=3000").json()
+    assert s["advice"] is None

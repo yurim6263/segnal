@@ -51,7 +51,7 @@ function PatternEvalCards({ ev }: { ev: EvalSummary }) {
   const pc = ev.classify?.per_class;
   const prev = ev.classify?.previous_rule?.per_class;
   const pe = ev.pattern;
-  const fc = pe?.forecast;
+  const ad = pe?.advice;
   return (
     <div className="mb-3 grid gap-3 lg:grid-cols-2">
       {pc && (
@@ -91,26 +91,44 @@ function PatternEvalCards({ ev }: { ev: EvalSummary }) {
           <p className="muted mt-1 text-[12.5px]">표류 2배에서 "계측기로 확정"이 늘어난 것은 유량계가 실제로 어긋난 상황이라 계측기 점검 안내가 맞는 쪽입니다. 누수로 잘못 확정한 건수는 두 방식이 같습니다.</p>
         </Card>
       )}
-      {fc && (
-        <Card title="경보선 도달 예상 시각의 정확도" sub={`누수로 판정된 ${fc.by_offset_min["0"]?.n_forecasts ?? 0}건`} right="합성 데이터 · 직선 추세 가정" className="lg:col-span-2">
+      {ad && (
+        <Card title="교체 시점 권고의 정확도" sub={`누수 ${ad.n_leaks}건 · 판정 시점 ${ad.main.n}개 (누수로 판정된 직후와 3·6시간 뒤)`} right="합성 데이터 · 교체 필요 크기·정비 창은 가정" className="lg:col-span-2">
+          <div className="grid gap-4 lg:grid-cols-2">
+            <div>
+              <p className="mb-1 text-[13px] font-semibold">정책별 결과 <span className="muted font-normal">(필요했던 교체를 놓친 것이 가장 위험)</span></p>
+              <table className="tbl">
+                <thead><tr><th>정책</th><th>적절</th><th>조기</th><th>늦음</th><th>놓침</th></tr></thead>
+                <tbody>
+                  <tr style={{ background: "var(--card2)" }}><td className="font-semibold">우리 권고</td><td>{ad.main.policy_ours.적절 ?? 0}</td><td>{ad.main.policy_ours.조기 ?? 0}</td><td>{ad.main.policy_ours.늦음 ?? 0}</td><td style={{ fontWeight: 700 }}>{ad.main.policy_ours.놓침 ?? 0}</td></tr>
+                  <tr><td className="muted">항상 계획 정지까지 기다림</td><td>{ad.main.policy_wait.적절 ?? 0}</td><td>—</td><td>—</td><td style={{ color: "var(--alarm)", fontWeight: 700 }}>{ad.main.policy_wait.놓침 ?? 0}</td></tr>
+                  <tr><td className="muted">항상 다음 휴지에 교체</td><td>{ad.main.policy_break.적절 ?? 0}</td><td style={{ color: "var(--watch)", fontWeight: 700 }}>{ad.main.policy_break.조기 ?? 0}</td><td style={{ color: "var(--alarm)", fontWeight: 700 }}>{ad.main.policy_break.늦음 ?? 0}</td><td>—</td></tr>
+                </tbody>
+              </table>
+              <p className="muted mt-1 text-[12.5px]">조기 = 필요 없었는데 앞당겨 권고, 늦음 = 필요한 교체를 한계 도달 뒤에 권고, 놓침 = 감시 유지라고 했는데 한계가 계획 정지 전에 옴.</p>
+            </div>
+            <div>
+              <p className="mb-1 text-[13px] font-semibold">한계에 닿은 누수에서 확보한 여유 <span className="muted font-normal">({ad.lead.n_reach_limit}건)</span></p>
+              <dl className="grid grid-cols-[150px_1fr] gap-y-1.5 text-[14px]">
+                <dt className="muted">우리 방식</dt><dd><b>한계 도달 {ad.lead.ours_median_min != null ? `${Math.round(ad.lead.ours_median_min)}분 전` : "—"}</b>에 알림 (중앙값, {ad.lead.ours_before_limit}/{ad.lead.n_reach_limit}건이 도달 전)</dd>
+                <dt className="muted">고정 임계값</dt><dd>{ad.lead.fixed_median_min != null ? `한계 도달 ${Math.round(Math.abs(ad.lead.fixed_median_min))}분 ${ad.lead.fixed_median_min >= 0 ? "전" : "뒤"}` : "—"}에 알림 (중앙값, {ad.lead.fixed_before_limit}건만 도달 전, {ad.lead.fixed_never}건은 못 잡음)</dd>
+              </dl>
+              <p className="muted mt-1 text-[12.5px]">한계(교체 필요 크기)에 실제로 닿은 누수가 적어(시나리오 대부분은 일정 크기에서 멈춤) 표본이 작습니다.</p>
+            </div>
+          </div>
+          <p className="mb-1 mt-3 text-[13px] font-semibold">가정을 바꾸면 <span className="muted font-normal">(판정 직후 시점, 같은 누수 {ad.sensitivity[0]?.n}건)</span></p>
           <table className="tbl">
-            <thead><tr><th>예상을 낸 시점</th><th>시각을 낸 건수</th><th>채점 가능</th><th>중앙 오차</th><th>범위 안에 든 비율</th><th>끝내 닿지 않은 건수</th></tr></thead>
+            <thead><tr><th>교체 필요 크기</th><th>휴지 간격</th><th>우리: 적절/조기/늦음/놓침</th><th>항상 기다림: 놓침</th><th>항상 다음 휴지: 조기/늦음</th></tr></thead>
             <tbody>
-              {Object.entries(fc.by_offset_min).map(([o, r]) => (
-                <tr key={o}>
-                  <td className="font-semibold">{o === "0" ? "누수로 판정된 직후" : `${Number(o) / 60}시간 뒤`}</td>
-                  <td>{r.n_available} / {r.n_forecasts}</td><td>{r.n_scored}</td>
-                  <td>{r.median_abs_err_h != null ? `${r.median_abs_err_h}시간` : "—"}</td>
-                  <td>{r.coverage != null ? pct(r.coverage) : "—"}</td>
-                  <td style={r.available_but_never_reached > 0 ? { color: "var(--alarm)", fontWeight: 700 } : undefined}>{r.available_but_never_reached}</td>
+              {ad.sensitivity.filter((r) => r.break_every_min === 360).map((r) => (
+                <tr key={r.limit_lpm}>
+                  <td className="font-semibold">{r.limit_lpm} L/min</td><td>{r.break_every_min / 60}시간</td>
+                  <td>{r.ours.적절 ?? 0} / {r.ours.조기 ?? 0} / {r.ours.늦음 ?? 0} / <b style={(r.ours.놓침 ?? 0) > 0 ? { color: "var(--alarm)" } : undefined}>{r.ours.놓침 ?? 0}</b></td>
+                  <td>{r.wait.놓침 ?? 0}</td><td>{r.break.조기 ?? 0} / {r.break.늦음 ?? 0}</td>
                 </tr>
               ))}
             </tbody>
           </table>
-          <p className="muted mt-1 text-[12.5px]">
-            추정 누수량은 중앙 오차 {fc.leak_estimate.median_abs_err_lpm} L/min(실제 누수 중앙값 {fc.leak_estimate.median_true_lpm} L/min), 범위 안에 든 비율 {pct(fc.leak_estimate.coverage)}입니다.
-            도달 시각은 "경보선에 해당하는 크기에 실제 누수가 처음 닿은 시각"과 비교했습니다. 시각을 낸 건 대부분은 이후 누수가 더 커지지 않아 끝내 닿지 않았습니다. 지금 속도가 이어진다는 직선 가정은 진행이 멈추면 틀리므로, 이 시각은 약속이 아니라 "이 속도라면"의 참고값입니다.
-          </p>
+          <p className="muted mt-1 text-[12.5px]">휴지 간격을 3·6·12시간으로 바꿔도 결과가 거의 같았습니다(전체 표는 advice_eval.json). 교체 필요 크기와 정비 창 일정은 가정이며, 현업 답변으로 바꿉니다.</p>
         </Card>
       )}
     </div>

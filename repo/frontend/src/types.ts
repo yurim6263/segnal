@@ -127,7 +127,7 @@ export interface PatternInfo {
   verdict: string;
   how_to_check: string;
 }
-/** 기존 방식 경보선(고정 임계값) 도달 예상 */
+/** 교체 필요 크기까지의 추세 시간 (지금 속도가 이어진다는 직선 가정) */
 export interface ForecastInfo {
   available: boolean;
   crossed: boolean;
@@ -136,12 +136,28 @@ export interface ForecastInfo {
   high_hours: number | null;
   slope_pct_per_hour: number | null;
   current_pct: number;
-  line_pct: number;
+  limit_pct: number;
   basis_min: number;
   reason: string;
   text: string;
-  line_leak_pct?: number | null;
+  limit_lpm?: number | null;
   progress?: number | null;
+}
+export type AdviceAction = "now" | "next_break" | "watch" | "verify";
+export interface AdviceWindow { ts: number; label: string; in_hours: number }
+/** 교체 시점 권고. 교체 필요 크기와 정비 창 일정은 가정 */
+export interface AdviceInfo {
+  action: AdviceAction;
+  headline: string;
+  reasons: string[];
+  cases: { label: string; text: string }[];
+  action_ts: number | null;
+  next_break: AdviceWindow | null;
+  planned_stop: AdviceWindow | null;
+  limit_lpm: number;
+  current_lpm: number | null;
+  progress: number | null;
+  assumptions: string[];
 }
 export interface LeakEstimate { lpm: number; low_lpm: number; high_lpm: number; pct: number; flow_lpm: number; conditional: boolean }
 
@@ -170,6 +186,7 @@ export interface State {
   pattern?: PatternInfo | null;
   forecast?: ForecastInfo | null;
   leak_estimate?: LeakEstimate | null;
+  advice?: AdviceInfo | null;
 }
 
 export interface SeriesPoint {
@@ -252,10 +269,20 @@ export interface LongrunRow { drift_scale: number; label: string; days_total: nu
 export interface ClassRow { n: number; correct: number; acc: number | null; ambiguous?: number; unknown?: number; wrong?: number }
 export interface NormalRow { drift_scale: number; label: string; [method: string]: unknown }
 export interface ForecastStat { n_forecasts: number; n_available: number; n_scored: number; median_abs_err_h?: number; median_rel_err?: number; coverage?: number; available_but_never_reached: number }
+export type Verdicts = { 적절?: number; 조기?: number; 늦음?: number; 놓침?: number };
+export interface AdviceEval {
+  plan: Record<string, number | number[]>;
+  n_leaks: number;
+  skipped_not_leak: number;
+  main: { n: number; by_action: Record<string, Verdicts>; policy_ours: Verdicts; policy_wait: Verdicts; policy_break: Verdicts };
+  lead: { n_reach_limit: number; ours_median_min: number | null; ours_before_limit: number; fixed_detected: number; fixed_median_min: number | null; fixed_before_limit: number; fixed_never: number };
+  sensitivity: { limit_lpm: number; break_every_min: number; n: number; ours: Verdicts; wait: Verdicts; break: Verdicts }[];
+  note: string;
+}
 export interface PatternEval {
   normal?: { runs_per_setting: number; days_per_run: number; rows: { drift_scale: number; label: string; [m: string]: unknown }[] } | null;
   calibration?: { chosen_delta_deg: number | null; holdout: string; rule: string; rows: { delta_deg: number; leak: ClassRow & { wrong: number; ambiguous: number }; sensor: ClassRow & { wrong: number; ambiguous: number } }[] } | null;
-  forecast?: { params: Record<string, number>; by_offset_min: Record<string, ForecastStat>; skipped: Record<string, number>; leak_estimate: { n: number; median_abs_err_lpm: number; coverage: number; median_true_lpm: number }; note: string } | null;
+  advice?: AdviceEval | null;
 }
 export interface EvalSummary {
   longrun?: { days_per_run: number; seeds: number; rows: LongrunRow[]; note: string } | null;

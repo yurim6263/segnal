@@ -1,7 +1,7 @@
-"""경보선 도달 예상 시각과 추정 누수량.
+"""교체 필요 크기까지의 추세 시간과 추정 누수량.
 
 누수로 가려진 뒤, 기준선 보정 불균형(누수 비율에 해당)의 최근 추세를 직선으로 이어
-"이 추세면 기존 방식 경보선(고정 임계값)에 언제 닿는가"를 계산한다.
+"이 추세면 교체 필요 크기에 언제 닿는가"를 계산한다(목표 크기는 호출하는 쪽이 정한다).
 
 - 추세는 30분 평균 블록에 직선을 맞춰 구하고(최대 6시간), 기울기의 표준오차로 범위를 낸다.
 - 기울기가 표준오차의 2배에 못 미치면(추세가 뚜렷하지 않으면) 시각을 내지 않는다.
@@ -39,9 +39,9 @@ def block_means(x: np.ndarray, end: int, window: int, block: int = BLOCK) -> tup
 def forecast_line(res: np.ndarray, level_now: float, line: float, ts: int, t_start: int) -> dict:
     """res: 기준선 보정 불균형 잔차(비율), level_now: 지금 기존 방식이 보는 불균형(비율, 평활), line: 기존 방식 경보선(비율)."""
     out = {"available": False, "reason": "", "crossed": False, "hours": None, "low_hours": None, "high_hours": None,
-           "slope_pct_per_hour": None, "current_pct": round(level_now * 100, 3), "line_pct": round(line * 100, 3), "basis_min": 0}
+           "slope_pct_per_hour": None, "current_pct": round(level_now * 100, 3), "limit_pct": round(line * 100, 3), "basis_min": 0}
     if level_now >= line:
-        out.update(crossed=True, reason="이미 기존 경보선을 넘었습니다")
+        out.update(crossed=True, reason="이미 목표 크기를 넘었습니다")
         return out
     window = int(min(MAX_WINDOW, ts - t_start + 1))
     y, t = block_means(res, ts, window)
@@ -71,16 +71,16 @@ def forecast_line(res: np.ndarray, level_now: float, line: float, ts: int, t_sta
     return out
 
 
-def forecast_text(f: dict) -> str:
+def forecast_text(f: dict, target: str = "교체 필요 크기") -> str:
     if f["crossed"]:
-        return "이미 기존 경보선을 넘었습니다."
+        return f"이미 {target}를 넘었습니다."
     if not f["available"]:
         return f["reason"] + "."
     if f["hours"] < 1:
-        return "이 추세면 기존 경보선에 1시간 안에 닿습니다."
+        return f"이 추세면 {target}에 1시간 안에 닿습니다."
     if f["high_hours"] is None:
-        return f"이 추세면 기존 경보선에 약 {f['hours']:.0f}시간 뒤(빠르면 {f['low_hours']:.0f}시간)."
-    return f"이 추세면 기존 경보선에 약 {f['hours']:.0f}시간 뒤(범위 {f['low_hours']:.0f}~{f['high_hours']:.0f}시간)."
+        return f"이 추세면 {target}에 약 {f['hours']:.0f}시간 뒤(빠르면 {f['low_hours']:.0f}시간)."
+    return f"이 추세면 {target}에 약 {f['hours']:.0f}시간 뒤(범위 {f['low_hours']:.0f}~{f['high_hours']:.0f}시간)."
 
 
 def estimate_leak(res: np.ndarray, flow_in: np.ndarray, ts: int, noise: float, window: int = 60) -> dict:

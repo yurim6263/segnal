@@ -149,7 +149,7 @@ class PatternOut(BaseModel):
 
 
 class ForecastOut(BaseModel):
-    """경보선(기존 방식의 고정 임계값) 도달 예상 시각."""
+    """교체 필요 크기까지의 추세 시간 (지금 속도가 이어진다고 가정한 직선 추세)."""
     available: bool
     crossed: bool = False
     hours: Optional[float] = None
@@ -157,12 +157,38 @@ class ForecastOut(BaseModel):
     high_hours: Optional[float] = None
     slope_pct_per_hour: Optional[float] = None
     current_pct: float = 0.0
-    line_pct: float = 0.0
+    limit_pct: float = 0.0
     basis_min: int = 0
     reason: str = ""
     text: str = ""
-    line_leak_pct: Optional[float] = Field(default=None, description="기존 경보선에 해당하는 누수 크기(입구 유량의 %)")
-    progress: Optional[float] = Field(default=None, description="지금 추정 누수 크기 / 경보선에 해당하는 크기. 1이면 도달")
+    limit_lpm: Optional[float] = None
+    progress: Optional[float] = Field(default=None, description="지금 추정 누수량 / 교체 필요 크기. 1이면 도달")
+
+
+class AdviceCase(BaseModel):
+    label: str
+    text: str
+
+
+class WindowOut(BaseModel):
+    ts: int
+    label: str
+    in_hours: float
+
+
+class AdviceOut(BaseModel):
+    """교체 시점 권고. 교체 필요 크기와 정비 창 일정은 가정이다."""
+    action: Literal["now", "next_break", "watch", "verify"]
+    headline: str
+    reasons: list[str] = []
+    cases: list[AdviceCase] = []
+    action_ts: Optional[int] = None
+    next_break: Optional[WindowOut] = None
+    planned_stop: Optional[WindowOut] = None
+    limit_lpm: float
+    current_lpm: Optional[float] = None
+    progress: Optional[float] = None
+    assumptions: list[str] = []
 
 
 class LeakEstimateOut(BaseModel):
@@ -199,6 +225,7 @@ class StateOut(BaseModel):
     pattern: Optional[PatternOut] = None
     forecast: Optional[ForecastOut] = None
     leak_estimate: Optional[LeakEstimateOut] = None
+    advice: Optional[AdviceOut] = None
 
 
 class SeriesPoint(BaseModel):

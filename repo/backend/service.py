@@ -17,6 +17,7 @@ import pandas as pd
 from core.baseline import Baseline
 from core.classify import CHANNELS, Diagnosis, DiagnosisModel
 from core.detect import cusum, ewma, first_alarm, recenter
+from core.advice import advise
 from core.forecast import estimate_leak, forecast_line, forecast_text, leak_noise
 from core.pattern import CH9, CH_LABEL, CLASS_LABEL, build_pattern_model
 from core.impact import impact_range
@@ -38,7 +39,7 @@ TOP_N = 12
 
 SCENARIO_NAMES = [
     "normal_opchange", "leak_ramp_s5", "leak_small_s9", "leak_abrupt_s2", "clog_s7", "pump_degrade", "sensor_fault",
-    "flow_offset_s5", "leak_small_s1",
+    "flow_offset_s5", "leak_small_s1", "leak_grow_s6",
 ]
 
 CAUSE_MESSAGE = {
@@ -70,7 +71,6 @@ class Static:
     seg_minutes: np.ndarray = None
     seg_risk: np.ndarray = None
     leak_noise: dict = None             # 묶음별: 정상 때 60분 평균 잔차가 흔들리는 폭(비율)
-    line_leak: dict = None              # 묶음별: 기존 경보선(고정 임계값)에 해당하는 누수 크기(비율) = 임계값 − 정상 평균 불균형
 
 
 @lru_cache(maxsize=1)
@@ -100,14 +100,13 @@ def static() -> Static:
         thr_e[g] = calibrate_threshold(se, 1, EPISODE_GAP, 1) + MARGIN_SD * float(np.std(se))
         thr_c[g] = calibrate_threshold(sc, 1, EPISODE_GAP, 1) + MARGIN_SD * float(np.std(sc))
         thr_f[g] = calibrate_threshold(imb, 1, EPISODE_GAP, 5) + MARGIN_SD * float(np.std(imb))
-    line_leak = {g: thr_f[g] - float(np.mean(group_signals(tr, g)["imb_vol"].to_numpy())) for g in gs}
     init_db()
     seg_min = np.zeros(cfg.n_segments + 1)
     seg_rk = np.zeros(cfg.n_segments + 1)
     for sg in range(1, cfg.n_segments + 1):
         m = sigs.segments == sg
         seg_min[sg], seg_rk[sg] = minutes[m].mean(), risk[m].mean()     # 세그먼트 점검의 대표값(가상)
-    return Static(cfg, LAYOUT, bl, gs, model, sigs, joints, fit, prior, minutes, risk, thr_e, thr_c, thr_f, seg_min, seg_rk, lnoise, line_leak)
+    return Static(cfg, LAYOUT, bl, gs, model, sigs, joints, fit, prior, minutes, risk, thr_e, thr_c, thr_f, seg_min, seg_rk, lnoise)
 
 
 @dataclass
@@ -505,21 +504,22 @@ def state_at(scenario_id: str, ts: int | None) -> dict:
         gg = d.group
         est_out = estimate_leak(rt.res_imb[gg], rt.df[f"g{gg}_flow_in"].to_numpy(), ts, st.leak_noise[gg])
         est_out["conditional"] = cause == "ambiguous"
-    if confirmed and cause == "leak" and d.group is not None and t_start is not None:
+    advice_out = None
+    if confirmed and cause == "leak" and d.group is not None and t_start is not None and est_out is not None:
         gg = d.group
-        vol = group_signals(rt.df, gg)["imb_vol"].to_numpy()
-        forecast_out = forecast_line(rt.res_imb[gg], float(np.mean(vol[max(ts - 29, 0): ts + 1])), float(st.thr_fixed[gg]), ts, t_start)
-        if fx_alarm is not None:       # 기존 방식이 이미 울렸으면 '닿을 시각'이 아니라 '이미 넘음'
-            forecast_out.update(available=False, crossed=True, hours=None, low_hours=None, high_hours=None, reason="이미 기존 경보선을 넘었습니다")
+        limit = float(st.cfg.plan["replace_limit_lpm"])
+        forecast_out = forecast_line(rt.res_imb[gg], est_out["lpm"] / max(est_out["flow_lpm"], 1.0), limit / max(est_out["flow_lpm"], 1.0), ts, t_start)
         forecast_out["text"] = forecast_text(forecast_out)
-        forecast_out["line_leak_pct"] = round(st.line_leak[gg] * 100, 2)
-        if est_out is not None and st.line_leak[gg] > 0:
-            forecast_out["progress"] = round(est_out["pct"] / (st.line_leak[gg] * 100), 2)
+        forecast_out["limit_lpm"] = limit
+        forecast_out["progress"] = round(est_out["lpm"] / limit, 2)
+        advice_out = advise("leak", est_out, forecast_out, ts, st.cfg.plan)
+    elif confirmed and cause in ("ambiguous", "sensor"):
+        advice_out = advise(cause, est_out, None, ts, st.cfg.plan)
     summary = _summary(level, cause if level != "normal" else "unknown", group_label,
                        seg_cands[0]["segment"] if seg_cands else None, not distinguishable, fx_alarm,
                        confirmed_seg, len(insps), mins_to_confirm, changed,
                        [i["segment"] for i in insps if i["result"] == "no_issue"],
-                       pat=pattern_out, fc_text=(forecast_out or {}).get("text", ""), est=est_out)
+                       pat=pattern_out, fc_text=(advice_out or {}).get("headline", ""), est=est_out)
     if level == "watch" and not confirmed:
         if unexplained:
             names = ", ".join(f"묶음 {g}(세그먼트 {', '.join(map(str, st.cfg.sensor_groups[g - 1]))})" for g in unexplained)
@@ -550,7 +550,7 @@ def state_at(scenario_id: str, ts: int | None) -> dict:
         "cause_table": _cause_table(rt, st, ts, cause, d.group if confirmed else None, d.pattern if confirmed else None),
         "operating": {"cast_speed": round(float(rt.df["cast_speed"].iloc[ts]), 3), "steel_grade": str(rt.df["steel_grade"].iloc[ts]),
                       "t_in": round(float(rt.df["g1_t_in"].iloc[ts]), 1), "changed_recently": changed},
-        "pattern": pattern_out, "forecast": forecast_out, "leak_estimate": est_out,
+        "pattern": pattern_out, "forecast": forecast_out, "leak_estimate": est_out, "advice": advice_out,
     }
 
 
@@ -598,7 +598,9 @@ def handover_at(scenario_id: str, ts: int | None) -> dict:
                      "values": [{"label": "점검 횟수", "value": f"{len(insps)}회", "source": "점검 기록"}]})
     else:
         out["missing"].append("점검 결과: 아직 점검 기록이 없습니다.")
-    secs.append({"title": "다음 할 일", "text": "조치는 담당자가 결정합니다.", "values": []})
+    adv = state.get("advice")
+    nxt = ((adv["headline"] + " 교체 필요 크기와 정비 창 일정은 가정입니다. ") if adv else "") + "조치는 담당자가 결정합니다."
+    secs.append({"title": "다음 할 일", "text": nxt, "values": []})
     for sct in secs:
         srcs.extend(sct["values"])
     conf = state["confirmed_segment"]
@@ -719,13 +721,10 @@ def eval_summary() -> dict:
         c = json.loads(p.read_text(encoding="utf-8"))
         out["classify"] = {"accuracy": c["accuracy"], "per_class": c["per_class"], "previous_rule": c.get("previous_rule"), "method": c.get("method")}
     pat: dict = {}
-    for key, fname in (("normal", "pattern_eval.json"), ("calibration", "pattern_calibration.json"), ("forecast", "forecast_eval.json")):
+    for key, fname in (("normal", "pattern_eval.json"), ("calibration", "pattern_calibration.json"), ("advice", "advice_eval.json")):
         p = DATA_DIR / fname
         if p.exists():
             d_ = json.loads(p.read_text(encoding="utf-8"))
-            if key == "forecast":              # 건별 행은 화면에 필요 없다
-                d_.pop("rows", None)
-                d_.pop("estimate_rows", None)
             pat[key] = d_
     out["pattern"] = pat or None
     return out
