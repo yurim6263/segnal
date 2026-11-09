@@ -752,6 +752,28 @@ def risk_board() -> dict:
     return _RISK["board"]
 
 
+_HISTORY_COLS = ["bearing_t_avg_c", "vib_rms_mm_s", "low_flow_min", "pressure_events", "t_out_avg_c", "joint_age_t"]
+
+
+def risk_history(serial: str, days: int = 30) -> dict:
+    """세그먼트의 최근 일별 신호와 정비 이력(합성 데이터). 같은 날 장착 세그먼트 평균을 fleet_ 열로 함께 준다."""
+    if "daily" not in _RISK:
+        d = Path(__file__).resolve().parents[1] / "data" / "health"
+        _RISK["daily"] = pd.read_csv(d / "segment_daily.csv")
+        _RISK["maintenance"] = pd.read_csv(d / "maintenance.csv")
+    daily, mnt = _RISK["daily"], _RISK["maintenance"]
+    if serial not in set(daily["segment_serial"]):
+        raise KeyError(serial)
+    recent = daily[daily["date"].isin(sorted(daily["date"].unique())[-days:])]
+    fleet = recent.groupby("date")[_HISTORY_COLS].mean().round(3).add_prefix("fleet_")
+    mine = recent[recent["segment_serial"] == serial].set_index("date")[_HISTORY_COLS]
+    table = fleet.join(mine).reset_index()         # 탈거 기간은 신호가 빈칸으로 남는다
+    rows = mnt[mnt["segment_serial"] == serial].sort_values("date", ascending=False).head(10)
+    rows = rows[["date", "part", "type", "finding_grade", "found_cause", "wo_id"]]
+    clean = lambda df: df.astype(object).where(df.notna(), None).to_dict("records")
+    return {"segment": serial, "days": clean(table), "maintenance": clean(rows)}
+
+
 def risk_eval() -> dict:
     p = Path(__file__).resolve().parents[1] / "data" / "health" / "risk_eval.json"
     if not p.exists():
