@@ -1,4 +1,4 @@
-// 위험 예측·보안 LLM API (기획서 4-6). 기존 api.ts와 달리 mock으로 대체하지 않는다: 실제 계산·권한 결과만 보여 준다.
+// 위험 예측·보안 LLM API (기획서 4-6). mock으로 대체하지 않는다: 실제 계산·권한 결과만 보여 준다.
 const BASE = import.meta.env.VITE_API_BASE ?? "http://localhost:8000";
 
 export type Role = "정비담당" | "정비계획" | "수처리담당" | "관리자";
@@ -17,37 +17,16 @@ export interface SegmentHistoryData {
   days: Array<Record<string, number | string | null>>;       // 신호 열과 같은 날 장착 평균 fleet_ 열
   maintenance: { date: string; part: string; type: string; finding_grade: number | null; found_cause: string | null; wo_id: string | null }[];
 }
-export interface RiskEvalRun {
-  leaks: number; auc_model: number; auc_tons_order: number; auc_diff_90ci: [number, number]; cause_top1_acc: number;
-  top3_daily_capture_model: number; top3_daily_capture_tons: number; top3_daily_capture_random: number;
-  calibration: { bin: number; pred_mean: number; obs_rate: number; n: number; leaks: number }[];
-  per_cause_auc: { cause: string; n: number; auc_model: number | null; auc_tons_order: number | null }[];
-}
-export interface RiskEval {
-  with_vibration: RiskEvalRun; no_bearing_sensor: RiskEvalRun; note: string;
-  coefficients: { cause: string; label: string }[];
-  beta_by_cause: { cause: string; n_events: number; beta: number; beta_lo: number; beta_hi: number; type: string }[];
-}
 
 export interface Checks {
   numbers_ok?: boolean; citations_ok?: boolean; pii_ok?: boolean; no_forbidden_leak?: boolean; control_ok?: boolean; fallback?: boolean;
   required_ok?: boolean; actions_cited_ok?: boolean; off_card?: number; bad_numbers?: string[]; missing_sections?: string[]; llm_error?: string | null;
-}
-export interface AskResult {
-  answer: string; outcome: "answered" | "blocked" | "denied" | "refused"; reason: string; mode: string; model: string; role: string;
-  citations: { ref: string; title: string; tier: string }[]; tools_used: string[]; checks: Checks; masked_count: number;
-  dropped_injection: string[]; audit_id: number; disclaimer: string;
 }
 export interface WorkOrder {
   ok: boolean; outcome?: string; message?: string; wo_id: string; status: string; mode: string; model: string; retries: number;
   draft_md: string; checks: Checks; cited: string[]; masked_count: number;
 }
 export interface WoRow { wo_id: string; segment_serial: string; position: number; planned_stop_date: string; prob: number; rank: number; top_cause: string; status: string; numbers_ok: number; off_card: number; approver: string | null; mode: string; draft_md?: string }
-export interface PolicyRole { role: string; desc: string; max_tier: number; clauses: number; total_clauses: number; tools: string[]; docs: { doc_id: string; title: string; clauses: number; tiers: string[] }[] }
-export interface AuditRow { id: number; ts: number; user: string; role: string; kind: string; question: string; refs: string[]; tools: string[]; masked: number; outcome: string; reason: string; answer: string; mode: string; model: string }
-export interface RedteamMode { defense_rate: number; attack_cases: number; normal_pass_rate: number; normal_cases: number; restricted_leaks: number; heldout_defense_rate: number; heldout_cases: number;
-  by_category: Record<string, { n: number; pass: number; rate: number }>; failures: { cat: string; role: string; q: string; outcome: string }[] }
-export interface Redteam { rules: RedteamMode; claude?: RedteamMode; note: string }
 
 export class ApiError extends Error { constructor(public status: number, msg: string) { super(msg); } }
 
@@ -66,17 +45,10 @@ async function call<T>(method: string, path: string, body?: unknown): Promise<T>
 
 export const llm = {
   board: () => call<RiskBoard>("GET", "/api/risk/board"),
-  ask: (role: Role, user: string, question: string) => call<AskResult>("POST", "/api/llm/ask", { role, user, question }),
   createWo: (role: Role, user: string, segment: string) => call<WorkOrder>("POST", "/api/llm/workorders", { role, user, segment }),
   listWo: () => call<WoRow[]>("GET", "/api/llm/workorders"),
-  getWo: (id: string) => call<WoRow & { draft_md: string; checks: string }>("GET", `/api/llm/workorders/${id}`),
   editWo: (id: string, role: Role, user: string, draft_md: string) => call<WoRow & { draft_md: string }>("PUT", `/api/llm/workorders/${id}`, { role, user, draft_md }),
   approveWo: (id: string, role: Role, user: string) => call<WoRow>("POST", `/api/llm/workorders/${id}/approve`, { role, user }),
-  recordResult: (id: string, role: Role, user: string, grade: string, cause: string, note: string) =>
-    call<WoRow & { prediction_match: boolean }>("POST", `/api/llm/workorders/${id}/result`, { role, user, grade, cause, note }),
-  policy: () => call<{ roles: PolicyRole[] }>("GET", "/api/llm/policy"),
-  audit: (role: Role) => call<AuditRow[]>("GET", `/api/llm/audit?role=${encodeURIComponent(role)}&limit=40`),
-  redteam: () => call<Redteam>("GET", "/api/llm/redteam"),
-  riskEval: () => call<RiskEval>("GET", "/api/risk/eval"),
-  history: (segment: string) => call<SegmentHistoryData>("GET", `/api/risk/segments/${segment}/history`),
+  roles: () => call<{ llm_available: boolean }>("GET", "/api/llm/roles"),
+  history:(segment: string) => call<SegmentHistoryData>("GET", `/api/risk/segments/${segment}/history`),
 };

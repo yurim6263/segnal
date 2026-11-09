@@ -306,8 +306,3 @@ def snapshot(model: RiskModel, rows: pd.DataFrame, data: Data, horizon_days: flo
     for k, d in enumerate(out, 1):
         d["rank"] = k
     return out
-
-
-def age_rank(rows: pd.DataFrame) -> pd.Series:
-    """현행 기준(교체 후 누적 톤수가 큰 순서)의 순위. 1이 가장 위험."""
-    return rows["t0"].rank(ascending=False, method="first")
