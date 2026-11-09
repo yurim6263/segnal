@@ -214,7 +214,9 @@ export interface SensitivityRow {
   median_delay_min: number | null; false_alarms_per_14d_per_group: number | null;
   top3_hit: number | null; mean_inspections: number | null; inspection_success: number | null;
 }
+export interface LongrunRow { drift_scale: number; label: string; days_total: number; ours_episodes: number; fixed_episodes: number; ours_per_30d_plant: number; fixed_per_30d_plant: number }
 export interface EvalSummary {
+  longrun?: { days_per_run: number; seeds: number; rows: LongrunRow[]; note: string } | null;
   detectors: DetectorRow[];
   headline?: { ours: DetectorRow | null; fixed: DetectorRow | null };
   inspection: Record<"random" | "prob" | "o1", InspectionPolicy> | null;

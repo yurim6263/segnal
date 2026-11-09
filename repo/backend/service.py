@@ -646,7 +646,7 @@ def eval_priors() -> list[dict]:
 
 def eval_summary() -> dict:
     """비교·지표 화면용: 저장된 평가 결과를 그대로 읽어 온다 (보고서·발표자료와 같은 값)."""
-    out: dict = {"detectors": [], "inspection": None, "localize": None, "classify": None, "sensitivity": None}
+    out: dict = {"detectors": [], "inspection": None, "localize": None, "classify": None, "sensitivity": None, "longrun": None}
     p = DATA_DIR / "detector_tuning.json"
     if p.exists():
         rows = json.loads(p.read_text(encoding="utf-8")).get(LAYOUT, {}).get("rows", [])
@@ -664,6 +664,9 @@ def eval_summary() -> dict:
     p = DATA_DIR / "sensitivity_eval.json"
     if p.exists():
         out["sensitivity"] = json.loads(p.read_text(encoding="utf-8")).get(LAYOUT)
+    p = DATA_DIR / "longrun_eval.json"
+    if p.exists():
+        out["longrun"] = json.loads(p.read_text(encoding="utf-8")).get(LAYOUT)
     p = DATA_DIR / "classify_eval.json"
     if p.exists():
         c = json.loads(p.read_text(encoding="utf-8"))

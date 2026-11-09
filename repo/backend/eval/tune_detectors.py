@@ -12,6 +12,7 @@ import argparse
 import json
 
 import numpy as np
+import pandas as pd
 
 from core.detect import (
     count_alarm_episodes, cusum, ewma, first_alarm, recenter,
@@ -30,11 +31,19 @@ CUSUM_KS = [0.25, 0.5, 1.0]
 HOLDOUT_FRAC = 0.3
 
 
+RAW_STAT: dict = {}     # 묶음별 (학습 구간 질량 불균형 평균, 표준편차): '운전점 보정 없음' 비교용
+
+
 def base_signals(df, bl, g):
-    """(재중심화한 z, 고정 임계값이 보는 부피유량 불균형)"""
+    """(재중심화한 z, 고정 임계값이 보는 부피유량 불균형, 운전점 보정 없이 학습 구간 통계로만 표준화한 z)"""
     z = recenter(bl.residuals(df, g)["z_imb_mass"].to_numpy())
-    imb = group_signals(df, g)["imb_vol"].to_numpy()
-    return z, imb
+    sig = group_signals(df, g)
+    imb = sig["imb_vol"].to_numpy()
+    if g not in RAW_STAT:
+        raise KeyError(g)
+    mu, sd = RAW_STAT[g]
+    raw = recenter((sig["imb_mass"].to_numpy() - mu) / sd)
+    return z, imb, raw
 
 
 def _row(label, kind, params, stats, scen, cfg, mr, target):
@@ -80,6 +89,9 @@ def evaluate(layout: str = "S-A", with_ae: bool = True, target: int = TARGET_FA_
     gs = groups_in(tr)
     scen = [load_eval(n, layout) for n in eval_names()]
     normal_df, _ = load_scenario("normal_opchange", layout)
+    for g in gs:
+        v = group_signals(tr, g)["imb_mass"].to_numpy()
+        RAW_STAT[g] = (float(v.mean()), float(v.std()))
 
     base = {
         "train": {g: base_signals(tr, bl, g) for g in gs},
@@ -96,10 +108,15 @@ def evaluate(layout: str = "S-A", with_ae: bool = True, target: int = TARGET_FA_
 
     rows = []
     for lam in LAMBDAS:
-        rows.append(_row(f"EWMA λ={lam}", "ewma", {"lam": lam}, transform(lambda z, i, l=lam: ewma(z, l)), scen, cfg, MIN_RUN["ewma"], target))
+        rows.append(_row(f"EWMA λ={lam}", "ewma", {"lam": lam}, transform(lambda z, i, r, l=lam: ewma(z, l)), scen, cfg, MIN_RUN["ewma"], target))
     for k in CUSUM_KS:
-        rows.append(_row(f"CUSUM k={k}", "cusum", {"k": k}, transform(lambda z, i, kk=k: cusum(z, kk)), scen, cfg, MIN_RUN["cusum"], target))
-    rows.append(_row("고정 임계값(보정)", "fixed", {}, transform(lambda z, i: i), scen, cfg, MIN_RUN["fixed"], target))
+        rows.append(_row(f"CUSUM k={k}", "cusum", {"k": k}, transform(lambda z, i, r, kk=k: cusum(z, kk)), scen, cfg, MIN_RUN["cusum"], target))
+    rows.append(_row("고정 임계값(보정)", "fixed", {}, transform(lambda z, i, r: i), scen, cfg, MIN_RUN["fixed"], target))
+    # 기여도 분해: 평균만 내는 방법(60분 이동평균)과 운전점 보정을 뺀 EWMA (같은 오경보 기준)
+    ma60 = lambda z, i, r: pd.Series(z).rolling(60, min_periods=1).mean().to_numpy()
+    rows.append(_row("60분 이동평균(보정 있음)", "ma60", {"window": 60}, transform(ma60), scen, cfg, MIN_RUN["ewma"], target))
+    rows.append(_row("EWMA λ=0.1 (운전점 보정 없음)", "ewma_raw", {"lam": 0.1}, transform(lambda z, i, r: ewma(r, 0.1)), scen, cfg, MIN_RUN["ewma"], target))
+    rows.append(_row("60분 이동평균(보정 없음)", "ma60_raw", {"window": 60}, transform(lambda z, i, r: pd.Series(r).rolling(60, min_periods=1).mean().to_numpy()), scen, cfg, MIN_RUN["ewma"], target))
 
     # ---- ML 검출기: 앞 70%로 학습, 뒤 30%로 임계값 보정 ----------------------
     cut = int(len(tr) * (1 - HOLDOUT_FRAC))
