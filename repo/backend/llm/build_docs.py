@@ -1,6 +1,7 @@
 """조치 카드 AC-01~06과 사례집 HIST-01을 만든다. 숫자는 위험 모델·합성 데이터와 같은 출처다.
 
-  python -m llm.build_docs         # docs/corp/AC-0x.md, HIST-01.md 생성 (HIST-01은 data/health 이력에서 추출)
+  python -m llm.build_docs         # docs/corp/AC-0x.md, HIST-01.md 생성(이미 있으면 건너뜀). --force로 덮어쓰기
+  (HIST-01은 data/health 이력에서 추출)
 HIST-01은 합성 이력에서 뽑으므로 데이터와 문서가 어긋나지 않는다. 담당자 이름·사번·내선은 합성 값이다.
 """
 from __future__ import annotations
@@ -103,11 +104,21 @@ def hist_md(max_cases: int = 14) -> str:
 
 
 def main() -> None:
+    """이미 있는 문서는 덮어쓰지 않는다(담당자가 손으로 고친 내용을 지우지 않기 위해). 처음부터 다시 만들 때만 --force."""
+    import sys
+    force = "--force" in sys.argv
     DOCS.mkdir(parents=True, exist_ok=True)
-    for cid, c in CARDS.items():
-        (DOCS / f"{cid}.md").write_text(card_md(cid, c), encoding="utf-8")
-    (DOCS / "HIST-01.md").write_text(hist_md(), encoding="utf-8")
-    print("wrote", sorted(p.name for p in DOCS.glob("*.md")))
+    targets = {f"{cid}.md": card_md(cid, c) for cid, c in CARDS.items()}
+    targets["HIST-01.md"] = hist_md()
+    wrote, kept = [], []
+    for name, text in targets.items():
+        path = DOCS / name
+        if path.exists() and not force:
+            kept.append(name)
+            continue
+        path.write_text(text, encoding="utf-8")
+        wrote.append(name)
+    print("새로 씀:", wrote or "없음", "| 이미 있어 건너뜀:", kept or "없음", "(덮어쓰려면 --force)")
 
 
 if __name__ == "__main__":

@@ -20,7 +20,23 @@ _INJECT_RE = [re.compile(p, re.I) for p in _INJECT]
 _CONTROL_RE = [re.compile(p) for p in _CONTROL]
 _PII_ASK_RE = [re.compile(p) for p in _PII_ASK]
 _PII_OUT = [re.compile(p) for p in (r"사번\s*[A-Z]?\d{4,8}", r"내선\s*\d{3,4}", r"01[016789]-?\d{3,4}-?\d{4}", r"[\w.+-]+@[\w-]+\.[\w.]+")]
-_CITE = re.compile(r"\[([A-Z]+-\d{2})\s+([0-9][0-9.]*)\]")
+_CITE_GROUP = re.compile(r"\[([A-Z]+-\d{2}\s+[0-9][0-9.]*(?:\s*[,;]\s*(?:[A-Z]+-\d{2}\s+)?[0-9][0-9.]*)*)[^\]]*\]")
+_CITE_ITEM = re.compile(r"(?:([A-Z]+-\d{2})\s+)?([0-9][0-9.]*)")
+
+
+def cites(text: str) -> set[str]:
+    """[AC-03 3], [AC-03 3, SOP-01 3], [AC-03 5, 6] 형식의 인용을 'AC-03 3' 목록으로 푼다."""
+    out: set[str] = set()
+    for g in _CITE_GROUP.findall(text):
+        doc = None
+        for part in re.split(r"[,;]", g):
+            m = _CITE_ITEM.search(part.strip())
+            if not m:
+                continue
+            doc = m.group(1) or doc
+            if doc:
+                out.add(f"{doc} {m.group(2).rstrip('.')}")
+    return out
 _CTRL_OUT = [re.compile(p) for p in (r"(제가|내가|시스템이)\s*(밸브|펌프|설비).{0,8}(조작|제어|닫|열)", r"자동으로\s*(승인|발행|실행)했")]
 
 
@@ -54,7 +70,7 @@ def _shingles(text: str, n: int = 12) -> set[str]:
 def check_answer(answer: str, *, model_values: list, clause_text: str, question: str, allowed_refs: set[str], forbidden_texts: list[str]) -> dict:
     """출력 검사 결과: 각 항목 True면 통과."""
     bad_nums = unmatched(answer, model_values, clause_text + " " + question)
-    cited = {f"{d} {c.rstrip('.')}" for d, c in _CITE.findall(answer)}
+    cited = cites(answer)
     bad_cites = sorted(cited - allowed_refs)
     pii = any(r.search(answer) for r in _PII_OUT)
     ctrl = any(r.search(answer) for r in _CTRL_OUT)

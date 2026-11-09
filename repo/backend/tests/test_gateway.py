@@ -142,3 +142,23 @@ def test_llm_api_roles_and_permissions(board):
     assert c.post("/api/llm/ask", json={"role": "해커", "question": "x"}).status_code == 400
     assert c.get("/api/llm/audit", params={"role": "정비담당"}).status_code == 403
     assert len(c.get("/api/llm/audit", params={"role": "관리자"}).json()) >= 1
+
+
+def test_record_result_flow(board, tmp_path):
+    g = Gateway(board_fn=lambda: board, audit_path=tmp_path / "a.db", adapter=Adapter())
+    wo = workorder.generate(g, S("정비담당"), "S-0012", tmp_path / "w.db")["wo_id"]
+    with pytest.raises(ValueError):
+        workorder.record_result(S("정비담당"), wo, "2", "BEARING", "", tmp_path / "w.db", tmp_path / "a.db")        # 승인 전에는 입력 불가
+    workorder.approve(S("관리자"), wo, tmp_path / "w.db", tmp_path / "a.db")
+    with pytest.raises(PermissionError):
+        workorder.record_result(S("수처리담당"), wo, "2", "BEARING", "", tmp_path / "w.db", tmp_path / "a.db")
+    with pytest.raises(ValueError):
+        workorder.record_result(S("정비담당"), wo, "9", "BEARING", "", tmp_path / "w.db", tmp_path / "a.db")
+    r = workorder.record_result(S("정비담당"), wo, "2", "BEARING", "씰 면 균열, 담당 박설비(사번 P10307)", tmp_path / "w.db", tmp_path / "a.db")
+    assert r["status"] == "done" and r["prediction_match"] is True and "P10307" not in r["result_note"]
+    r2 = workorder.record_result(S("정비담당"), wo, "3", "HAMMER", "", tmp_path / "w.db", tmp_path / "a.db")
+    assert r2["prediction_match"] is False
+
+
+def test_grouped_citations_are_parsed():
+    assert guard.cites("a [AC-03 3, SOP-01 3] b [AC-03 5, 6] c [SAF-01 4][SOP-01 5] d [AC-03 6, 가정]") == {"AC-03 3", "SOP-01 3", "AC-03 5", "AC-03 6", "SAF-01 4", "SOP-01 5"}

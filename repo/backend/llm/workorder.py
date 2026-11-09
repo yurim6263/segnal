@@ -76,7 +76,7 @@ def verify(md: str, *, values: dict, clause_text: str, allowed_refs: set[str], f
     sec = _sections(md)
     missing = [r for r in REQUIRED if not sec.get(r, "").strip()]
     work_lines = [l for l in sec.get("작업 내용", "").splitlines() if l.strip() and not l.strip().startswith("#")]
-    uncited = [l.strip()[:60] for l in work_lines if not re.search(r"\[[A-Z]+-\d{2}\s+[0-9.]+\]", l)]
+    uncited = [l.strip()[:60] for l in work_lines if not guard.cites(l)]
     extra = [l for l in sec.get("추가 제안", "").splitlines() if l.strip().lstrip("-*0123456789. ") and "없음" not in l]
     chk |= {"required_ok": not missing, "missing_sections": missing, "uncited_actions": uncited, "actions_cited_ok": not uncited, "off_card": len(extra)}
     chk["numbers_total"] = len(guard.unmatched.__globals__["NUM"].findall(md))
@@ -259,3 +259,27 @@ def approve(subj: policy.Subject, wo_id: str, db_path: Path | None = None, audit
         c.execute("UPDATE work_orders SET status='approved', approver=?, approved_ts=? WHERE wo_id=?", (subj.user, time.time(), wo_id))
     audit.log(audit_path, user=subj.user, role=subj.role, kind="approve", question=f"승인 {wo_id}", refs=[], tools=[], masked=0, outcome="approved", reason="", answer="", checks={}, mode="human", model="")
     return get(wo_id, db_path)
+
+
+CAUSES = ("WEAR", "HAMMER", "BEARING", "THERMAL", "WATER", "ASSEMBLY", "RANDOM")
+
+
+def record_result(subj: policy.Subject, wo_id: str, grade: str, cause: str, note: str = "", db_path: Path | None = None, audit_path: Path | None = None) -> dict:
+    """점검 결과 입력(F7): 승인된 작업지시서에 씰 마모 등급·실제 원인·메모를 기록하고 예측 원인과 맞았는지 비교한다.
+    모델 재학습은 하지 않는다(기록만 쌓는다). 등급은 1~3."""
+    if subj.role not in CREATE_ROLES:
+        raise PermissionError(f"'{subj.role}' 역할은 점검 결과를 입력할 수 없습니다.")
+    if str(grade) not in ("1", "2", "3"):
+        raise ValueError("마모 등급은 1~3입니다.")
+    if cause not in CAUSES:
+        raise ValueError("알 수 없는 원인 코드입니다.")
+    wo = get(wo_id, db_path)
+    if not wo or wo["status"] not in ("approved", "done"):
+        raise ValueError("승인된 작업지시서에만 점검 결과를 입력할 수 있습니다.")
+    note_m, _ = policy.mask((note or "")[:300])
+    with _con(db_path) as c:
+        c.execute("UPDATE work_orders SET result_grade=?, result_cause=?, result_note=?, status='done' WHERE wo_id=?", (str(grade), cause, note_m, wo_id))
+    audit.log(audit_path, user=subj.user, role=subj.role, kind="result", question=f"점검 결과 {wo_id}: 등급 {grade}, 원인 {cause}", refs=[], tools=[], masked=0, outcome="recorded", reason="", answer=note_m, checks={}, mode="human", model="")
+    out = get(wo_id, db_path)
+    out["prediction_match"] = out["result_cause"] == out["top_cause"]
+    return out

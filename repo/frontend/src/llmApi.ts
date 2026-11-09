@@ -55,6 +55,8 @@ export const llm = {
   getWo: (id: string) => call<WoRow & { draft_md: string; checks: string }>("GET", `/api/llm/workorders/${id}`),
   editWo: (id: string, role: Role, user: string, draft_md: string) => call<WoRow & { draft_md: string }>("PUT", `/api/llm/workorders/${id}`, { role, user, draft_md }),
   approveWo: (id: string, role: Role, user: string) => call<WoRow>("POST", `/api/llm/workorders/${id}/approve`, { role, user }),
+  recordResult: (id: string, role: Role, user: string, grade: string, cause: string, note: string) =>
+    call<WoRow & { prediction_match: boolean }>("POST", `/api/llm/workorders/${id}/result`, { role, user, grade, cause, note }),
   policy: () => call<{ roles: PolicyRole[] }>("GET", "/api/llm/policy"),
   audit: (role: Role) => call<AuditRow[]>("GET", `/api/llm/audit?role=${encodeURIComponent(role)}&limit=40`),
   redteam: () => call<Redteam>("GET", "/api/llm/redteam"),

@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import json
+import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -40,7 +41,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="연주기 냉각수 누수 조기 감지 API", version="0.2.0", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173", *[o for o in os.environ.get("CORS_EXTRA", "").split(",") if o]],
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -322,3 +323,21 @@ def llm_policy_matrix():
                     "docs": [{**d, "tiers": sorted(d["tiers"])} for d in docs.values()],
                     "tools": [t for t, rs in llm_policy.TOOL_ROLES.items() if role in rs]})
     return {"roles": out, "tiers": llm_policy.TIERS}
+
+
+class WoResultIn(BaseModel):
+    role: str
+    user: str = "demo"
+    grade: str
+    cause: str
+    note: str = ""
+
+
+@app.post("/api/llm/workorders/{wo_id}/result")
+def llm_wo_result(wo_id: str, body: WoResultIn):
+    try:
+        return llm_wo.record_result(_subj(body.role, body.user), wo_id, body.grade, body.cause, body.note)
+    except PermissionError as e:
+        raise HTTPException(403, str(e))
+    except ValueError as e:
+        raise HTTPException(409, str(e))
