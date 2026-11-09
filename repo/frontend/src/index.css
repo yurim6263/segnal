@@ -92,7 +92,7 @@ body {
 
 .mono { font-family: "JetBrains Mono", Consolas, monospace; }
 .topbar { background: var(--topbar); border-bottom: 1px solid var(--line); }
-.tab { min-height: 44px; padding: 0 12px; font-size: 15px; color: var(--text); border-bottom: 2px solid transparent; background: none; cursor: pointer; }
+.tab { min-height: 44px; padding: 0 12px; font-size: 16.5px; color: var(--text); border-bottom: 2px solid transparent; background: none; cursor: pointer; }
 .tab[aria-current="true"] { color: var(--primary); font-weight: 700; border-bottom-color: var(--primary); }
 
 .card { background: var(--card); border: 1px solid var(--line); padding: 14px 16px; }
