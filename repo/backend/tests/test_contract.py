@@ -54,7 +54,7 @@ def test_leak_scenario_flow():
     # 정답 세그먼트(5)가 속한 묶음(세그먼트 4~5)이 상위, 묶음 안은 구분되지 않음을 밝힌다
     assert {c["segment"] for c in s1["segment_candidates"][:2]} == {4, 5}
     assert s1["distinguishable"] is False and "구분되지 않습니다" in s1["candidate_note"]
-    assert {r["cause"] for r in s1["cause_table"]} == {"leak", "clog", "pump"}
+    assert {r["cause"] for r in s1["cause_table"]} == {"leak", "sensor", "clog", "pump"}
 
 
 @needs_data

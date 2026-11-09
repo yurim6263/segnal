@@ -1,4 +1,4 @@
-"""질의응답 에이전트의 도구. 읽기 전용 조회 도구 6개 + 쓰기 도구 1개(사람 확인 전에는 실행하지 않는다).
+"""질의응답 에이전트의 도구. 읽기 전용 조회 도구 7개 + 쓰기 도구 1개(사람 확인 전에는 실행하지 않는다).
 
 도구는 service.py의 계산 결과를 그대로 돌려준다. 모델이 숫자를 새로 만들지 못하도록, 답에 쓰일 값은 모두 여기서 나온다.
 """
@@ -24,7 +24,10 @@ TOOLS = [
      "description": "현재 시각의 전체 상태: 단계(정상/주의/경보), 한 줄 요약, 묶음별 상태와 편차, 운전 조건, 경보 시각, 두 방식(추세 감지·고정 임계값)의 경보 시점, 점검으로 확인된 세그먼트.",
      "input_schema": {"type": "object", "properties": {}, "additionalProperties": False}},
     {"name": "get_cause_table",
-     "description": "원인 분류표: 누수/막힘/펌프 저하 각각의 판정 규칙, 지금 신호 값, 판정.",
+     "description": "원인 분류표: 누수/계측기 오차/막힘/펌프 저하 각각의 판정 규칙, 지금 신호 값, 판정.",
+     "input_schema": {"type": "object", "properties": {}, "additionalProperties": False}},
+    {"name": "get_diagnosis_detail",
+     "description": "원인 구분 근거(누수와 계측기 오차 중 어느 쪽에 가까운지: 후보별 사이각, 신호별 변화량 σ, 구분 불가 여부, 확인 방법), 경보선(기존 방식의 고정 임계값) 도달 예상 시각과 범위, 추정 누수량(L/min과 범위). 없는 값은 null이다.",
      "input_schema": {"type": "object", "properties": {}, "additionalProperties": False}},
     {"name": "get_location_candidates",
      "description": "점검할 세그먼트 후보: 확률(가능성), 순위, 점검 순서(점검 부담 반영), 이미 점검한 곳, 근거 문장. 후보는 세그먼트 단위이고 롤·조인트는 신호로 구분되지 않는다.",
@@ -77,6 +80,19 @@ def run_tool(name: str, args: dict, ctx: Ctx) -> dict:
         }
     if name == "get_cause_table":
         return {"rows": service.state_at(sid, ts)["cause_table"]}
+    if name == "get_diagnosis_detail":
+        s = service.state_at(sid, ts)
+        p, f, e = s.get("pattern"), s.get("forecast"), s.get("leak_estimate")
+        return {
+            "cause": s["alert"]["cause"],
+            "pattern": None if not p else {"verdict": p["verdict"], "how_to_check": p["how_to_check"], "ambiguous": p["ambiguous"],
+                                          "gap_deg": p["gap_deg"], "observed_window_min": p["window_min"],
+                                          "angle_by_candidate_deg": {r["label"]: r["angle"] for r in p["ranking"]},
+                                          "signal_change_in_sigma": {x["label"]: x["sigma"] for x in p["signals"]}},
+            "forecast_to_old_alarm_line": None if not f else {k: f.get(k) for k in ("text", "hours", "low_hours", "high_hours", "slope_pct_per_hour", "progress", "line_leak_pct", "reason", "crossed")},
+            "leak_estimate": e,
+            "note": "합성 데이터. 도달 시각은 누수가 일정 속도로 커진다는 직선 가정이며, 진행이 멈추면 닿지 않는다. 사이각이 작을수록 그 고장의 모습에 가깝다.",
+        }
     if name == "get_location_candidates":
         s = service.state_at(sid, ts)
         return {

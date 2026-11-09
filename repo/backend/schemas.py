@@ -9,7 +9,7 @@ from typing import Literal, Optional
 from pydantic import BaseModel, Field
 
 Level = Literal["normal", "watch", "alarm"]
-Cause = Literal["leak", "clog", "pump", "sensor", "unknown"]
+Cause = Literal["leak", "clog", "pump", "sensor", "ambiguous", "unknown"]
 Side = Literal["in", "out"]
 
 
@@ -124,6 +124,56 @@ class Summary(BaseModel):
     secondary_tab: Optional[str] = None
 
 
+class PatternRank(BaseModel):
+    cls: str
+    label: str
+    angle: float = Field(description="관측한 변화 방향과 이 고장의 기준 방향 사이각(도). 작을수록 가깝다")
+
+
+class PatternSignal(BaseModel):
+    key: str
+    label: str
+    sigma: float = Field(description="평소 흔들림 폭(σ)의 몇 배 움직였나. 부호 있음")
+
+
+class PatternOut(BaseModel):
+    """원인 구분(신호 변화 방향 비교) 결과와 근거."""
+    group: int                                  # 1부터
+    window_min: int
+    ambiguous: bool
+    gap_deg: float = Field(description="1위와 2위 사이각 차이(도). 작으면 구분 불가")
+    ranking: list[PatternRank] = []
+    signals: list[PatternSignal] = []
+    verdict: str = ""
+    how_to_check: str = ""
+
+
+class ForecastOut(BaseModel):
+    """경보선(기존 방식의 고정 임계값) 도달 예상 시각."""
+    available: bool
+    crossed: bool = False
+    hours: Optional[float] = None
+    low_hours: Optional[float] = None
+    high_hours: Optional[float] = None
+    slope_pct_per_hour: Optional[float] = None
+    current_pct: float = 0.0
+    line_pct: float = 0.0
+    basis_min: int = 0
+    reason: str = ""
+    text: str = ""
+    line_leak_pct: Optional[float] = Field(default=None, description="기존 경보선에 해당하는 누수 크기(입구 유량의 %)")
+    progress: Optional[float] = Field(default=None, description="지금 추정 누수 크기 / 경보선에 해당하는 크기. 1이면 도달")
+
+
+class LeakEstimateOut(BaseModel):
+    lpm: float
+    low_lpm: float
+    high_lpm: float
+    pct: float
+    flow_lpm: float
+    conditional: bool = Field(default=False, description="True면 원인이 구분 불가라 '누수라면'의 값")
+
+
 class StateOut(BaseModel):
     scenario_id: str
     ts: int
@@ -146,6 +196,9 @@ class StateOut(BaseModel):
     minutes_to_confirm: Optional[int] = None
     cause_table: list[CauseRow] = []
     operating: Optional[OperatingInfo] = None
+    pattern: Optional[PatternOut] = None
+    forecast: Optional[ForecastOut] = None
+    leak_estimate: Optional[LeakEstimateOut] = None
 
 
 class SeriesPoint(BaseModel):

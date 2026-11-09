@@ -1,6 +1,7 @@
 import type { PlantConfig, Series, State } from "../types";
 import LineOverview from "../components/LineOverview";
 import TrendPanel from "../components/TrendPanel";
+import { ForecastCard } from "../components/PatternCard";
 import { Card, LEVEL_LABEL, LEVEL_VAR, StatusShape, groupName } from "../components/ui";
 
 function GroupRow({ g }: { g: State["groups"][number] }) {
@@ -34,6 +35,7 @@ export default function MonitorView({ config, state, series, ts }: { config: Pla
         <TrendPanel series={series} detectors={state.alert.detectors} currentTs={ts} />
       </div>
       <div className="space-y-3">
+        <ForecastCard f={state.forecast} est={state.leak_estimate} />
         <Card title="묶음 상태" sub="기준선 대비 편차">
           <div className="grid grid-cols-[72px_1fr_64px] gap-2 text-[12px] muted"><span /><span className="flex justify-between"><span>낮음</span><span>기준선</span><span>높음</span></span><span /></div>
           {state.groups.map((g) => <GroupRow key={g.group} g={g} />)}

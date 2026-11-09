@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { api } from "../api";
 import type { Series, State } from "../types";
 import Chart from "../components/Chart";
+import { ForecastCard, PatternCard } from "../components/PatternCard";
 import { Bar, Card, NumBadge, PageHead, pct } from "../components/ui";
 
 function trendText(s: Series | null): string {
@@ -53,7 +54,8 @@ export default function DiagnosisView({ state, scenarioId, ts, imbSeries }: { st
       <PageHead title={headline} sub="결론은 후보와 확신도까지이고, 확정은 점검으로 합니다." />
       <div className="grid gap-3 lg:grid-cols-[1fr_380px]">
         <div className="min-w-0 space-y-3">
-          <Card title="원인 분류" sub="세 가지 중 어느 쪽에 가까운가" right="방식: 규칙 (현장 확인 전 가설)">
+          {state.pattern && <PatternCard p={state.pattern} />}
+          <Card title="원인 분류" sub="누수·계측기 오차·막힘·펌프 저하 중 어느 쪽에 가까운가" right="방식: 규칙 + 신호 방향 비교 (현장 확인 전 가설)">
             <table className="tbl">
               <thead><tr><th style={{ width: 70 }}>원인</th><th>이런 모습이면</th><th>지금 신호</th><th style={{ width: 90 }}>판정</th></tr></thead>
               <tbody>
@@ -88,9 +90,10 @@ export default function DiagnosisView({ state, scenarioId, ts, imbSeries }: { st
         </div>
 
         <div className="space-y-3">
+          <ForecastCard f={state.forecast} est={state.leak_estimate} />
           <Card title="위치 후보" sub={`확신도가 높은 순 · 묶음 ${g + 1} 안의 세그먼트`} right="방식: 서명 매칭 + 확률 갱신">
             {top3.length === 0 ? (
-              <p className="muted text-[14px]">{level === "normal" ? "이상 징후가 없어 후보가 없습니다." : "누수로 판정된 경우에만 위치 후보를 만듭니다."}</p>
+              <p className="muted text-[14px]">{level === "normal" ? "이상 징후가 없어 후보가 없습니다." : state.alert.cause === "ambiguous" ? "누수인지 계측기 오차인지 구분되지 않아 위치 후보를 만들지 않습니다." : "누수로 판정된 경우에만 위치 후보를 만듭니다."}</p>
             ) : (
               <ul className="space-y-3">
                 {top3.map((c) => (

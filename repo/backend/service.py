@@ -17,6 +17,8 @@ import pandas as pd
 from core.baseline import Baseline
 from core.classify import CHANNELS, Diagnosis, DiagnosisModel
 from core.detect import cusum, ewma, first_alarm, recenter
+from core.forecast import estimate_leak, forecast_line, forecast_text, leak_noise
+from core.pattern import CH9, CH_LABEL, CLASS_LABEL, build_pattern_model
 from core.impact import impact_range
 from core.lifetime import WeibullFit, collect_lives, fit_weibull, prior_from_fit
 from core.locate import WINDOW, apply_segment_inspection, priority_order, rank_candidates
@@ -36,13 +38,15 @@ TOP_N = 12
 
 SCENARIO_NAMES = [
     "normal_opchange", "leak_ramp_s5", "leak_small_s9", "leak_abrupt_s2", "clog_s7", "pump_degrade", "sensor_fault",
+    "flow_offset_s5", "leak_small_s1",
 ]
 
 CAUSE_MESSAGE = {
     "leak": "공급-회수 불균형이 기준선 대비 커지는 추세 — 누수 후보",
     "clog": "회수 압력 상승과 유량 감소 — 막힘 후보",
     "pump": "여러 묶음에서 공급 압력과 유량이 함께 낮아짐 — 펌프 이상 후보",
-    "sensor": "계측값 이상(고착 또는 유량계 문제) — 센서 확인 필요",
+    "sensor": "계측값 이상(고착 또는 계측기 오차) — 계측기 확인 필요",
+    "ambiguous": "누수인지 계측기 오차인지 신호 방향으로 구분되지 않음 — 확인 필요",
     "unknown": "이상 징후가 있으나 원인 규칙에 맞지 않음",
 }
 
@@ -65,6 +69,8 @@ class Static:
     thr_fixed: dict[int, float]
     seg_minutes: np.ndarray = None
     seg_risk: np.ndarray = None
+    leak_noise: dict = None             # 묶음별: 정상 때 60분 평균 잔차가 흔들리는 폭(비율)
+    line_leak: dict = None              # 묶음별: 기존 경보선(고정 임계값)에 해당하는 누수 크기(비율) = 임계값 − 정상 평균 불균형
 
 
 @lru_cache(maxsize=1)
@@ -73,7 +79,8 @@ def static() -> Static:
     tr, _ = load_scenario("train_normal", LAYOUT)
     bl = Baseline().fit(tr)
     gs = groups_in(tr)
-    model = DiagnosisModel(bl).fit(tr, gs)
+    model = DiagnosisModel(bl, build_pattern_model(cfg, bl, gs, LAYOUT)).fit(tr, gs)
+    lnoise = {g: leak_noise(bl.residuals(tr, g)["res_imb_mass"].to_numpy()) for g in gs}
     sigs = build_signatures(cfg, bl, LAYOUT)
     joints = pd.read_csv(DATA_DIR / "joints.csv")
     log = pd.read_csv(DATA_DIR / "maintenance_log.csv")
@@ -93,13 +100,14 @@ def static() -> Static:
         thr_e[g] = calibrate_threshold(se, 1, EPISODE_GAP, 1) + MARGIN_SD * float(np.std(se))
         thr_c[g] = calibrate_threshold(sc, 1, EPISODE_GAP, 1) + MARGIN_SD * float(np.std(sc))
         thr_f[g] = calibrate_threshold(imb, 1, EPISODE_GAP, 5) + MARGIN_SD * float(np.std(imb))
+    line_leak = {g: thr_f[g] - float(np.mean(group_signals(tr, g)["imb_vol"].to_numpy())) for g in gs}
     init_db()
     seg_min = np.zeros(cfg.n_segments + 1)
     seg_rk = np.zeros(cfg.n_segments + 1)
     for sg in range(1, cfg.n_segments + 1):
         m = sigs.segments == sg
         seg_min[sg], seg_rk[sg] = minutes[m].mean(), risk[m].mean()     # 세그먼트 점검의 대표값(가상)
-    return Static(cfg, LAYOUT, bl, gs, model, sigs, joints, fit, prior, minutes, risk, thr_e, thr_c, thr_f, seg_min, seg_rk)
+    return Static(cfg, LAYOUT, bl, gs, model, sigs, joints, fit, prior, minutes, risk, thr_e, thr_c, thr_f, seg_min, seg_rk, lnoise, line_leak)
 
 
 @dataclass
@@ -141,29 +149,8 @@ def runtime(name: str) -> Runtime:
         alarms["cusum"][g] = first_alarm(cu[g], st.thr_cusum[g], 0)
         alarms["fixed"][g] = first_alarm(group_signals(df, g)["imb_vol"].to_numpy(), st.thr_fixed[g], 0, 5)
 
-    # 진단: 짧게 지나가는 이상(오경보)이나 원인이 판정되지 않는 이상은 건너뛰고, 계속 이어지는 이상만 원인으로 확정한다
-    T = len(df)
-
-    def persistent(dg: Diagnosis) -> bool:
-        for dt in (60, 120):
-            t = (dg.diag_ts or 0) + dt
-            if t >= T:
-                return True
-            c = st.model._classify_at(df, st.groups, E, t, dg.alarm_ts)
-            if c.cause != dg.cause:
-                return False
-        return True
-
-    start = 0
-    d = st.model.diagnose(df, st.groups, start=start, E=E)
-    while d.alarm_ts is not None:
-        if d.cause != "unknown" and persistent(d):
-            break
-        start = d.alarm_ts + 60
-        if start >= T - 1:
-            d = Diagnosis("unknown", None, None, None, ["이상 징후 없음"])
-            break
-        d = st.model.diagnose(df, st.groups, start=start, E=E)
+    # 진단: 짧게 지나가는 이상이나 원인이 판정되지 않는 이상은 건너뛰고, 계속 이어지는 이상만 원인으로 확정한다
+    d = st.model.diagnose_final(df, st.groups, E=E)
     # 경보 시각 보정: 앞선 짧은 오경보가 아니라, 확정된 원인의 증거 채널이 처음 지속적으로 임계값을 넘은 시점으로 한다
     if d.alarm_ts is not None:
         if d.cause == "leak" and d.group:
@@ -299,21 +286,29 @@ def _channel(rt: Runtime, st: Static, g: int, ch: str, ts: int) -> tuple[float, 
     return float(rt.E[g][ch][ts]), float(st.model.thr[(g, ch)])
 
 
-def _cause_table(rt: Runtime, st: Static, ts: int, cause: str, group: int | None) -> list[dict]:
+def _cause_table(rt: Runtime, st: Static, ts: int, cause: str, group: int | None, pattern: dict | None = None) -> list[dict]:
     g = group or max(st.groups, key=lambda x: rt.ewma_imb[x][ts] / st.thr_ewma[x])
     imb, th_i = _channel(rt, st, g, "imb_mass", ts)
     m_in, _ = _channel(rt, st, g, "m_in", ts)
     p_out, th_po = _channel(rt, st, g, "p_out", ts)
     n_pump = sum(1 for x in st.groups if rt.E[x]["p_in"][ts] < -st.model.thr[(x, "p_in")] and rt.E[x]["m_in"][ts] < -st.model.thr[(x, "m_in")])
-    alerted = cause in ("leak", "clog", "pump")
+    alerted = cause in ("leak", "sensor", "ambiguous", "clog", "pump")
+    ang = {r["cls"]: r["angle"] for r in pattern["ranking"]} if pattern else {}
+    near_sensor = next((r for r in pattern["ranking"] if r["cls"] != "leak"), None) if pattern else None
 
     def verdict(c: str, label: str) -> str:
         if not alerted:
             return "해당 없음"
+        if cause == "ambiguous" and c in ("leak", "sensor"):
+            return "구분 불가"
         return f"{label} 후보" if cause == c else "해당 없음"
+    leak_now = f"묶음 {g}: 불균형 {imb:+.1f}σ (한계 {th_i:.1f}σ), 입구 유량 {m_in:+.1f}σ" + (f", 누수 방향과 사이각 {ang['leak']:.0f}°" if "leak" in ang else "")
+    sens_now = (f"가장 가까운 계측 이상: {near_sensor['label']} (사이각 {near_sensor['angle']:.0f}°)" if near_sensor else "불균형만 커지거나 값이 변하지 않는지 확인")
     return [
-        {"cause": "leak", "label": "누수", "pattern": "공급-회수 불균형이 커지고 입구 유량은 줄지 않는다",
-         "now": f"묶음 {g}: 불균형 {imb:+.1f}σ (한계 {th_i:.1f}σ), 입구 유량 {m_in:+.1f}σ", "verdict": verdict("leak", "누수")},
+        {"cause": "leak", "label": "누수", "pattern": "공급-회수 불균형이 커지고, 여러 신호의 변화 방향이 누수 기준 방향과 가장 가깝다",
+         "now": leak_now, "verdict": verdict("leak", "누수")},
+        {"cause": "sensor", "label": "계측기 오차", "pattern": "불균형은 커졌지만 다른 신호의 움직임이 누수와 다르다(유량계·압력계·온도계 오차) 또는 값이 변하지 않는다(고착)",
+         "now": sens_now, "verdict": verdict("sensor", "계측기 점검")},
         {"cause": "clog", "label": "막힘", "pattern": "회수 압력이 오르고 입구 유량이 줄어든다",
          "now": f"묶음 {g}: 회수 압력 {p_out:+.1f}σ (한계 {th_po:.1f}σ), 입구 유량 {m_in:+.1f}σ", "verdict": verdict("clog", "막힘")},
         {"cause": "pump", "label": "펌프 저하", "pattern": "여러 묶음에서 공급 압력과 입구 유량이 함께 내려간다",
@@ -321,8 +316,34 @@ def _cause_table(rt: Runtime, st: Static, ts: int, cause: str, group: int | None
     ]
 
 
+def _pattern_out(d: Diagnosis) -> dict | None:
+    """원인 구분 결과와 근거를 화면용으로 정리한다."""
+    p = d.pattern
+    if p is None or len(p["ranking"]) < 2:
+        return None
+    top, second = p["ranking"][0], p["ranking"][1]
+    if d.cause == "leak":
+        verdict = f"누수 의심 (다음 후보: {second['label']}, 사이각 차이 {p['gap_deg']:.0f}°)"
+        how = f"점검 순서대로 현장 확인. 다음 후보인 {second['label']}를 배제하려면 해당 유량계의 진단값과 교정 이력도 확인."
+    elif d.cause == "ambiguous":
+        verdict = f"구분 불가: '{top['label']}'와 '{second['label']}'의 모습이 비슷함 (사이각 차이 {p['gap_deg']:.0f}°)"
+        how = "계측기 진단값·교정 이력과 현장(외부 배관) 점검을 함께 확인. 시간이 더 쌓이면 갈릴 수 있음."
+    else:
+        verdict = f"{top['label']} 의심 (사이각 {top['angle']:.0f}°)"
+        how = "해당 계측기의 진단값과 교정 이력을 확인하고, 교정·교체 뒤에는 기준선을 다시 학습."
+    return {
+        "group": int(p["group"]), "window_min": int(p["window"]), "ambiguous": bool(p["ambiguous"]), "gap_deg": float(p["gap_deg"]),
+        "ranking": [{"cls": r["cls"], "label": r["label"], "angle": float(r["angle"])} for r in p["ranking"]],
+        "signals": [{"key": k, "label": CH_LABEL[k], "sigma": round(float(p["signals"][k]), 1)} for k in CH9],
+        "verdict": verdict, "how_to_check": how,
+    }
+
+
 def _summary(level: str, cause: str, group_label: str, top_seg: int | None, indistinct: bool, fixed_alarm: int | None,
-             confirmed_seg: int | None, n_insp: int, mins_to_confirm: int | None, changed: bool, inspected_clear: list[int]) -> dict:
+             confirmed_seg: int | None, n_insp: int, mins_to_confirm: int | None, changed: bool, inspected_clear: list[int],
+             pat: dict | None = None, fc_text: str = "", est: dict | None = None) -> dict:
+    est_txt = (f" 추정 누수량 약 {est['lpm']:.0f} L/min (범위 {est['low_lpm']:.0f}~{est['high_lpm']:.0f}){'은 누수라면의 값입니다' if est.get('conditional') else ''}."
+               if est else "")
     if level == "normal":
         detail = ("주조 속도가 바뀌어 유량이 달라졌지만, 운전 조건을 보정한 기준선도 함께 움직였습니다."
                   if changed else "운전 조건을 보정한 기준선과의 차이가 모두 정상 범위입니다.")
@@ -337,7 +358,7 @@ def _summary(level: str, cause: str, group_label: str, top_seg: int | None, indi
         fx = "고정 임계값은 아직 넘지 않았습니다." if fixed_alarm is None else "고정 임계값도 넘었지만 우리 방식이 먼저 알렸습니다."
         extra = " 묶음 안 세그먼트는 신호로 구분되지 않아 사전확률로 순서를 정했습니다." if indistinct else ""
         return {"headline": f"{group_label}에서 누수가 의심됩니다. {where}",
-                "detail": f"공급-회수 불균형이 기준선보다 커지는 추세가 이어지고 있습니다. {fx}{extra}",
+                "detail": f"공급-회수 불균형이 기준선보다 커지는 추세가 이어지고 있습니다. {fx}{extra}{est_txt}" + (f" {fc_text}" if fc_text else ""),
                 "primary_label": "점검 시작", "primary_tab": "inspect", "secondary_label": "진단 보기", "secondary_tab": "diagnosis"}
     if cause == "clog":
         return {"headline": f"{group_label}에서 막힘이 의심됩니다.", "detail": "회수 압력이 오르고 입구 유량이 줄고 있습니다. 누수 후보 순위는 만들지 않습니다.",
@@ -346,7 +367,14 @@ def _summary(level: str, cause: str, group_label: str, top_seg: int | None, indi
         return {"headline": "펌프 저하가 의심됩니다.", "detail": "여러 묶음에서 공급 압력과 입구 유량이 함께 낮아졌습니다. 누수 후보 순위는 만들지 않습니다.",
                 "secondary_label": "진단 보기", "secondary_tab": "diagnosis"}
     if cause == "sensor":
-        return {"headline": f"{group_label}의 계측값 이상이 의심됩니다.", "detail": "값이 변하지 않거나 입구 유량 변화 없이 불균형만 커졌습니다. 유량계 확인을 권고합니다.",
+        if pat:
+            return {"headline": f"{group_label}에서 {pat['verdict']}.", "detail": f"{pat['how_to_check']} 누수 후보 순위는 만들지 않습니다.",
+                    "secondary_label": "진단 보기", "secondary_tab": "diagnosis"}
+        return {"headline": f"{group_label}의 계측값 이상이 의심됩니다.", "detail": "값이 변하지 않거나 입구 유량 변화 없이 불균형만 커졌습니다. 계측기 확인을 권고합니다.",
+                "secondary_label": "진단 보기", "secondary_tab": "diagnosis"}
+    if cause == "ambiguous":
+        return {"headline": f"{group_label}에서 이상이 있지만 누수인지 계측기 오차인지 구분되지 않습니다.",
+                "detail": ((pat["verdict"] + ". " + pat["how_to_check"]) if pat else "신호 방향만으로는 구분되지 않습니다.") + est_txt + " 누수 후보 순위는 만들지 않습니다.",
                 "secondary_label": "진단 보기", "secondary_tab": "diagnosis"}
     return {"headline": "이상 징후가 감지되었습니다. 원인을 확인하는 중입니다.", "detail": "패턴이 완성될 때까지 기다리는 중입니다."}
 
@@ -470,10 +498,28 @@ def state_at(scenario_id: str, ts: int | None) -> dict:
     changed = bool(ts >= 30 and abs(float(rt.df["cast_speed"].iloc[ts]) - float(rt.df["cast_speed"].iloc[ts - 30])) > 0.02)
     g_lab = f"묶음 {d.group}" if d.group else "일부 묶음"
     group_label = f"{g_lab}(세그먼트 {', '.join(map(str, st.cfg.sensor_groups[d.group - 1]))})" if d.group else g_lab
+    # 원인 구분 근거, 경보선 도달 예상 시각, 추정 누수량
+    pattern_out = _pattern_out(d) if (confirmed and cause in ("leak", "sensor", "ambiguous")) else None
+    forecast_out = est_out = None
+    if confirmed and cause in ("leak", "ambiguous") and d.group is not None:
+        gg = d.group
+        est_out = estimate_leak(rt.res_imb[gg], rt.df[f"g{gg}_flow_in"].to_numpy(), ts, st.leak_noise[gg])
+        est_out["conditional"] = cause == "ambiguous"
+    if confirmed and cause == "leak" and d.group is not None and t_start is not None:
+        gg = d.group
+        vol = group_signals(rt.df, gg)["imb_vol"].to_numpy()
+        forecast_out = forecast_line(rt.res_imb[gg], float(np.mean(vol[max(ts - 29, 0): ts + 1])), float(st.thr_fixed[gg]), ts, t_start)
+        if fx_alarm is not None:       # 기존 방식이 이미 울렸으면 '닿을 시각'이 아니라 '이미 넘음'
+            forecast_out.update(available=False, crossed=True, hours=None, low_hours=None, high_hours=None, reason="이미 기존 경보선을 넘었습니다")
+        forecast_out["text"] = forecast_text(forecast_out)
+        forecast_out["line_leak_pct"] = round(st.line_leak[gg] * 100, 2)
+        if est_out is not None and st.line_leak[gg] > 0:
+            forecast_out["progress"] = round(est_out["pct"] / (st.line_leak[gg] * 100), 2)
     summary = _summary(level, cause if level != "normal" else "unknown", group_label,
                        seg_cands[0]["segment"] if seg_cands else None, not distinguishable, fx_alarm,
                        confirmed_seg, len(insps), mins_to_confirm, changed,
-                       [i["segment"] for i in insps if i["result"] == "no_issue"])
+                       [i["segment"] for i in insps if i["result"] == "no_issue"],
+                       pat=pattern_out, fc_text=(forecast_out or {}).get("text", ""), est=est_out)
     if level == "watch" and not confirmed:
         if unexplained:
             names = ", ".join(f"묶음 {g}(세그먼트 {', '.join(map(str, st.cfg.sensor_groups[g - 1]))})" for g in unexplained)
@@ -501,9 +547,10 @@ def state_at(scenario_id: str, ts: int | None) -> dict:
         "segment_candidates": seg_cands, "others_prob": others, "distinguishable": distinguishable, "candidate_note": note,
         "inspections": insps, "confirmed_segment": confirmed_seg,
         "minutes_since_alarm": mins_since, "minutes_to_confirm": mins_to_confirm,
-        "cause_table": _cause_table(rt, st, ts, cause, d.group if confirmed else None),
+        "cause_table": _cause_table(rt, st, ts, cause, d.group if confirmed else None, d.pattern if confirmed else None),
         "operating": {"cast_speed": round(float(rt.df["cast_speed"].iloc[ts]), 3), "steel_grade": str(rt.df["steel_grade"].iloc[ts]),
                       "t_in": round(float(rt.df["g1_t_in"].iloc[ts]), 1), "changed_recently": changed},
+        "pattern": pattern_out, "forecast": forecast_out, "leak_estimate": est_out,
     }
 
 
@@ -519,7 +566,7 @@ def handover_at(scenario_id: str, ts: int | None) -> dict:
     if state["alert"]["level"] == "normal" or d.alarm_ts is None:
         out["missing"] = ["아직 경보가 없어 작성할 내용이 없습니다."]
         return out
-    cause_label = {"leak": "누수", "clog": "막힘", "pump": "펌프 저하", "sensor": "센서 이상"}.get(state["alert"]["cause"], "원인 확인 중")
+    cause_label = {"leak": "누수", "clog": "막힘", "pump": "펌프 저하", "sensor": "계측기 이상", "ambiguous": "누수 또는 계측기 오차(구분 불가)"}.get(state["alert"]["cause"], "원인 확인 중")
     g = d.group
     secs, srcs = [], []
     # 경보
@@ -646,7 +693,7 @@ def eval_priors() -> list[dict]:
 
 def eval_summary() -> dict:
     """비교·지표 화면용: 저장된 평가 결과를 그대로 읽어 온다 (보고서·발표자료와 같은 값)."""
-    out: dict = {"detectors": [], "inspection": None, "localize": None, "classify": None, "sensitivity": None, "longrun": None}
+    out: dict = {"detectors": [], "inspection": None, "localize": None, "classify": None, "sensitivity": None, "longrun": None, "pattern": None}
     p = DATA_DIR / "detector_tuning.json"
     if p.exists():
         rows = json.loads(p.read_text(encoding="utf-8")).get(LAYOUT, {}).get("rows", [])
@@ -670,5 +717,15 @@ def eval_summary() -> dict:
     p = DATA_DIR / "classify_eval.json"
     if p.exists():
         c = json.loads(p.read_text(encoding="utf-8"))
-        out["classify"] = {"accuracy": c["accuracy"], "per_class": c["per_class"]}
+        out["classify"] = {"accuracy": c["accuracy"], "per_class": c["per_class"], "previous_rule": c.get("previous_rule"), "method": c.get("method")}
+    pat: dict = {}
+    for key, fname in (("normal", "pattern_eval.json"), ("calibration", "pattern_calibration.json"), ("forecast", "forecast_eval.json")):
+        p = DATA_DIR / fname
+        if p.exists():
+            d_ = json.loads(p.read_text(encoding="utf-8"))
+            if key == "forecast":              # 건별 행은 화면에 필요 없다
+                d_.pop("rows", None)
+                d_.pop("estimate_rows", None)
+            pat[key] = d_
+    out["pattern"] = pat or None
     return out

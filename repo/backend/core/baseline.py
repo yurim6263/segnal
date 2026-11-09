@@ -15,7 +15,7 @@ import pandas as pd
 from .normalize import group_signals, groups_in
 
 # 정상값을 예측해서 잔차를 내는 채널
-CHANNELS = ["imb_mass", "m_in", "p_in", "p_out", "dt"]
+CHANNELS = ["imb_mass", "m_in", "m_out", "p_in", "p_out", "dt", "t_out"]    # m_out·t_out은 원인 구분(core.pattern)이 쓴다
 SPEED_LAGS = (0, 1, 2, 3, 5, 8, 12, 20, 30)
 
 

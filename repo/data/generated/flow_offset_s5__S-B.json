@@ -1,0 +1,61 @@
+{
+ "scenario": "flow_offset_s5",
+ "layout": "S-B",
+ "description": "유량계 오차: 묶음 3 입구 유량계가 +2% 치우침 (누수 아님)",
+ "n_samples": 4320,
+ "dt_s": 60,
+ "groups": [
+  [
+   1
+  ],
+  [
+   2
+  ],
+  [
+   3
+  ],
+  [
+   4
+  ],
+  [
+   5
+  ],
+  [
+   6
+  ],
+  [
+   7
+  ],
+  [
+   8
+  ],
+  [
+   9
+  ],
+  [
+   10
+  ],
+  [
+   11
+  ],
+  [
+   12
+  ],
+  [
+   13
+  ]
+ ],
+ "events": [
+  {
+   "kind": "sensor",
+   "start_ts": 1920,
+   "ramp_min": 0,
+   "end_ts": null,
+   "peak": 0.0,
+   "sensor_group": 2,
+   "sensor_name": "flow_in",
+   "sensor_mode": "offset",
+   "sensor_value": 0.02
+  }
+ ]
+}

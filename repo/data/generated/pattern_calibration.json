@@ -1,0 +1,160 @@
+{
+ "rows": [
+  {
+   "delta_deg": 0,
+   "leak": {
+    "n": 60,
+    "correct": 50,
+    "ambiguous": 0,
+    "unknown": 0,
+    "wrong": 10
+   },
+   "sensor": {
+    "n": 40,
+    "correct": 40,
+    "ambiguous": 0,
+    "unknown": 0,
+    "wrong": 0
+   }
+  },
+  {
+   "delta_deg": 1,
+   "leak": {
+    "n": 60,
+    "correct": 53,
+    "ambiguous": 0,
+    "unknown": 0,
+    "wrong": 7
+   },
+   "sensor": {
+    "n": 40,
+    "correct": 40,
+    "ambiguous": 0,
+    "unknown": 0,
+    "wrong": 0
+   }
+  },
+  {
+   "delta_deg": 2,
+   "leak": {
+    "n": 60,
+    "correct": 52,
+    "ambiguous": 3,
+    "unknown": 0,
+    "wrong": 5
+   },
+   "sensor": {
+    "n": 40,
+    "correct": 40,
+    "ambiguous": 0,
+    "unknown": 0,
+    "wrong": 0
+   }
+  },
+  {
+   "delta_deg": 3,
+   "leak": {
+    "n": 60,
+    "correct": 53,
+    "ambiguous": 5,
+    "unknown": 0,
+    "wrong": 2
+   },
+   "sensor": {
+    "n": 40,
+    "correct": 40,
+    "ambiguous": 0,
+    "unknown": 0,
+    "wrong": 0
+   }
+  },
+  {
+   "delta_deg": 4,
+   "leak": {
+    "n": 60,
+    "correct": 52,
+    "ambiguous": 7,
+    "unknown": 0,
+    "wrong": 1
+   },
+   "sensor": {
+    "n": 40,
+    "correct": 40,
+    "ambiguous": 0,
+    "unknown": 0,
+    "wrong": 0
+   }
+  },
+  {
+   "delta_deg": 5,
+   "leak": {
+    "n": 60,
+    "correct": 47,
+    "ambiguous": 12,
+    "unknown": 0,
+    "wrong": 1
+   },
+   "sensor": {
+    "n": 40,
+    "correct": 38,
+    "ambiguous": 2,
+    "unknown": 0,
+    "wrong": 0
+   }
+  },
+  {
+   "delta_deg": 6,
+   "leak": {
+    "n": 60,
+    "correct": 41,
+    "ambiguous": 19,
+    "unknown": 0,
+    "wrong": 0
+   },
+   "sensor": {
+    "n": 40,
+    "correct": 36,
+    "ambiguous": 4,
+    "unknown": 0,
+    "wrong": 0
+   }
+  },
+  {
+   "delta_deg": 8,
+   "leak": {
+    "n": 60,
+    "correct": 22,
+    "ambiguous": 38,
+    "unknown": 0,
+    "wrong": 0
+   },
+   "sensor": {
+    "n": 40,
+    "correct": 33,
+    "ambiguous": 7,
+    "unknown": 0,
+    "wrong": 0
+   }
+  },
+  {
+   "delta_deg": 10,
+   "leak": {
+    "n": 60,
+    "correct": 14,
+    "ambiguous": 46,
+    "unknown": 0,
+    "wrong": 0
+   },
+   "sensor": {
+    "n": 40,
+    "correct": 31,
+    "ambiguous": 9,
+    "unknown": 0,
+    "wrong": 0
+   }
+  }
+ ],
+ "chosen_delta_deg": 3,
+ "rule": "오답이 전체의 2% 이하가 되는 가장 작은 각도",
+ "holdout": "누수 60건 + 유량계 오프셋 40건 (평가용 66건과 다른 시드), 합성 데이터"
+}

@@ -4,7 +4,7 @@ import type { AgentStatus, AskOut, ProposedAction } from "../types";
 import { josa } from "./ui";
 
 const TOOL_KO: Record<string, string> = {
-  get_status: "현재 상태", get_cause_table: "원인 분류표", get_location_candidates: "위치 후보", get_signal: "신호 값",
+  get_status: "현재 상태", get_cause_table: "원인 분류표", get_diagnosis_detail: "원인 구분 근거", get_location_candidates: "위치 후보", get_signal: "신호 값",
   get_inspections: "점검 기록", get_eval_results: "평가 결과", propose_inspection_record: "점검 기록 제안", "(정해진 양식)": "정해진 양식",
 };
 const FALLBACK_PRESETS = ["왜 주의(경보)가 떴어?", "누수 후보 순위와 근거를 알려줘", "지금 무엇을 하면 돼?"];
