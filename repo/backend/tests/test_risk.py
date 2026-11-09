@@ -12,6 +12,20 @@ def setup():
     return d, rows, m
 
 
+def test_history_leaves_removed_days_empty_and_is_json_safe():
+    import json
+
+    import service
+
+    h = service.risk_history("S-0012", 30)
+    assert len(h["days"]) == 30 and h["days"][-1]["bearing_t_avg_c"] is not None
+    assert any(d["bearing_t_avg_c"] is None for d in h["days"])   # 10/15~10/29 탈거 기간
+    assert all(d["fleet_bearing_t_avg_c"] is not None for d in h["days"])
+    json.dumps(h, allow_nan=False)
+    with pytest.raises(KeyError):
+        service.risk_history("S-9999")
+
+
 def test_features_use_only_past_and_hide_answer_fields(setup):
     d, rows, _ = setup
     assert "assembly_flag" not in rows.columns                    # 정답 전용 값은 모델에 안 들어간다

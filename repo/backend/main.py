@@ -166,6 +166,16 @@ def risk_board():
     return service.risk_board()
 
 
+@app.get("/api/risk/segments/{serial}/history")
+def risk_history(serial: str, days: int = 30):
+    if not 1 <= days <= 730:
+        raise HTTPException(422, "days 는 1~730 이어야 합니다")
+    try:
+        return service.risk_history(serial, days)
+    except KeyError:
+        raise HTTPException(404, f"세그먼트 없음: {serial}")
+
+
 @app.get("/api/risk/eval")
 def risk_eval():
     try:

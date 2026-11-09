@@ -12,6 +12,23 @@ export interface RiskSegment {
 }
 export interface RiskBoard { as_of: string; next_planned_stop: string; segments: RiskSegment[]; note: string; coefficients: unknown[] }
 
+export interface SegmentHistoryData {
+  segment: string;
+  days: Array<Record<string, number | string | null>>;       // 신호 열과 같은 날 장착 평균 fleet_ 열
+  maintenance: { date: string; part: string; type: string; finding_grade: number | null; found_cause: string | null; wo_id: string | null }[];
+}
+export interface RiskEvalRun {
+  leaks: number; auc_model: number; auc_tons_order: number; auc_diff_90ci: [number, number]; cause_top1_acc: number;
+  top3_daily_capture_model: number; top3_daily_capture_tons: number; top3_daily_capture_random: number;
+  calibration: { bin: number; pred_mean: number; obs_rate: number; n: number; leaks: number }[];
+  per_cause_auc: { cause: string; n: number; auc_model: number | null; auc_tons_order: number | null }[];
+}
+export interface RiskEval {
+  with_vibration: RiskEvalRun; no_bearing_sensor: RiskEvalRun; note: string;
+  coefficients: { cause: string; label: string }[];
+  beta_by_cause: { cause: string; n_events: number; beta: number; beta_lo: number; beta_hi: number; type: string }[];
+}
+
 export interface Checks {
   numbers_ok?: boolean; citations_ok?: boolean; pii_ok?: boolean; no_forbidden_leak?: boolean; control_ok?: boolean; fallback?: boolean;
   required_ok?: boolean; actions_cited_ok?: boolean; off_card?: number; bad_numbers?: string[]; missing_sections?: string[]; llm_error?: string | null;
@@ -58,5 +75,6 @@ export const llm = {
   policy: () => call<{ roles: PolicyRole[] }>("GET", "/api/llm/policy"),
   audit: (role: Role) => call<AuditRow[]>("GET", `/api/llm/audit?role=${encodeURIComponent(role)}&limit=40`),
   redteam: () => call<Redteam>("GET", "/api/llm/redteam"),
-  riskEval: () => call<Record<string, unknown>>("GET", "/api/risk/eval"),
+  riskEval: () => call<RiskEval>("GET", "/api/risk/eval"),
+  history: (segment: string) => call<SegmentHistoryData>("GET", `/api/risk/segments/${segment}/history`),
 };
