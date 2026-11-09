@@ -14,9 +14,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from agent.envfile import load_env, llm_available, MODEL_QA, MODEL_NOTE
 from agent import qa as agent_qa, note as agent_note
 import service
+from core import cost as cost_core
 from core.handover import polish_note
 from schemas import (
-    AskIn, AskOut, DetectorEval, HandoverOut, HandoverPolishIn, InspectionIn, InspectionOut,
+    AskIn, AskOut, CostIn, CostOut, DetectorEval, HandoverOut, HandoverPolishIn, InspectionIn, InspectionOut,
     JointRisk, PlantConfigOut, PriorEval, ScenarioInfo, SeriesOut, StateOut,
 )
 from sim.config import load_config
@@ -140,6 +141,24 @@ def polish_handover(body: HandoverPolishIn):
     """사람이 '문장 다듬기'를 눌렀을 때만 LLM을 호출한다. 실패하면 템플릿 노트와 이유를 돌려준다."""
     _check(body.scenario_id)
     return polish_note(service.handover_at(body.scenario_id, body.ts))
+
+
+@app.post("/api/cost", response_model=CostOut)
+def cost(body: CostIn) -> CostOut:
+    """계획 교체와 비계획 교체의 비용 비교. 금액·시간은 모두 입력값이며 이 서버가 만들지 않는다."""
+    values = body.model_dump()
+    res = cost_core.compare(values)
+    out = CostOut(**res)
+    out.note = "입력값 기준 계산입니다. 기본 금액은 없으며 현장 값 확인 전입니다."
+    if not res["ready"]:
+        return out
+    if body.failure_after_leak_min is not None and body.wait_to_window_min is not None:
+        head = service.eval_summary().get("headline") or {}
+        d_ours = (head.get("ours") or {}).get("median_delay_min")
+        d_fixed = (head.get("fixed") or {}).get("median_delay_min")
+        out.detector_delay_min = {"ours": d_ours, "fixed": d_fixed}
+        out.conversion = cost_core.conversion(d_ours, d_fixed, body.failure_after_leak_min, body.wait_to_window_min)
+    return out
 
 
 @app.get("/api/eval/detectors", response_model=list[DetectorEval])
