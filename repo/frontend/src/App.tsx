@@ -8,6 +8,7 @@ import InspectView from "./views/InspectView";
 import HandoverView from "./views/HandoverView";
 import MetricsView from "./views/MetricsView";
 import ScenarioView from "./views/ScenarioView";
+import AskPanel from "./components/AskPanel";
 
 type Tab = "monitor" | "diagnosis" | "inspect" | "handover" | "metrics" | "scenario";
 type Theme = "light" | "dark";
@@ -195,6 +196,8 @@ export default function App() {
         ) : (
           <HandoverView handover={handover} polishing={polishing} onPolish={onPolish} />
         )}
+
+        <AskPanel scenarioId={scenarioId} ts={ts} onRecord={onInspect} />
 
         <footer className="muted pt-2 text-[12.5px]">
           모든 데이터는 합성입니다. 경보 기준값은 현장 확인 전 가설이며, 이 화면은 점검 후보를 제시할 뿐 확정하지 않습니다.

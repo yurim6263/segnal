@@ -10,3 +10,8 @@ data/generated/eval_*
 data/generated/evalp_*
 *.log
 *.tsbuildinfo
+
+# 비밀값: API 키는 backend/.env 에만 둔다 (절대 커밋하지 않는다)
+.env
+.env.*
+!.env.example

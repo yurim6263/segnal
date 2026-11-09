@@ -195,12 +195,17 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--n", type=int, default=20)
     ap.add_argument("--layouts", nargs="+", default=["S-A"])
+    ap.add_argument("--only", nargs="+", default=None, help="조건 키만 실행")
+    ap.add_argument("--no-save", action="store_true")
     args = ap.parse_args()
+    if args.only:
+        CONDITIONS[:] = [c for c in CONDITIONS if c[0] in args.only]
     out = {}
     for layout in args.layouts:
         print(f"\n=== {layout} (n={args.n}) ===")
         out[layout] = evaluate(args.n, layout)
-    (DATA_DIR / "sensitivity_eval.json").write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
+    if not args.no_save:
+        (DATA_DIR / "sensitivity_eval.json").write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
 
 
 if __name__ == "__main__":
