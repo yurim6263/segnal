@@ -56,7 +56,7 @@ export default function MetricsView({ state, series, ts }: { state: State | null
 
       <div className="mb-3 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
         <Kpi title="경보까지 걸린 시간" num={min(o?.median_delay_min)} unit="분" lines={[`고정 임계값 방식 ${min(f?.median_delay_min)}분`, `누수 ${o?.n ?? 0}건의 중앙값`]} />
-        <Kpi title="정상인데 뜬 오경보" num={o ? o.false_alarms_per_14d_per_group.toFixed(2) : "—"} unit="회" lines={[`고정 임계값 방식 ${f ? f.false_alarms_per_14d_per_group.toFixed(2) : "—"}회`, f ? `다만 고정 방식은 ${f.n}건 중 ${f.missed}건을 놓침` : ""].filter(Boolean)} />
+        <Kpi title="정상인데 뜬 오경보" num={o ? o.false_alarms_per_14d_per_group.toFixed(2) : "—"} unit="회" lines={[`고정 임계값 방식 ${f ? f.false_alarms_per_14d_per_group.toFixed(2) : "—"}회`, f ? `다만 고정 방식은 ${f.n}건 중 ${f.missed}건을 놓침` : "", "누수 직전 구간 기준 · 장기 시험은 아래"].filter(Boolean)} />
         <Kpi title="확정까지 점검 횟수" num={ins ? ins.prob.mean_inspections.toFixed(1) : "—"} unit="회" lines={[`순서 없이 점검하면 ${ins ? ins.random.mean_inspections.toFixed(1) : "—"}회`, "후보 순서대로 점검할 때"]} />
         <Kpi title="위치 후보 적중률" num={loc ? pct(loc.group_top1) : "—"} unit="" lines={[`계측 묶음 1순위 기준`, loc ? `세그먼트 1순위 ${pct(loc.segment_top1)}` : ""].filter(Boolean)} />
         <Kpi title="원인 분류 정확도" num={ev.classify ? pct(ev.classify.accuracy) : "—"} unit="" lines={["누수·막힘·펌프 저하·센서 고장", "가상 시나리오 66건"]} />
@@ -95,6 +95,26 @@ export default function MetricsView({ state, series, ts }: { state: State | null
           )}
         </Card>
       </div>
+
+      {ev.longrun && (
+        <Card title="오경보 장기 시험" sub={`정상 운전 ${ev.longrun.days_per_run}일 × ${ev.longrun.seeds}회를 이어서 돌린 결과`} right="공장 전체 · 월(30일) 환산" className="mb-3">
+          <table className="tbl">
+            <thead><tr><th>유량계 표류 가정</th><th>우리 방식 (경보 사건)</th><th>고정 임계값 (경보 사건)</th></tr></thead>
+            <tbody>
+              {ev.longrun.rows.map((r) => (
+                <tr key={r.drift_scale} style={r.drift_scale === 1 ? { background: "var(--card2)" } : undefined}>
+                  <td className="font-semibold">{r.label}</td>
+                  <td style={r.ours_per_30d_plant > r.fixed_per_30d_plant * 2 ? { color: "var(--alarm)", fontWeight: 700 } : undefined}>월 {r.ours_per_30d_plant}건 <span className="muted">({r.ours_episodes}건/{r.days_total}일)</span></td>
+                  <td>월 {r.fixed_per_30d_plant}건 <span className="muted">({r.fixed_episodes}건/{r.days_total}일)</span></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p className="muted mt-1 text-[12.5px]">
+            "오경보 없음"은 누수 시작 전 1~1.5일 구간과 정상 3일에서 나온 값입니다. 오래 이어서 돌리면 현재 설정에서 두 방식이 비슷한 수준(월 수 건)이고, 유량계 표류가 크면 우리 방식이 더 민감해 경보가 급증합니다. 표류 크기는 현장에서 모르는 값이라 기준값을 주기적으로 다시 맞춰야 합니다.
+          </p>
+        </Card>
+      )}
 
       <Card title="조건이 바뀔 때" sub="조건 하나씩 바꿔 가며 같은 지표를 다시 잡았습니다">
         {ev.sensitivity ? (

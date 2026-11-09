@@ -128,6 +128,48 @@
     "median_leak_lpm_at_detection": 16.46
    },
    {
+    "label": "60분 이동평균(보정 있음)",
+    "detector": "ma60",
+    "params": {
+     "window": 60
+    },
+    "false_alarms_per_14d_per_group": 2.363,
+    "detected": 30,
+    "missed": 0,
+    "n": 30,
+    "median_delay_min": 62.0,
+    "p90_delay_min": 240.70000000000013,
+    "median_leak_lpm_at_detection": 9.9
+   },
+   {
+    "label": "EWMA λ=0.1 (운전점 보정 없음)",
+    "detector": "ewma_raw",
+    "params": {
+     "lam": 0.1
+    },
+    "false_alarms_per_14d_per_group": 0.328,
+    "detected": 30,
+    "missed": 0,
+    "n": 30,
+    "median_delay_min": 202.0,
+    "p90_delay_min": 1227.6000000000001,
+    "median_leak_lpm_at_detection": 12.27
+   },
+   {
+    "label": "60분 이동평균(보정 없음)",
+    "detector": "ma60_raw",
+    "params": {
+     "window": 60
+    },
+    "false_alarms_per_14d_per_group": 2.953,
+    "detected": 30,
+    "missed": 0,
+    "n": 30,
+    "median_delay_min": 80.5,
+    "p90_delay_min": 346.50000000000017,
+    "median_leak_lpm_at_detection": 11.39
+   },
+   {
     "label": "Isolation Forest (잔차)",
     "detector": "iforest",
     "params": {
@@ -312,6 +354,48 @@
     "median_delay_min": 47.5,
     "p90_delay_min": 377.1,
     "median_leak_lpm_at_detection": 8.9
+   },
+   {
+    "label": "60분 이동평균(보정 있음)",
+    "detector": "ma60",
+    "params": {
+     "window": 60
+    },
+    "false_alarms_per_14d_per_group": 5.25,
+    "detected": 30,
+    "missed": 0,
+    "n": 30,
+    "median_delay_min": 31.0,
+    "p90_delay_min": 110.9,
+    "median_leak_lpm_at_detection": 6.66
+   },
+   {
+    "label": "EWMA λ=0.1 (운전점 보정 없음)",
+    "detector": "ewma_raw",
+    "params": {
+     "lam": 0.1
+    },
+    "false_alarms_per_14d_per_group": 0.833,
+    "detected": 30,
+    "missed": 0,
+    "n": 30,
+    "median_delay_min": 29.5,
+    "p90_delay_min": 221.6000000000001,
+    "median_leak_lpm_at_detection": 6.49
+   },
+   {
+    "label": "60분 이동평균(보정 없음)",
+    "detector": "ma60_raw",
+    "params": {
+     "window": 60
+    },
+    "false_alarms_per_14d_per_group": 6.361,
+    "detected": 30,
+    "missed": 0,
+    "n": 30,
+    "median_delay_min": 33.5,
+    "p90_delay_min": 139.30000000000004,
+    "median_leak_lpm_at_detection": 7.0
    },
    {
     "label": "Isolation Forest (잔차)",

@@ -11,14 +11,18 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
+from agent.envfile import load_env, llm_available, MODEL_QA, MODEL_NOTE
+from agent import qa as agent_qa, note as agent_note
 import service
 from core import cost as cost_core
+from core.handover import polish_note
 from schemas import (
-    AskIn, AskOut, CostIn, CostOut, DetectorEval, HandoverOut, InspectionIn, InspectionOut,
+    AskIn, AskOut, CostIn, CostOut, DetectorEval, HandoverOut, HandoverPolishIn, InspectionIn, InspectionOut,
     JointRisk, PlantConfigOut, PriorEval, ScenarioInfo, SeriesOut, StateOut,
 )
 from sim.config import load_config
 
+load_env()                    # backend/.env 의 ANTHROPIC_API_KEY (없으면 정해진 양식으로 동작)
 MOCK_DIR = Path(__file__).resolve().parents[1] / "frontend" / "src" / "mock"
 
 
@@ -27,6 +31,7 @@ async def lifespan(app: FastAPI):
     try:                       # 첫 요청이 느리지 않게 미리 계산해 둔다 (약 10초)
         service.static()
         service.runtime("leak_ramp_s5")
+        import anthropic  # noqa: F401  첫 '문장 다듬기'가 패키지 로딩을 기다리지 않게 한다
     except Exception as e:     # 데이터가 없으면 mock으로만 동작
         print("[warn] service warm-up failed:", e)
     yield
@@ -109,15 +114,33 @@ def get_joints():
     return service.joint_risks()
 
 
+@app.get("/api/agent/status")
+def agent_status():
+    """질의응답이 모델을 쓰는지(키 있음) 정해진 양식으로 동작하는지 화면에 알려 준다. 키 값은 돌려주지 않는다."""
+    return {"llm_available": llm_available(), "model_qa": MODEL_QA() if llm_available() else None,
+            "model_note": MODEL_NOTE() if llm_available() else None, "presets": agent_qa.PRESETS}
+
+
 @app.post("/api/agent/ask", response_model=AskOut)
 def ask(body: AskIn):
-    return _mock("ask")                           # 17단계에서 실제 에이전트로 교체
+    _check(body.scenario_id)
+    T = len(service.runtime(body.scenario_id).df)
+    ts = T - 1 if body.ts is None else max(0, min(int(body.ts), T - 1))
+    return agent_qa.ask(body.scenario_id, ts, body.question)
 
 
 @app.get("/api/handover", response_model=HandoverOut)
 def handover(scenario_id: str = "leak_ramp_s5", ts: int | None = None):
     _check(scenario_id)
-    return service.handover_at(scenario_id, ts)    # 템플릿 노트 (17단계에서 LLM 문장 다듬기 추가)
+    h = service.handover_at(scenario_id, ts)       # 양식 노트(계산값)
+    return agent_note.polish(h, scenario_id, -1 if ts is None else ts)   # 키가 있으면 문장만 다듬는다(값은 검증, 실패 시 양식 그대로)
+
+
+@app.post("/api/handover/polish", response_model=HandoverOut)
+def polish_handover(body: HandoverPolishIn):
+    """사람이 '문장 다듬기'를 눌렀을 때만 LLM을 호출한다. 실패하면 템플릿 노트와 이유를 돌려준다."""
+    _check(body.scenario_id)
+    return polish_note(service.handover_at(body.scenario_id, body.ts))
 
 
 @app.post("/api/cost", response_model=CostOut)

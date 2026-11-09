@@ -171,13 +171,18 @@ export interface JointRisk {
   replace_count: number;
 }
 
+export interface ProposedAction { segment: number; result: InspectResult; reason: string }
 export interface AskOut {
   answer: string;
   tools_used: string[];
   numbers_verified: boolean;
   from_cache: boolean;
   disclaimer: string;
+  mode: "llm" | "cache" | "template";
+  proposed_action: ProposedAction | null;
+  note: string;
 }
+export interface AgentStatus { llm_available: boolean; model_qa: string | null; model_note: string | null; presets: string[] }
 
 export interface HandoverValue { label: string; value: string; source: string }
 export interface HandoverSection { title: string; text: string; values: HandoverValue[] }
@@ -189,6 +194,7 @@ export interface Handover {
   sections: HandoverSection[];
   missing: string[];
   sources: HandoverValue[];
+  fallback_reason?: string;
 }
 
 export interface DetectorRow {
@@ -209,7 +215,9 @@ export interface SensitivityRow {
   median_delay_min: number | null; false_alarms_per_14d_per_group: number | null;
   top3_hit: number | null; mean_inspections: number | null; inspection_success: number | null;
 }
+export interface LongrunRow { drift_scale: number; label: string; days_total: number; ours_episodes: number; fixed_episodes: number; ours_per_30d_plant: number; fixed_per_30d_plant: number }
 export interface EvalSummary {
+  longrun?: { days_per_run: number; seeds: number; rows: LongrunRow[]; note: string } | null;
   detectors: DetectorRow[];
   headline?: { ours: DetectorRow | null; fixed: DetectorRow | null };
   inspection: Record<"random" | "prob" | "o1", InspectionPolicy> | null;

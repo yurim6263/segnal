@@ -8,6 +8,7 @@ import InspectView from "./views/InspectView";
 import HandoverView from "./views/HandoverView";
 import MetricsView from "./views/MetricsView";
 import ScenarioView from "./views/ScenarioView";
+import AskPanel from "./components/AskPanel";
 
 type Tab = "monitor" | "diagnosis" | "inspect" | "handover" | "metrics" | "scenario";
 type Theme = "light" | "dark";
@@ -32,6 +33,7 @@ export default function App() {
   const [state, setState] = useState<State | null>(null);
   const [series, setSeries] = useState<Series | null>(null);
   const [handover, setHandover] = useState<Handover | null>(null);
+  const [polishing, setPolishing] = useState(false);
   const [tab, setTab] = useState<Tab>("monitor");
   const [online, setOnline] = useState<boolean | null>(null);
   const [version, setVersion] = useState(0);
@@ -95,6 +97,14 @@ export default function App() {
   const onDelete = async (id: number) => {
     await api.deleteInspection(scenarioId, id);
     setVersion((v) => v + 1);
+  };
+  const onPolish = async () => {
+    if (!handover) return;
+    const id = reqId.current;
+    setPolishing(true);
+    const polished = await api.polishHandover(scenarioId, ts, handover);
+    setPolishing(false);
+    if (id === reqId.current) setHandover(polished);     // 기다리는 동안 시각이 바뀌었으면 옛 시각의 노트를 덮어쓰지 않는다
   };
 
   const header = (
@@ -184,8 +194,10 @@ export default function App() {
         ) : tab === "inspect" ? (
           <InspectView config={config} state={state} onInspect={onInspect} onDelete={onDelete} />
         ) : (
-          <HandoverView handover={handover} />
+          <HandoverView handover={handover} polishing={polishing} onPolish={onPolish} />
         )}
+
+        <AskPanel scenarioId={scenarioId} ts={ts} onRecord={onInspect} />
 
         <footer className="muted pt-2 text-[12.5px]">
           모든 데이터는 합성입니다. 경보 기준값은 현장 확인 전 가설이며, 이 화면은 점검 후보를 제시할 뿐 확정하지 않습니다.

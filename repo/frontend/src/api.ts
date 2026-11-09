@@ -1,6 +1,6 @@
 // API 호출. 백엔드(8000)에 연결되지 않으면 mock JSON으로 대신한다 (병렬 개발용).
 import type {
-  AskOut, DetectorEval, EvalSummary, Handover, InspectionRecord, JointRisk, PlantConfig, PriorEval,
+  AgentStatus, AskOut, DetectorEval, EvalSummary, Handover, InspectionRecord, JointRisk, PlantConfig, PriorEval,
   ScenarioInfo, Series, State,
 } from "./types";
 import mockConfig from "./mock/config.json";
@@ -58,6 +58,8 @@ export const api = {
     get<Series>(`/api/series?scenario_id=${scenarioId}&group=${group}&ts=${ts}&channel=${channel}`, mockSeries),
   joints: () => get<JointRisk[]>("/api/joints", mockJoints),
   handover: (scenarioId: string, ts: number) => get<Handover>(`/api/handover?scenario_id=${scenarioId}&ts=${ts}`, mockHandover as unknown as Handover),
+  polishHandover: (scenario_id: string, ts: number, current: Handover) =>
+    post<Handover>("/api/handover/polish", { scenario_id, ts }, { ...current, fallback_reason: "백엔드에 연결하지 못했습니다." }),
   evalSummary: () => get<EvalSummary | null>("/api/eval/summary", null),
   detectors: () => get<DetectorEval[]>("/api/eval/detectors", mockDetectors),
   priors: () => get<PriorEval[]>("/api/eval/priors", mockPriors),
@@ -69,6 +71,7 @@ export const api = {
   deleteInspection: async (scenario_id: string, id: number) => {
     try { await fetch(`${BASE}/api/inspections/${id}?scenario_id=${scenario_id}`, { method: "DELETE" }); } catch { /* 백엔드 꺼짐 */ }
   },
-  ask: (scenario_id: string, question: string) =>
-    post<AskOut>("/api/agent/ask", { scenario_id, question }, mockAsk),
+  ask: (scenario_id: string, question: string, ts: number) =>
+    post<AskOut>("/api/agent/ask", { scenario_id, question, ts }, mockAsk as unknown as AskOut),
+  agentStatus: () => get<AgentStatus | null>("/api/agent/status", null),
 };

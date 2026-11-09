@@ -1,0 +1,59 @@
+{
+ "layout": "S-A",
+ "days_per_run": 30,
+ "seeds": 3,
+ "rows": [
+  {
+   "drift_scale": 0.0,
+   "label": "표류 0 (유량계가 안 틀어짐)",
+   "days_total": 90,
+   "ours_episodes": 0,
+   "fixed_episodes": 6,
+   "ours_per_30d_plant": 0.0,
+   "fixed_per_30d_plant": 2.0,
+   "ours_per_14d_per_group": 0.0,
+   "per_group_episodes": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0
+   }
+  },
+  {
+   "drift_scale": 1.0,
+   "label": "현재 설정",
+   "days_total": 90,
+   "ours_episodes": 14,
+   "fixed_episodes": 10,
+   "ours_per_30d_plant": 4.67,
+   "fixed_per_30d_plant": 3.33,
+   "ours_per_14d_per_group": 0.436,
+   "per_group_episodes": {
+    "1": 12,
+    "2": 0,
+    "3": 0,
+    "4": 2,
+    "5": 0
+   }
+  },
+  {
+   "drift_scale": 2.0,
+   "label": "표류 2배",
+   "days_total": 90,
+   "ours_episodes": 503,
+   "fixed_episodes": 31,
+   "ours_per_30d_plant": 167.67,
+   "fixed_per_30d_plant": 10.33,
+   "ours_per_14d_per_group": 15.649,
+   "per_group_episodes": {
+    "1": 108,
+    "2": 46,
+    "3": 143,
+    "4": 106,
+    "5": 100
+   }
+  }
+ ],
+ "note": "기준선·임계값은 정상 14일(학습)에서 맞추고, 다른 시드의 정상 연속 운전에서 경보 사건 수를 센 값. 합성 데이터."
+}
