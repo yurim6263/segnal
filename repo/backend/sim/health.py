@@ -25,9 +25,8 @@ import numpy as np
 import pandas as pd
 import yaml
 
-from .config import CONFIG_PATH
-
-OUT_DIR = Path(__file__).resolve().parents[2] / "data" / "health"
+CONFIG_PATH = Path(__file__).resolve().parents[2] / "config" / "plant.yaml"
+OUT_DIR =Path(__file__).resolve().parents[2] / "data" / "health"
 CAUSES = ["WEAR", "HAMMER", "BEARING", "THERMAL", "WATER", "ASSEMBLY", "RANDOM"]
 CAUSE_PART = {"WEAR": ["rotary_joint", "seal"], "HAMMER": ["seal"], "BEARING": ["bearing_housing"], "THERMAL": ["seal"],
               "WATER": ["seal"], "ASSEMBLY": ["oring", "hose"], "RANDOM": ["hose", "rotary_joint"]}
@@ -339,10 +338,7 @@ def simulate(params: dict | None = None, seed: int | None = None, with_minute: b
         leaks_df = leaks_df[["leak_id", "ts", "segment_serial", "position", "bundle_id", "part", "cause_code", "leak_lpm", "found_by"]]
     ops_df = pd.DataFrame(ops).sort_values("ts").reset_index(drop=True)
     out = {"segments": segments_df, "installs": installs_df.sort_values(["install_ts", "position"]).reset_index(drop=True), "maintenance": maint_df,
-           "leaks": leaks_df, "segment_daily": daily_df, "water_quality": wq, "ops_events": ops_df,
-           "work_orders": pd.DataFrame(columns=["wo_id", "created_ts", "segment_serial", "position", "planned_stop_date", "prob", "prob_avg", "rank", "top_cause",
-                                                "contributions", "cards_used", "docs_cited", "draft_md", "numbers_ok", "off_card", "approver", "approved_ts",
-                                                "status", "result_grade", "result_cause", "result_note"])}
+           "leaks": leaks_df, "segment_daily": daily_df, "water_quality": wq, "ops_events": ops_df}
     if with_minute:
         out["sensor_1min"] = _minute_series(rng, P, N, demo_start, daily_df, sched, speed, day_date)
     out["_meta"] = {"params": P, "start_date": str(d0), "end_date": str(end), "planned_stops": [str(day_date(s)) for s in stops],
@@ -447,12 +443,6 @@ def write(out: dict, dir_: Path = OUT_DIR) -> Path:
         df.drop(columns=["day"], errors="ignore").to_csv(dir_ / f"{name}.csv", index=False, encoding="utf-8")
     (dir_ / "meta.json").write_text(json.dumps(out["_meta"], ensure_ascii=False, indent=1, default=str), encoding="utf-8")
     return dir_
-
-
-def summary(out: dict) -> dict:
-    lk = out["leaks"]
-    return {"leaks": len(lk), "by_cause": lk["cause_code"].value_counts().to_dict() if len(lk) else {},
-            "segment_daily_rows": len(out["segment_daily"]), "installs": len(out["installs"]), "maintenance": len(out["maintenance"])}
 
 
 def validate(out: dict) -> dict:

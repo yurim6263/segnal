@@ -5,9 +5,6 @@ __pycache__/
 frontend/node_modules/
 frontend/dist/
 data/*.db
-# 평가용 시나리오(약 140MB)는 python -m sim.generate 옵션으로 다시 만든다. 데모 시나리오와 평가 결과(JSON/CSV)는 커밋한다.
-data/generated/eval_*
-data/generated/evalp_*
 *.log
 *.tsbuildinfo
 

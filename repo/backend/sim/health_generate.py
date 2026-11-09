@@ -1,6 +1,6 @@
 """세그먼트 수명·누수 원인 데이터 생성 CLI.  python -m sim.health_generate [--seed N] [--no-minute]
 
-결과: data/health/*.csv (segments, installs, maintenance, leaks, segment_daily, water_quality, ops_events, sensor_1min, work_orders)
+결과: data/health/*.csv (segments, installs, maintenance, leaks, segment_daily, water_quality, ops_events, sensor_1min)
 """
 from __future__ import annotations
 

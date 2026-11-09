@@ -26,4 +26,4 @@ def llm_available() -> bool:
 
 
 MODEL_QA = lambda: os.environ.get("AGENT_MODEL_QA", "claude-haiku-5-5")        # 질의응답: 빠른 모델
-MODEL_NOTE = lambda: os.environ.get("AGENT_MODEL_NOTE", "claude-sonnet-5-5")   # 노트 문장 다듬기
+MODEL_NOTE = lambda: os.environ.get("AGENT_MODEL_NOTE", "claude-sonnet-5-5")   # 작업지시서 초안
