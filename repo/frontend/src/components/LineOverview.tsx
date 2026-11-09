@@ -65,9 +65,9 @@ export default function LineOverview({ config, segments, candidates, impact, now
         <line x1={X0} x2={X0} y1={90} y2={Y0} style={{ stroke: "var(--seg-stroke)" }} strokeWidth={2} />
 
         {/* 냉각수 공급(실선) / 회수(점선) */}
-        <path d={supply} fill="none" style={{ stroke: "var(--primary)" }} strokeWidth={2} />
-        <path d={ret} fill="none" style={{ stroke: "var(--primary)" }} strokeWidth={1.6} strokeDasharray="5 4" />
-        <text x={xEnd + 4} y={yb + 54} textAnchor="end" style={{ fill: "var(--primary)", fontSize: 12.5, fontWeight: 700 }}>기계 냉각수 회로</text>
+        <path d={supply} fill="none" style={{ stroke: "var(--water)" }} strokeWidth={2} />
+        <path d={ret} fill="none" style={{ stroke: "var(--water)" }} strokeWidth={1.6} strokeDasharray="5 4" />
+        <text x={xEnd + 4} y={yb + 54} textAnchor="end" style={{ fill: "var(--water)", fontSize: 12.5, fontWeight: 700 }}>기계 냉각수 회로</text>
 
         {/* 절단 · 슬래브 */}
         <line x1={xEnd + 10} x2={xEnd + 10} y1={yb - 22} y2={yb + 22} style={{ stroke: "var(--seg-stroke)" }} strokeWidth={1.4} />
@@ -132,8 +132,8 @@ export default function LineOverview({ config, segments, candidates, impact, now
           {anyLow && <LegendBox fill="var(--primary-soft)" stroke="var(--primary)" label="후보 2–3순위" />}
           {anyDone && <LegendBox dashed label="점검함, 이상 없음" />}
           {confirmed != null && <LegendBox fill="var(--alarm)" stroke="var(--alarm)" label="누수 확인" />}
-          <li className="mt-1 flex items-center gap-2"><svg width="22" height="8"><line x1="0" x2="22" y1="4" y2="4" style={{ stroke: "var(--primary)" }} strokeWidth={2} /></svg>냉각수 공급</li>
-          <li className="flex items-center gap-2"><svg width="22" height="8"><line x1="0" x2="22" y1="4" y2="4" style={{ stroke: "var(--primary)" }} strokeWidth={1.6} strokeDasharray="4 3" /></svg>냉각수 회수</li>
+          <li className="mt-1 flex items-center gap-2"><svg width="22" height="8"><line x1="0" x2="22" y1="4" y2="4" style={{ stroke: "var(--water)" }} strokeWidth={2} /></svg>냉각수 공급</li>
+          <li className="flex items-center gap-2"><svg width="22" height="8"><line x1="0" x2="22" y1="4" y2="4" style={{ stroke: "var(--water)" }} strokeWidth={1.6} strokeDasharray="4 3" /></svg>냉각수 회수</li>
         </ul>
       )}
     </div>

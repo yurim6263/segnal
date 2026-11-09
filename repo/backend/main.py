@@ -1,6 +1,6 @@
-"""FastAPI 앱. 시나리오·상태·후보는 service.py의 실제 계산 결과이고, 질의응답·인수인계는 17단계 전까지 mock이다.
+"""FastAPI 앱. 위험 예측·작업지시서·보안 질의응답과 E1 조기 감지 API를 함께 제공한다.
 
-/docs 에서 API 문서를 볼 수 있다. 데이터를 아직 만들지 않았다면 python -m sim.generate 를 먼저 실행한다.
+/docs 에서 API 문서를 볼 수 있다. 데이터 준비는 README의 실행 순서를 따른다.
 """
 from __future__ import annotations
 
@@ -14,12 +14,15 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from agent.envfile import load_env, llm_available, MODEL_QA, MODEL_NOTE
 from agent import qa as agent_qa, note as agent_note
+from db import init_db
+import queries
 import service
 from core import cost as cost_core
 from core.handover import polish_note
 from schemas import (
     AskIn, AskOut, CostIn, CostOut, DetectorEval, HandoverOut, HandoverPolishIn, InspectionIn, InspectionOut,
-    JointRisk, PlantConfigOut, PriorEval, ScenarioInfo, SeriesOut, StateOut,
+    JointRisk, PlantConfigOut, PriorEval, ReplacementPlanIn, ReplacementPlanOut, ScenarioInfo, SegmentDetail,
+    SegmentOut, SeriesOut, StateOut,
 )
 from sim.config import load_config
 
@@ -35,10 +38,14 @@ async def lifespan(app: FastAPI):
         import anthropic  # noqa: F401  첫 '문장 다듬기'가 패키지 로딩을 기다리지 않게 한다
     except Exception as e:     # 데이터가 없으면 mock으로만 동작
         print("[warn] service warm-up failed:", e)
+    try:
+        init_db().close()
+    except Exception as e:
+        print("[warn] db init failed:", e)
     yield
 
 
-app = FastAPI(title="연주기 냉각수 누수 조기 감지 API", version="0.2.0", lifespan=lifespan)
+app = FastAPI(title="세그먼트 냉각수 누수 예측·예방 API", version="0.3.0", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173", "http://127.0.0.1:5173", *[o for o in os.environ.get("CORS_EXTRA", "").split(",") if o]],
@@ -167,12 +174,40 @@ def risk_board():
     return service.risk_board()
 
 
+@app.get("/api/risk/segments/{serial}/history")
+def risk_history(serial: str, days: int = 30):
+    if not 1 <= days <= 730:
+        raise HTTPException(422, "days 는 1~730 이어야 합니다")
+    try:
+        return service.risk_history(serial, days)
+    except KeyError:
+        raise HTTPException(404, f"세그먼트 없음: {serial}")
+
+
 @app.get("/api/risk/eval")
 def risk_eval():
     try:
         return service.risk_eval()
     except FileNotFoundError as e:
         raise HTTPException(404, str(e))
+
+
+@app.get("/api/segments", response_model=list[SegmentOut])
+def get_segments():
+    return queries.list_segments()
+
+
+@app.get("/api/segments/{serial}", response_model=SegmentDetail)
+def get_segment(serial: str):
+    row = queries.get_segment(serial)
+    if row is None:
+        raise HTTPException(404, "세그먼트 없음")
+    return row
+
+
+@app.post("/api/replacement-plan", response_model=ReplacementPlanOut)
+def replacement_plan(body: ReplacementPlanIn):
+    return queries.replacement_plan(service.risk_board(), body.capacity)
 
 
 @app.get("/api/eval/detectors", response_model=list[DetectorEval])

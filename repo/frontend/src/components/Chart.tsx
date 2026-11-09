@@ -20,10 +20,11 @@ interface Props {
   yDomain?: [number, number];
   endKey?: string;
   includeZero?: boolean;
+  xCaption?: string;       // 왼쪽 아래 글자. 없으면 "지난 N시간" (x가 분 단위일 때)
 }
 
 
-export default function Chart({ data, lines, hlines = [], marks = [], xMax, xMin = 0, height = 190, compact = false, endLabel, baseLabel, baseKey, unit, bracket, yDomain, endKey, includeZero = false }: Props) {
+export default function Chart({ data, lines, hlines = [], marks = [], xMax, xMin = 0, height = 190, compact = false, endLabel, baseLabel, baseKey, unit, bracket, yDomain, endKey, includeZero = false, xCaption }: Props) {
   const W = compact ? 300 : 760;
   const pk = endKey ?? lines[0].key;
   const ml = compact ? 38 : 44, mr = compact ? 8 : 92, mt = 14, mb = compact ? 6 : 24;
@@ -61,7 +62,7 @@ export default function Chart({ data, lines, hlines = [], marks = [], xMax, xMin
     return out;
   };
   const ticks = niceTicks(lo, hi, compact ? 2 : 4);
-  const fmtT = (v: number) => (Math.abs(v) >= 100 ? v.toFixed(0) : Math.abs(v) >= 10 ? v.toFixed(1) : Math.abs(v) >= 1 ? v.toFixed(1) : v.toFixed(2));
+  const fmtT = (v: number) => (Math.abs(v) >= 10000 ? `${Math.round(v / 1000)}k` : Math.abs(v) >= 100 ? v.toFixed(0) : Math.abs(v) >= 10 ? v.toFixed(1) : Math.abs(v) >= 1 ? v.toFixed(1) : v.toFixed(2));
   const halo = { stroke: "var(--card)", strokeWidth: 3.5, paintOrder: "stroke" } as const;
   const last = [...data].reverse().find((d) => d[pk] != null);
   const txt = { fill: "var(--muted)", fontSize: 11.5 } as const;
@@ -121,7 +122,7 @@ export default function Chart({ data, lines, hlines = [], marks = [], xMax, xMin
       )}
       {!compact && (
         <g>
-          <text x={ml} y={height - 4} style={txt}>← 지난 {Math.round((xMax - xMin) / 60)}시간</text>
+          <text x={ml} y={height - 4} style={txt}>{xCaption ?? `← 지난 ${Math.round((xMax - xMin) / 60)}시간`}</text>
           {last && <text x={X(last.ts as number)} y={height - 4} textAnchor="middle" style={{ ...txt, fill: "var(--text)" }}>지금</text>}
         </g>
       )}
