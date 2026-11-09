@@ -15,7 +15,7 @@ _INJECT = [r"이전\s*(의\s*)?(지시|명령|규칙).{0,8}(무시|잊)", r"위�
            r"ignore\s+(all\s+|the\s+)?(previous|above)", r"system\s*prompt", r"jailbreak|DAN\s*모드", r"관리자\s*(모드|권한)\s*(으?로|를)?\s*(전환|켜|부여)", r"개발자\s*모드",
            r"너는\s*이제", r"역할을\s*(바꿔|변경)", r"you\s+are\s+now"]
 _CONTROL = [r"(밸브|펌프|유량|압력|설비).{0,10}(제어|조작|열어|닫아|꺼|켜|변경해)", r"(자동으로|바로)\s*(발행|승인|실행)", r"작업지시서.{0,10}(승인\s*처리|발행해)"]
-_PII_ASK = [r"(사번|내선|연락처|전화번호|이메일|주민|담당자\s*(이름|명단))", r"누가\s*(담당|작업|처리)했"]
+_PII_ASK = [r"(사번|내선|연락처|전화번호|휴대폰|핸드폰|이메일|주민|담당자\s*(이름|명단))", r"누가\s*(담당|작업|처리)했"]
 _INJECT_RE = [re.compile(p, re.I) for p in _INJECT]
 _CONTROL_RE = [re.compile(p) for p in _CONTROL]
 _PII_ASK_RE = [re.compile(p) for p in _PII_ASK]

@@ -291,3 +291,15 @@ def llm_audit(role: str, limit: int = 50):
         return _gateway().audit_log(_subj(role), limit)
     except PermissionError as e:
         raise HTTPException(403, str(e))
+
+
+@app.get("/api/llm/redteam")
+def llm_redteam():
+    p = Path(__file__).resolve().parents[1] / "data" / "health" / "redteam.json"
+    if not p.exists():
+        raise HTTPException(404, "redteam.json 없음: python -m eval.redteam_eval 을 먼저 실행")
+    d = json.loads(p.read_text(encoding="utf-8"))
+    for k in ("rules", "claude"):
+        if k in d:
+            d[k].pop("rows", None)
+    return d

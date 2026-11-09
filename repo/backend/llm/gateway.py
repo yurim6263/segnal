@@ -16,6 +16,7 @@ from typing import Callable
 from llm import audit, guard, policy
 from llm.rag import Chunk, Index
 
+DOC_ONLY_MIN = 0.15      # 모델 값 없이 문서만으로 답하는 질문의 최소 검색 점수 (정상 질문 최저 0.23, 범위 밖 최고 0.12)
 SCORE_MIN = 0.10          # 이보다 낮은 검색 점수는 근거로 보지 않는다 (범위 밖 질문 판정)
 POS_RE = re.compile(r"(\d{1,2})\s*번\s*(?:자리|세그먼트|위치)?")
 SER_RE = re.compile(r"S-\d{4}")
@@ -67,6 +68,7 @@ class Context:
     chunks: list[Chunk] = field(default_factory=list)
     dropped_injection: list[str] = field(default_factory=list)
     masked: int = 0
+    top_score: float = 0.0
 
 
 def _compact(seg: dict) -> dict:
@@ -131,9 +133,10 @@ class Gateway:
         hits = self.index.search(role, question + (" " + ctx.values["segments"][0]["top_cause_label"] if cause and ctx.values.get("segments") else ""), k=4)
         if cause:
             hits += self.index.search(role, question, k=2, cause=cause)
+        ctx.top_score = max((sc for _, sc in hits), default=0.0)
         seen: set[str] = set()
         for ch, sc in hits:
-            if ch.ref in seen or sc < SCORE_MIN:
+            if ch.ref in seen or sc < SCORE_MIN * 0.6:
                 continue
             seen.add(ch.ref)
             if guard.doc_has_injection(ch.text):          # 문서 속 지시문은 따르지 않고 버린다
@@ -162,7 +165,7 @@ class Gateway:
         if ctx.denied or (not ctx.values and self._denied_by_permission(subj, q)):
             who = "·".join(ctx.denied) if ctx.denied else "요청하신 정보"
             return self._finish(subj, "qa", q, ctx, "denied", "no_permission", f"{who}는 '{subj.role}' 역할에 열람 권한이 없습니다. 필요하면 관리자에게 권한을 요청하세요.", {}, "rule", "")
-        if not ctx.values and not ctx.chunks:
+        if not ctx.values and (not ctx.chunks or ctx.top_score < DOC_ONLY_MIN):          # 모델 값이 없는 질문은 문서와 꽤 맞아야 답한다
             return self._finish(subj, "qa", q, ctx, "refused", "out_of_scope", "답할 근거가 없습니다. 이 시스템은 세그먼트 누수 위험·원인·조치·정비 절차에 대한 질문만 답합니다.", {}, "rule", "")
         return self._answer(subj, q, ctx)
 
@@ -199,6 +202,8 @@ class Gateway:
         if mode != "llm":
             text = self.template_answer(ctx, q)
             checks = guard.check_answer(text, model_values=[ctx.values], clause_text=clause_text, question=q, allowed_refs=refs, forbidden_texts=forbidden) | {"fallback": True, "llm_error": checks.get("llm_error")}
+        if re.match(r"^\s*##\s*결론\s+[-*]?\s*답할 수 없습니다", text) and not ctx.values:          # 모델이 근거 없음으로 답한 경우: 답변이 아니라 거절로 기록
+            return self._finish(subj, "qa", q, ctx, "refused", "no_evidence", text, checks, mode, model)
         return self._finish(subj, "qa", q, ctx, "answered", "", text, checks, mode, model)
 
     # -- 규칙 기반 양식 답변 (키가 없거나 LLM 검사에 실패했을 때) --
