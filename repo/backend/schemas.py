@@ -364,3 +364,44 @@ class PriorEval(BaseModel):
     top3: float
     top10: Optional[float] = None
     mean_rank: Optional[float] = None
+
+
+class SegmentOut(BaseModel):
+    segment_serial: str
+    commission_date: str
+    position: Optional[int] = None          # 예비품은 None
+    bundle_id: Optional[str] = None
+    install_ts: Optional[str] = None
+    last_seal: Optional[str] = None
+    last_rotary_joint: Optional[str] = None
+    last_bearing: Optional[str] = None
+    is_synthetic: bool = True
+
+
+class SegmentDetail(SegmentOut):
+    installs: list[dict] = []
+    maintenance: list[dict] = []
+    leaks: list[dict] = []
+
+
+class ReplacementPlanIn(BaseModel):
+    capacity: int = Field(2, ge=0, description="이번 계획 정지에서 교체 가능한 세그먼트 수 [가정]")
+
+
+class ReplacementItem(BaseModel):
+    rank: int
+    segment: str
+    position: int
+    bundle: str
+    prob_next_stop: float
+    top_cause: str
+    top_cause_label: str
+    action: Literal["replace", "inspect"]
+
+
+class ReplacementPlanOut(BaseModel):
+    as_of: str
+    next_planned_stop: str
+    capacity: int
+    items: list[ReplacementItem]
+    is_synthetic: bool = True
