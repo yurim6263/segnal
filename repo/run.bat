@@ -11,6 +11,14 @@ if not exist frontend\node_modules (
   pause
   exit /b 1
 )
+pushd backend
+.venv\Scripts\python.exe -m tools.load_db --if-empty
+if errorlevel 1 (
+  echo [ERROR] segment data load failed. See README.md
+  pause
+  exit /b 1
+)
+popd
 start "backend" cmd /k "cd /d backend && .venv\Scripts\python.exe -m uvicorn main:app --port 8000"
 start "frontend" cmd /k "cd /d frontend && npm run dev"
 echo.
