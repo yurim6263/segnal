@@ -161,6 +161,19 @@ def cost(body: CostIn) -> CostOut:
     return out
 
 
+@app.get("/api/risk/board")
+def risk_board():
+    return service.risk_board()
+
+
+@app.get("/api/risk/eval")
+def risk_eval():
+    try:
+        return service.risk_eval()
+    except FileNotFoundError as e:
+        raise HTTPException(404, str(e))
+
+
 @app.get("/api/eval/detectors", response_model=list[DetectorEval])
 def eval_detectors():
     return service.eval_detectors() or _mock("eval_detectors")

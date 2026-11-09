@@ -1,0 +1,456 @@
+{
+ "with_vibration": {
+  "rows": 7098,
+  "leaks": 28,
+  "auc_model": 0.667,
+  "auc_tons_order": 0.521,
+  "auc_diff_90ci": [
+   0.024,
+   0.263
+  ],
+  "top3_daily_capture_model": 0.429,
+  "top3_daily_capture_tons": 0.321,
+  "top3_daily_capture_random": 0.231,
+  "pred_total": 31.2,
+  "calibration": [
+   {
+    "bin": 0,
+    "pred_mean": 0.00181,
+    "obs_rate": 0.00282,
+    "n": 1420,
+    "leaks": 4
+   },
+   {
+    "bin": 1,
+    "pred_mean": 0.00253,
+    "obs_rate": 0.00211,
+    "n": 1419,
+    "leaks": 3
+   },
+   {
+    "bin": 2,
+    "pred_mean": 0.0031,
+    "obs_rate": 0.00282,
+    "n": 1420,
+    "leaks": 4
+   },
+   {
+    "bin": 3,
+    "pred_mean": 0.0038,
+    "obs_rate": 0.00352,
+    "n": 1419,
+    "leaks": 5
+   },
+   {
+    "bin": 4,
+    "pred_mean": 0.01075,
+    "obs_rate": 0.00845,
+    "n": 1420,
+    "leaks": 12
+   }
+  ],
+  "per_cause_auc": [
+   {
+    "cause": "WEAR",
+    "n": 9,
+    "auc_model": 0.587,
+    "auc_tons_order": 0.641
+   },
+   {
+    "cause": "HAMMER",
+    "n": 7,
+    "auc_model": 0.947,
+    "auc_tons_order": 0.642
+   },
+   {
+    "cause": "BEARING",
+    "n": 2,
+    "auc_model": 0.999,
+    "auc_tons_order": 0.535
+   },
+   {
+    "cause": "THERMAL",
+    "n": 3,
+    "auc_model": 0.222,
+    "auc_tons_order": 0.352
+   },
+   {
+    "cause": "WATER",
+    "n": 3,
+    "auc_model": 0.818,
+    "auc_tons_order": 0.278
+   },
+   {
+    "cause": "ASSEMBLY",
+    "n": 2,
+    "auc_model": 0.316,
+    "auc_tons_order": 0.458
+   },
+   {
+    "cause": "RANDOM",
+    "n": 2,
+    "auc_model": 0.507,
+    "auc_tons_order": 0.228
+   }
+  ],
+  "cause_top1_acc": 0.643,
+  "cause_confusion": [
+   {
+    "true": "ASSEMBLY",
+    "pred": "THERMAL",
+    "n": 1
+   },
+   {
+    "true": "ASSEMBLY",
+    "pred": "WEAR",
+    "n": 1
+   },
+   {
+    "true": "BEARING",
+    "pred": "BEARING",
+    "n": 2
+   },
+   {
+    "true": "HAMMER",
+    "pred": "HAMMER",
+    "n": 6
+   },
+   {
+    "true": "HAMMER",
+    "pred": "WEAR",
+    "n": 1
+   },
+   {
+    "true": "RANDOM",
+    "pred": "HAMMER",
+    "n": 1
+   },
+   {
+    "true": "RANDOM",
+    "pred": "RANDOM",
+    "n": 1
+   },
+   {
+    "true": "THERMAL",
+    "pred": "WEAR",
+    "n": 3
+   },
+   {
+    "true": "WATER",
+    "pred": "HAMMER",
+    "n": 1
+   },
+   {
+    "true": "WATER",
+    "pred": "WATER",
+    "n": 2
+   },
+   {
+    "true": "WEAR",
+    "pred": "HAMMER",
+    "n": 1
+   },
+   {
+    "true": "WEAR",
+    "pred": "RANDOM",
+    "n": 1
+   },
+   {
+    "true": "WEAR",
+    "pred": "WEAR",
+    "n": 7
+   }
+  ]
+ },
+ "no_bearing_sensor": {
+  "rows": 7098,
+  "leaks": 28,
+  "auc_model": 0.627,
+  "auc_tons_order": 0.521,
+  "auc_diff_90ci": [
+   -0.01,
+   0.213
+  ],
+  "top3_daily_capture_model": 0.393,
+  "top3_daily_capture_tons": 0.321,
+  "top3_daily_capture_random": 0.231,
+  "pred_total": 28.3,
+  "calibration": [
+   {
+    "bin": 0,
+    "pred_mean": 0.00196,
+    "obs_rate": 0.00282,
+    "n": 1420,
+    "leaks": 4
+   },
+   {
+    "bin": 1,
+    "pred_mean": 0.00266,
+    "obs_rate": 0.00211,
+    "n": 1419,
+    "leaks": 3
+   },
+   {
+    "bin": 2,
+    "pred_mean": 0.00322,
+    "obs_rate": 0.00423,
+    "n": 1420,
+    "leaks": 6
+   },
+   {
+    "bin": 3,
+    "pred_mean": 0.00391,
+    "obs_rate": 0.00352,
+    "n": 1419,
+    "leaks": 5
+   },
+   {
+    "bin": 4,
+    "pred_mean": 0.00816,
+    "obs_rate": 0.00704,
+    "n": 1420,
+    "leaks": 10
+   }
+  ],
+  "per_cause_auc": [
+   {
+    "cause": "WEAR",
+    "n": 9,
+    "auc_model": 0.589,
+    "auc_tons_order": 0.641
+   },
+   {
+    "cause": "HAMMER",
+    "n": 7,
+    "auc_model": 0.947,
+    "auc_tons_order": 0.642
+   },
+   {
+    "cause": "BEARING",
+    "n": 2,
+    "auc_model": 0.382,
+    "auc_tons_order": 0.535
+   },
+   {
+    "cause": "THERMAL",
+    "n": 3,
+    "auc_model": 0.259,
+    "auc_tons_order": 0.352
+   },
+   {
+    "cause": "WATER",
+    "n": 3,
+    "auc_model": 0.823,
+    "auc_tons_order": 0.278
+   },
+   {
+    "cause": "ASSEMBLY",
+    "n": 2,
+    "auc_model": 0.315,
+    "auc_tons_order": 0.458
+   },
+   {
+    "cause": "RANDOM",
+    "n": 2,
+    "auc_model": 0.5,
+    "auc_tons_order": 0.228
+   }
+  ],
+  "cause_top1_acc": 0.571,
+  "cause_confusion": [
+   {
+    "true": "ASSEMBLY",
+    "pred": "THERMAL",
+    "n": 1
+   },
+   {
+    "true": "ASSEMBLY",
+    "pred": "WEAR",
+    "n": 1
+   },
+   {
+    "true": "BEARING",
+    "pred": "WEAR",
+    "n": 2
+   },
+   {
+    "true": "HAMMER",
+    "pred": "HAMMER",
+    "n": 6
+   },
+   {
+    "true": "HAMMER",
+    "pred": "WEAR",
+    "n": 1
+   },
+   {
+    "true": "RANDOM",
+    "pred": "HAMMER",
+    "n": 1
+   },
+   {
+    "true": "RANDOM",
+    "pred": "RANDOM",
+    "n": 1
+   },
+   {
+    "true": "THERMAL",
+    "pred": "WEAR",
+    "n": 3
+   },
+   {
+    "true": "WATER",
+    "pred": "HAMMER",
+    "n": 1
+   },
+   {
+    "true": "WATER",
+    "pred": "WATER",
+    "n": 2
+   },
+   {
+    "true": "WEAR",
+    "pred": "HAMMER",
+    "n": 1
+   },
+   {
+    "true": "WEAR",
+    "pred": "RANDOM",
+    "n": 1
+   },
+   {
+    "true": "WEAR",
+    "pred": "WEAR",
+    "n": 7
+   }
+  ]
+ },
+ "coefficients": [
+  {
+   "cause": "WEAR",
+   "label": "씰 정상 마모",
+   "form": "weibull_tons",
+   "n_events": 13,
+   "beta": 1.73,
+   "effects": []
+  },
+  {
+   "cause": "HAMMER",
+   "label": "스팀 해머성 씰 파손",
+   "form": "exp",
+   "n_events": 9,
+   "beta": null,
+   "effects": [
+    {
+     "signal": "냉각 유량 저하 시간(분/일)",
+     "hazard_ratio": 4.18,
+     "se": 0.29
+    }
+   ]
+  },
+  {
+   "cause": "BEARING",
+   "label": "베어링 손상 → 씰 하중",
+   "form": "exp",
+   "n_events": 3,
+   "beta": null,
+   "effects": [
+    {
+     "signal": "베어링 온도 상승(℃)",
+     "hazard_ratio": 4.24,
+     "se": 0.31
+    },
+    {
+     "signal": "진동 증가율",
+     "hazard_ratio": 4.24,
+     "se": 1.72
+    }
+   ]
+  },
+  {
+   "cause": "THERMAL",
+   "label": "열 사이클 피로",
+   "form": "exp",
+   "n_events": 4,
+   "beta": null,
+   "effects": [
+    {
+     "signal": "열 사이클(주조 시작·정지 횟수/일)",
+     "hazard_ratio": 1.01,
+     "se": 0.37
+    }
+   ]
+  },
+  {
+   "cause": "WATER",
+   "label": "이물질·스케일(수질)",
+   "form": "exp",
+   "n_events": 3,
+   "beta": null,
+   "effects": [
+    {
+     "signal": "수질 관리 상한 초과량",
+     "hazard_ratio": 23.65,
+     "se": 0.95
+    }
+   ]
+  },
+  {
+   "cause": "ASSEMBLY",
+   "label": "조립 불량",
+   "form": "weibull_days",
+   "n_events": 3,
+   "beta": 0.73,
+   "effects": [
+    {
+     "signal": "장착 후 압력 시험",
+     "hazard_ratio": 1.68,
+     "se": 1.05
+    }
+   ]
+  },
+  {
+   "cause": "RANDOM",
+   "label": "우연형",
+   "form": "exp",
+   "n_events": 3,
+   "beta": null,
+   "effects": []
+  }
+ ],
+ "beta_by_cause": [
+  {
+   "cause": "WEAR",
+   "n_events": 13,
+   "beta": 1.73,
+   "beta_lo": 1.13,
+   "beta_hi": 2.63,
+   "type": "마모형"
+  },
+  {
+   "cause": "ASSEMBLY",
+   "n_events": 3,
+   "beta": 0.98,
+   "beta_lo": 0.59,
+   "beta_hi": 1.63,
+   "type": "우연형"
+  },
+  {
+   "cause": "RANDOM",
+   "n_events": 3,
+   "beta": 1.13,
+   "beta_lo": 0.65,
+   "beta_hi": 1.95,
+   "type": "우연형"
+  },
+  {
+   "cause": "HAMMER",
+   "n_events": 9,
+   "beta": 1.2,
+   "beta_lo": 0.75,
+   "beta_hi": 1.91,
+   "type": "우연형"
+  }
+ ],
+ "note": "합성 데이터. 누수 약 30건이라 구간 추정이 넓다. 일 단위 평가이며, 정지 때마다 그 시점까지의 데이터로 다시 맞춘 뒤 이후 14일을 평가했다. 와이블 β는 공변량 없이 교체 후 누적 톤수 기준."
+}

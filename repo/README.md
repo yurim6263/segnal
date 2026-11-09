@@ -24,6 +24,9 @@ python -m venv .venv
 .venv\Scripts\python -m sim.generate --eval-n 30 --eval-events 12 --eval-prior 30
 # 평가 다시 돌리기: python -m eval.tune_detectors / classify_eval / localize_eval / inspection_eval / sensitivity_eval
 # (선택) 오토인코더 비교: pip install torch (CPU)
+# 세그먼트 수명·누수 원인 데이터(기획서 5-1): 대부분의 CSV는 data/health/에 들어 있다.
+# 용량이 커서(약 8MB) git에서 뺀 1분 센서 시계열(sensor_1min.csv)은 아래 명령으로 만든다 (시드 고정, 몇 초).
+.venv\Scripts\python -m sim.health_generate
 # 서버
 .venv\Scripts\python -m uvicorn main:app --reload --port 8000
 

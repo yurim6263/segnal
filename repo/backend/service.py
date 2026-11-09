@@ -728,3 +728,31 @@ def eval_summary() -> dict:
             pat[key] = d_
     out["pattern"] = pat or None
     return out
+
+
+# ---- 위험 예측(기획서 4-5): 세그먼트 수명·누수 원인 모델 ------------------------------------
+_RISK: dict = {}
+
+
+def risk_board() -> dict:
+    """다음 계획 정지 전 누수 위험 순위판. 데이터는 합성이며 첫 호출 때 한 번 맞춘 뒤 메모리에 둔다."""
+    if "board" not in _RISK:
+        from core import risk
+        data = risk.load()
+        rows = risk.build_rows(data)
+        model = risk.fit(rows[rows["day"] < rows["day"].max()])
+        snap = risk.snapshot(model, rows, data)
+        _RISK["board"] = {
+            "as_of": str((data.start_date + pd.Timedelta(days=int(rows["day"].max()))).date()),
+            "next_planned_stop": str((data.start_date + pd.Timedelta(days=data.next_stop_day)).date()),
+            "segments": snap, "coefficients": risk.describe(model),
+            "note": "합성 데이터. 누수 이력이 적어 계수 추정 폭이 넓고, 신호가 학습 범위를 넘으면 확률이 과대할 수 있다.",
+        }
+    return _RISK["board"]
+
+
+def risk_eval() -> dict:
+    p = Path(__file__).resolve().parents[1] / "data" / "health" / "risk_eval.json"
+    if not p.exists():
+        raise FileNotFoundError("risk_eval.json 없음: python -m eval.risk_eval 을 먼저 실행")
+    return json.loads(p.read_text(encoding="utf-8"))
