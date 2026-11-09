@@ -6,7 +6,7 @@ import json
 
 from db import init_db
 
-_DDL = "CREATE TABLE IF NOT EXISTS agent_cache3 (key TEXT PRIMARY KEY, kind TEXT NOT NULL, payload TEXT NOT NULL)"
+_DDL = "CREATE TABLE IF NOT EXISTS agent_cache6 (key TEXT PRIMARY KEY, kind TEXT NOT NULL, payload TEXT NOT NULL)"
 
 
 def _conn():
@@ -21,11 +21,11 @@ def make_key(kind: str, *parts) -> str:
 
 
 def get(key: str) -> dict | None:
-    row = _conn().execute("SELECT payload FROM agent_cache3 WHERE key=?", (key,)).fetchone()
+    row = _conn().execute("SELECT payload FROM agent_cache6 WHERE key=?", (key,)).fetchone()
     return json.loads(row[0]) if row else None
 
 
 def put(key: str, kind: str, payload: dict) -> None:
     c = _conn()
-    c.execute("INSERT OR REPLACE INTO agent_cache3 (key, kind, payload) VALUES (?,?,?)", (key, kind, json.dumps(payload, ensure_ascii=False)))
+    c.execute("INSERT OR REPLACE INTO agent_cache6 (key, kind, payload) VALUES (?,?,?)", (key, kind, json.dumps(payload, ensure_ascii=False)))
     c.commit()
