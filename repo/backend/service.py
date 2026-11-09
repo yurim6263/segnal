@@ -499,7 +499,7 @@ def state_at(scenario_id: str, ts: int | None) -> dict:
 
 def handover_at(scenario_id: str, ts: int | None) -> dict:
     """인수인계 노트 (템플릿). 수치는 계산 결과를 그대로 옮기고, 비어 있는 값은 문장을 만들지 않고 '값 없음'으로 둔다.
-    17단계에서 LLM이 이 틀의 문장을 다듬도록 확장한다."""
+    LLM 문장 정리는 core/handover.py가 이 결과를 받아서 한다."""
     st, rt = static(), runtime(scenario_id)
     T = len(rt.df)
     ts = T - 1 if ts is None else int(np.clip(ts, 0, T - 1))

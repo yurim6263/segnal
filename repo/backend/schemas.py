@@ -227,6 +227,12 @@ class HandoverOut(BaseModel):
     sections: list[HandoverSection] = []
     missing: list[str] = []
     sources: list[HandoverValue] = []
+    fallback_reason: str = ""
+
+
+class HandoverPolishIn(BaseModel):
+    scenario_id: str
+    ts: Optional[int] = None
 
 
 class DetectorEval(BaseModel):

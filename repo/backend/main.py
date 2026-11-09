@@ -12,8 +12,9 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 import service
+from core.handover import polish_note
 from schemas import (
-    AskIn, AskOut, DetectorEval, HandoverOut, InspectionIn, InspectionOut,
+    AskIn, AskOut, DetectorEval, HandoverOut, HandoverPolishIn, InspectionIn, InspectionOut,
     JointRisk, PlantConfigOut, PriorEval, ScenarioInfo, SeriesOut, StateOut,
 )
 from sim.config import load_config
@@ -26,6 +27,7 @@ async def lifespan(app: FastAPI):
     try:                       # 첫 요청이 느리지 않게 미리 계산해 둔다 (약 10초)
         service.static()
         service.runtime("leak_ramp_s5")
+        import anthropic  # noqa: F401  첫 '문장 다듬기'가 패키지 로딩을 기다리지 않게 한다
     except Exception as e:     # 데이터가 없으면 mock으로만 동작
         print("[warn] service warm-up failed:", e)
     yield
@@ -116,7 +118,14 @@ def ask(body: AskIn):
 @app.get("/api/handover", response_model=HandoverOut)
 def handover(scenario_id: str = "leak_ramp_s5", ts: int | None = None):
     _check(scenario_id)
-    return service.handover_at(scenario_id, ts)    # 템플릿 노트 (17단계에서 LLM 문장 다듬기 추가)
+    return service.handover_at(scenario_id, ts)    # 템플릿 노트. 재생 중에도 호출되므로 여기서는 LLM을 쓰지 않는다
+
+
+@app.post("/api/handover/polish", response_model=HandoverOut)
+def polish_handover(body: HandoverPolishIn):
+    """사람이 '문장 다듬기'를 눌렀을 때만 LLM을 호출한다. 실패하면 템플릿 노트와 이유를 돌려준다."""
+    _check(body.scenario_id)
+    return polish_note(service.handover_at(body.scenario_id, body.ts))
 
 
 @app.get("/api/eval/detectors", response_model=list[DetectorEval])
