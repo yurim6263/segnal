@@ -303,3 +303,22 @@ def llm_redteam():
         if k in d:
             d[k].pop("rows", None)
     return d
+
+
+@app.get("/api/llm/policy")
+def llm_policy_matrix():
+    """역할별로 AI가 읽을 수 있는 문서 조항 수와 도구. 조항 본문은 돌려주지 않는다."""
+    gw = _gateway()
+    out = []
+    for role, v in llm_policy.ROLES.items():
+        idx = gw.index.allowed(role)
+        docs: dict = {}
+        for i in idx:
+            c = gw.index.chunks[i]
+            d = docs.setdefault(c.doc_id, {"doc_id": c.doc_id, "title": c.doc_title, "clauses": 0, "tiers": set()})
+            d["clauses"] += 1
+            d["tiers"].add(c.tier)
+        out.append({"role": role, "desc": v["desc"], "max_tier": v["max_tier"], "clauses": len(idx), "total_clauses": len(gw.index.chunks),
+                    "docs": [{**d, "tiers": sorted(d["tiers"])} for d in docs.values()],
+                    "tools": [t for t, rs in llm_policy.TOOL_ROLES.items() if role in rs]})
+    return {"roles": out, "tiers": llm_policy.TIERS}

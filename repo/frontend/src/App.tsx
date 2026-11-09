@@ -9,11 +9,16 @@ import HandoverView from "./views/HandoverView";
 import MetricsView from "./views/MetricsView";
 import ScenarioView from "./views/ScenarioView";
 import AskPanel from "./components/AskPanel";
+import PredictView from "./views/PredictView";
+import AskView from "./views/AskView";
+import SecurityView from "./views/SecurityView";
+import { ROLES, type Role } from "./llmApi";
 
-type Tab = "monitor" | "diagnosis" | "inspect" | "handover" | "metrics" | "scenario";
+type Tab = "predict" | "ask" | "security" | "monitor" | "diagnosis" | "inspect" | "handover" | "metrics" | "scenario";
 type Theme = "light" | "dark";
 const TABS: { id: Tab; label: string }[] = [
-  { id: "monitor", label: "감시" }, { id: "diagnosis", label: "진단" }, { id: "inspect", label: "점검" },
+  { id: "predict", label: "위험 예측" }, { id: "ask", label: "질의응답" }, { id: "security", label: "AI 보안·감사" },
+  { id: "monitor", label: "조기 감지" }, { id: "diagnosis", label: "진단" }, { id: "inspect", label: "점검" },
   { id: "handover", label: "인수인계" }, { id: "metrics", label: "비교·지표" }, { id: "scenario", label: "시나리오" },
 ];
 const START_TS = 1500;
@@ -34,7 +39,10 @@ export default function App() {
   const [series, setSeries] = useState<Series | null>(null);
   const [handover, setHandover] = useState<Handover | null>(null);
   const [polishing, setPolishing] = useState(false);
-  const [tab, setTab] = useState<Tab>("monitor");
+  const [tab, setTab] = useState<Tab>("predict");
+  const [role, setRole] = useState<Role>("정비담당");
+  const llmTab = tab === "predict" || tab === "ask" || tab === "security";
+  const user = `${role}-01`;
   const [online, setOnline] = useState<boolean | null>(null);
   const [version, setVersion] = useState(0);
   const [theme, setTheme] = useState<Theme>(loadTheme);
@@ -110,16 +118,19 @@ export default function App() {
   const header = (
     <header className="topbar">
       <div className="mx-auto flex max-w-[1320px] flex-wrap items-center gap-x-5 px-4">
-        <h1 className="py-3 text-[16px] font-bold">연주기 기계 냉각수 누수 감시</h1>
+        <h1 className="py-3 text-[16px] font-bold">세그널 · 연주기 냉각수 누수 예지보전</h1>
         <nav className="flex flex-wrap" aria-label="화면">
           {TABS.map((t) => (
             <button key={t.id} className="tab" aria-current={tab === t.id} onClick={() => setTab(t.id)}>{t.label}</button>
           ))}
         </nav>
         <span className="ml-auto flex flex-wrap items-center gap-2 py-2">
-          {state && <StatusChip level={state.alert.level} />}
+          {state && !llmTab && <StatusChip level={state.alert.level} />}
+          <label className="flex items-center gap-1.5 text-[12.5px]"><span className="muted">역할(데모)</span>
+            <select value={role} onChange={(e) => setRole(e.target.value as Role)} aria-label="역할">{ROLES.map((r) => <option key={r} value={r}>{r}</option>)}</select>
+          </label>
           <span className="chip chip-dash">합성 데이터</span>
-          <span className="muted text-[12.5px]">경과 {fmtElapsed(ts)}</span>
+          {!llmTab && <span className="muted text-[12.5px]">경과 {fmtElapsed(ts)}</span>}
           <span className="inline-flex overflow-hidden rounded-md border" style={{ borderColor: "var(--line)" }} role="group" aria-label="테마">
             {(["light", "dark"] as Theme[]).map((t) => (
               <button key={t} className="px-2.5 py-1 text-[12.5px]" aria-pressed={theme === t} onClick={() => setTheme(t)}
@@ -157,7 +168,7 @@ export default function App() {
     <div>
       {header}
       <main className="mx-auto max-w-[1320px] space-y-3 p-4">
-        {tab !== "scenario" && (
+        {tab !== "scenario" && !llmTab && (
           <section className="card flex flex-wrap items-center gap-3 !py-2 text-[13.5px]">
             <button className="btn btn-sm" onClick={() => setPlaying((p) => !p)}>{playing ? "❚❚ 일시정지" : "▶ 재생"}</button>
             <label className="flex items-center gap-1.5"><span className="muted">속도</span>
@@ -182,7 +193,7 @@ export default function App() {
           </section>
         )}
 
-        {tab === "metrics" ? <MetricsView state={state} series={series} ts={ts} /> : tab === "scenario" ? (
+        {tab === "predict" ? <PredictView role={role} user={user} /> : tab === "ask" ? <AskView role={role} user={user} /> : tab === "security" ? <SecurityView role={role} /> : tab === "metrics" ? <MetricsView state={state} series={series} ts={ts} /> : tab === "scenario" ? (
           <ScenarioView scenarios={scenarios} scenarioId={scenarioId} onPick={pick} onReset={() => pick(scenarioId)}
             playing={playing} onTogglePlay={() => setPlaying((p) => !p)} speed={speed} onSpeed={setSpeed} ts={ts} nSamples={nSamples} onSeek={setTs} />
         ) : !state || !series ? (
@@ -197,7 +208,7 @@ export default function App() {
           <HandoverView handover={handover} polishing={polishing} onPolish={onPolish} />
         )}
 
-        <AskPanel scenarioId={scenarioId} ts={ts} onRecord={onInspect} />
+        {!llmTab && <AskPanel scenarioId={scenarioId} ts={ts} onRecord={onInspect} />}
 
         <footer className="muted pt-2 text-[12.5px]">
           모든 데이터는 합성입니다. 경보 기준값은 현장 확인 전 가설이며, 이 화면은 점검 후보를 제시할 뿐 확정하지 않습니다.
