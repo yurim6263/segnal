@@ -10,22 +10,25 @@ import MetricsView from "./views/MetricsView";
 import ScenarioView from "./views/ScenarioView";
 import AskPanel from "./components/AskPanel";
 import PredictView from "./views/PredictView";
+import PlanView from "./views/PlanView";
+import RiskEvalView from "./views/RiskEvalView";
 import AskView from "./views/AskView";
 import SecurityView from "./views/SecurityView";
 import { ROLES, type Role } from "./llmApi";
 
-type Tab = "predict" | "ask" | "security" | "monitor" | "diagnosis" | "inspect" | "handover" | "metrics" | "scenario";
+type Tab = "predict" | "plan" | "riskeval" | "ask" | "security" | "monitor" | "diagnosis" | "inspect" | "handover" | "metrics" | "scenario";
 type Theme = "light" | "dark";
 const TABS: { id: Tab; label: string }[] = [
-  { id: "predict", label: "위험 예측" }, { id: "ask", label: "질의응답" }, { id: "security", label: "AI 보안·감사" },
+  { id: "predict", label: "위험 예측" }, { id: "plan", label: "휴지 교체 계획" }, { id: "riskeval", label: "검증" }, { id: "ask", label: "질의응답" }, { id: "security", label: "AI 보안·감사" },
   { id: "monitor", label: "조기 감지" }, { id: "diagnosis", label: "진단" }, { id: "inspect", label: "점검" },
   { id: "handover", label: "인수인계" }, { id: "metrics", label: "비교·지표" }, { id: "scenario", label: "시나리오" },
 ];
 const START_TS = 1500;
+const THEME_KEY = "segnal-theme";     // 예전 키("theme")에는 이전 기본값 light가 저장돼 있어 다크 기본이 적용되지 않는다
 
 function loadTheme(): Theme {
-  try { const t = localStorage.getItem("theme"); if (t === "dark" || t === "light") return t; } catch { /* 저장소 사용 불가 */ }
-  return "light";
+  try { const t = localStorage.getItem(THEME_KEY); if (t === "dark" || t === "light") return t; } catch { /* 저장소 사용 불가 */ }
+  return "dark";
 }
 
 export default function App() {
@@ -41,7 +44,7 @@ export default function App() {
   const [polishing, setPolishing] = useState(false);
   const [tab, setTab] = useState<Tab>("predict");
   const [role, setRole] = useState<Role>("정비담당");
-  const llmTab = tab === "predict" || tab === "ask" || tab === "security";
+  const llmTab = tab === "predict" || tab === "plan" || tab === "riskeval" || tab === "ask" || tab === "security";
   const user = `${role}-01`;
   const [online, setOnline] = useState<boolean | null>(null);
   const [version, setVersion] = useState(0);
@@ -50,7 +53,7 @@ export default function App() {
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
-    try { localStorage.setItem("theme", theme); } catch { /* 저장소 사용 불가 */ }
+    try { localStorage.setItem(THEME_KEY, theme); } catch { /* 저장소 사용 불가 */ }
   }, [theme]);
 
   useEffect(() => {
@@ -117,7 +120,7 @@ export default function App() {
 
   const header = (
     <header className="topbar">
-      <div className="mx-auto flex max-w-[1320px] flex-wrap items-center gap-x-5 px-4">
+      <div className="mx-auto flex max-w-[1440px] flex-wrap items-center gap-x-5 px-4">
         <h1 className="flex items-center gap-1.5 py-2 text-[27px] font-extrabold tracking-tight" style={{ color: "var(--primary)" }}>
           <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M2 12h4l3-7 5 14 3-7h5" />
@@ -155,7 +158,7 @@ export default function App() {
     return (
       <div>
         {header}
-        <main className="mx-auto max-w-[1320px] p-4">
+        <main className="mx-auto max-w-[1440px] p-4">
           <section className="card">
             <h3 className="card-title">백엔드에 연결되지 않았습니다</h3>
             <p className="mt-1 text-[14.5px]">백엔드(8000번)가 아직 켜지는 중이면 10초쯤 기다리세요. 3초마다 자동으로 다시 연결을 시도하며, 연결되면 이 안내가 사라집니다.</p>
@@ -172,7 +175,7 @@ export default function App() {
   return (
     <div>
       {header}
-      <main className="mx-auto max-w-[1320px] space-y-3 p-4">
+      <main className="mx-auto max-w-[1440px] space-y-3 p-4">
         {tab !== "scenario" && !llmTab && (
           <section className="card flex flex-wrap items-center gap-3 !py-2 text-[13.5px]">
             <button className="btn btn-sm" onClick={() => setPlaying((p) => !p)}>{playing ? "❚❚ 일시정지" : "▶ 재생"}</button>
@@ -198,7 +201,7 @@ export default function App() {
           </section>
         )}
 
-        {tab === "predict" ? <PredictView role={role} user={user} /> : tab === "ask" ? <AskView role={role} user={user} /> : tab === "security" ? <SecurityView role={role} /> : tab === "metrics" ? <MetricsView state={state} series={series} ts={ts} /> : tab === "scenario" ? (
+        {tab === "predict" ? <PredictView role={role} user={user} onPlan={() => setTab("plan")} /> : tab === "plan" ? <PlanView role={role} user={user} /> : tab === "riskeval" ? <RiskEvalView /> : tab === "ask" ? <AskView role={role} user={user} /> : tab === "security" ? <SecurityView role={role} /> : tab === "metrics" ? <MetricsView state={state} series={series} ts={ts} /> : tab === "scenario" ? (
           <ScenarioView scenarios={scenarios} scenarioId={scenarioId} onPick={pick} onReset={() => pick(scenarioId)}
             playing={playing} onTogglePlay={() => setPlaying((p) => !p)} speed={speed} onSpeed={setSpeed} ts={ts} nSamples={nSamples} onSeek={setTs} />
         ) : !state || !series ? (
