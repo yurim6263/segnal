@@ -118,7 +118,12 @@ export default function App() {
   const header = (
     <header className="topbar">
       <div className="mx-auto flex max-w-[1320px] flex-wrap items-center gap-x-5 px-4">
-        <h1 className="py-3 text-[16px] font-bold">세그널 · 연주기 냉각수 누수 예지보전</h1>
+        <h1 className="flex items-center gap-1.5 py-2 text-[27px] font-extrabold tracking-tight" style={{ color: "var(--primary)" }}>
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M2 12h4l3-7 5 14 3-7h5" />
+          </svg>
+          Segnal
+        </h1>
         <nav className="flex flex-wrap" aria-label="화면">
           {TABS.map((t) => (
             <button key={t.id} className="tab" aria-current={tab === t.id} onClick={() => setTab(t.id)}>{t.label}</button>

@@ -70,7 +70,7 @@ body {
 }
 
 .topbar { background: var(--card); border-bottom: 1px solid var(--line); }
-.tab { padding: 14px 12px 12px; font-size: 15px; color: var(--text); border-bottom: 3px solid transparent; background: none; cursor: pointer; }
+.tab { padding: 14px 12px 12px; font-size: 16.5px; color: var(--text); border-bottom: 3px solid transparent; background: none; cursor: pointer; }
 .tab[aria-current="true"] { color: var(--primary); font-weight: 700; border-bottom-color: var(--primary); }
 
 .card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; }
