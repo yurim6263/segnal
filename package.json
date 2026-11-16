@@ -1,0 +1,8 @@
+{
+  "name": "segnal",
+  "private": true,
+  "description": "저장소 맨 위에서 npm run dev 하면 repo/frontend의 개발 서버(백엔드 포함)를 켠다",
+  "scripts": {
+    "dev": "npm --prefix repo/frontend run dev"
+  }
+}
